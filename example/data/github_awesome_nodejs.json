@@ -1,0 +1,11 @@
+{
+  "name": "awesome",
+  "url": "github.com/sindresorhus/awesome",
+  "description": "",
+  "description_html": "",
+  "items": {
+    "item": {
+      "date_published": "2019-01-01"
+    }
+  }
+}

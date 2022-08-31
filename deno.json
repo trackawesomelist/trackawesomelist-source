@@ -1,0 +1,38 @@
+{
+  "lint": {
+    "files": {
+      "exclude": ["workers-site/"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "exclude": [
+        "node_modules/",
+        "public/",
+        "example",
+        "workers-site/",
+        "current/",
+        "dev-current/",
+        "dev-archive/",
+        "archive/",
+        "s3/",
+        "zip/"
+      ]
+    }
+  },
+  "test": {
+    "files": {
+      "exclude": [
+        "s3",
+        "node_modules/",
+        "public/",
+        "example",
+        "workers-site/",
+        "current/",
+        "dev-current/",
+        "dev-archive/",
+        "archive/"
+      ]
+    }
+  }
+}
