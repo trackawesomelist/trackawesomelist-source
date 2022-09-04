@@ -1,4 +1,9 @@
 file_min_updated_hours: 12 
 sources:
   ripienaar/free-for-dev:
-  actionsflow/test-page:
+  EbookFoundation/free-programming-books:
+    files:
+      books/free-programming-books-langs.md:
+        index: true
+      books/free-programming-books-zh.md:
+      books/free-programming-books-subjects.md:

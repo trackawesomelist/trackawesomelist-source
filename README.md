@@ -27,3 +27,9 @@
 3. fetch readme, parsed it, compare with old data, if anything changed
 
 delete all un-exist items,
+
+
+## Dev
+
+
+Open <http://localhost:8000/ripienaar/free-for-dev/>

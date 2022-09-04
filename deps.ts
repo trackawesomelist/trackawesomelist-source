@@ -24,6 +24,8 @@ export * as base64 from "https://deno.land/std@0.153.0/encoding/base64.ts";
 // third party
 
 export { default as camelCase } from "https://deno.land/x/lodash@4.17.15-es/camelCase.js";
+export { default as groupBy } from "https://deno.land/x/lodash@4.17.15-es/groupBy.js";
+export { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";
 
 // npm modules
 export { default as mustache } from "https://esm.sh/mustache@4.2.0";

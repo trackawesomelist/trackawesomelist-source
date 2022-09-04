@@ -49,9 +49,8 @@ export default async function initItems(source: Source) {
     files: {},
   };
 
-  for (const fileObj of source.file) {
-    const file = fileObj.path;
-    const type = fileObj.type;
+  for (const file of Object.keys(source.files)) {
+    const type = source.files[file].type;
     const blameInfoMap = await getGitBlame(file, {
       workTree: repoPath,
       gitDir: path.join(repoPath, ".git"),
@@ -68,7 +67,7 @@ export default async function initItems(source: Source) {
         const updatedAt = commitDate.toISOString();
         items[docItem.markdown] = {
           category: docItem.category,
-          updated: updatedAt,
+          updated_at: updatedAt,
         };
       } else {
         throw new Error(

@@ -1,6 +1,6 @@
 import markdownlist from "./markdownlist.ts";
 import { readTextFile } from "../util.ts";
-import { assertEquals } from "../deps.ts";
+import { assertEquals } from "../test-deps.ts";
 Deno.test("markdown list test #1", async () => {
   const content = await readTextFile("./example/simple.md");
 

@@ -4,6 +4,7 @@ import log from "./log.ts";
 
 import fetchSources from "./workflows/1-fetch-sources.ts";
 import buildMarkdown from "./workflows/2-build-markdown.ts";
+import serveSite from "./workflows/3-serve-site.ts";
 import { getConfig, getFormatedSource, isDebug, isDev } from "./util.ts";
 import { RunOptions } from "./interface.ts";
 export default async function main() {
@@ -11,7 +12,7 @@ export default async function main() {
 
   let stage: string[] = [];
 
-  if (args.source) {
+  if (args.fetch) {
     // only source
     stage = stage.concat([
       "fetch",
@@ -20,22 +21,21 @@ export default async function main() {
   } else if (args.build) {
     // only build stage
     stage = stage.concat([
-      "build_site",
+      "buildmarkdown",
     ]);
   } else if (args.serve) {
     // only build stage
     stage = stage.concat([
-      "build_site",
-      "serve_site",
+      "buildmarkdown",
+      "serve",
     ]);
   } else {
     stage = stage.concat([
       "fetch",
-      "format",
-      "build_site",
+      "buildmarkdown",
     ]);
     if (isDev()) {
-      stage.push("serve_site");
+      stage.push("serve");
     }
   }
   if (args.stage) {
@@ -74,10 +74,22 @@ export default async function main() {
       }
     }
   }
+  let push = false;
+  if (args.push !== undefined) {
+    if (args.push === "1") {
+      push = true;
+    }
+  }
+  let port = 8000;
+  if (args.port !== undefined) {
+    port = args.port;
+  }
   const runOptions: RunOptions = {
     config: config,
     sourceIdentifiers,
     force: isForce,
+    push,
+    port,
   };
 
   if (stage.includes("fetch")) {
@@ -97,6 +109,14 @@ export default async function main() {
   } catch (e) {
     // log.error(e);
     throw e;
+  }
+
+  // 3. serve site
+  if (stage.includes("serve")) {
+    log.info("serve site");
+    await serveSite(runOptions);
+  } else {
+    log.info("skip serve site");
   }
 }
 

@@ -2,6 +2,15 @@
 
 Introduction text.
 
+# Table of Contents
+
+-   [Major Cloud Providers' Always-Free Limits](#major-cloud-providers)
+-   [Cloud management solutions](#cloud-management-solutions)
+-   [Analytics, Events and Statistics](#analytics-events-and-statistics)
+-   [APIs, Data and ML](#apis-data-and-ml)
+-   [Artifact Repos](#artifact-repos)
+-   [BaaS](#baas)
+
 ## BY PROGRAMMING LANGUAGE
 
 Originally, this list included a section called "Language Agnostic" for books about programming subjects not restricted to a specific programming language.

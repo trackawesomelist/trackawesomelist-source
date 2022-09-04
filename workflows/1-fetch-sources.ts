@@ -1,20 +1,12 @@
-import { path } from "../deps.ts";
 import {
-  exists,
-  getDataItemsPath,
-  getDataRawPath,
   getDbItemsJson,
   getDbMeta,
   getItemsFilePath,
-  readJSONFile,
-  readTextFile,
   sha1,
   writeDbMeta,
   writeJSONFile,
-  writeTextFile,
 } from "../util.ts";
 import parsers from "../parsers/mod.ts";
-
 import log from "../log.ts";
 import { Item, ItemsJson, RunOptions } from "../interface.ts";
 import initItems from "../init-items.ts";
@@ -32,7 +24,7 @@ export default async function (options: RunOptions) {
   for (const sourceIdentifier of sourceIdentifiers) {
     sourceIndex++;
     const source = sourcesMap[sourceIdentifier];
-    const files = source.file;
+    const files = source.files;
 
     if (!dbSources[sourceIdentifier]) {
       // need to init source
@@ -45,8 +37,9 @@ export default async function (options: RunOptions) {
     const api = new Github(source);
 
     // get file content and save it to raw data path
-    for (const file of files) {
-      const dbFileMeta = dbFiles[file.path];
+    for (const file of Object.keys(files)) {
+      const dbFileMeta = dbFiles[file];
+      const fileConfig = files[file];
       if (!dbFileMeta) {
         // reinit items
         await initItems(source);
@@ -64,30 +57,30 @@ export default async function (options: RunOptions) {
       if (!force && diff / 1000 / 60 / 60 < file_min_updated_hours) {
         // not updated
         log.info(
-          `${file.path} updated less than ${file_min_updated_hours} hours, skip`,
+          `${file} updated less than ${file_min_updated_hours} hours, skip`,
         );
         continue;
       } else if (!force) {
         log.info(
-          `${file.path} updated less than ${file_min_updated_hours} hours, force update`,
+          `${file} updated less than ${file_min_updated_hours} hours, force update`,
         );
       }
       log.info(
-        `${sourceIndex}/${sourceIdentifiers.length} try updating ${file.path}`,
+        `${sourceIndex}/${sourceIdentifiers.length} try updating ${file}`,
       );
 
-      const content = await api.getConent(file.path);
+      const content = await api.getConent(file);
       const contentSha1 = await sha1(content);
       const dbFileSha1 = dbFileMeta.sha1;
 
       if (dbFileSha1 === contentSha1) {
-        log.info(`${file.path} is up to date, cause sha1 is same`);
+        log.info(`${file} is up to date, cause sha1 is same`);
         continue;
       } else {
-        const itemsJson = await getDbItemsJson(sourceIdentifier, file.path);
+        const itemsJson = await getDbItemsJson(sourceIdentifier, file);
 
         const items = itemsJson.items;
-        const docItems = await parsers[file.type](content);
+        const docItems = await parsers[fileConfig.type](content);
         // compare updated items
         const newItems: Record<string, Item> = {};
         let newCount = 0;
@@ -102,13 +95,12 @@ export default async function (options: RunOptions) {
             newItems[docItem.markdown] = items[docItem.markdown];
           } else {
             newCount++;
-
             // yes
             // this is a new item
             // add it to items
             newItems[docItem.markdown] = {
               category: docItem.category,
-              updated: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
             };
           }
         }
@@ -119,18 +111,18 @@ export default async function (options: RunOptions) {
           items: newItems,
         };
         await writeJSONFile(
-          getItemsFilePath(sourceIdentifier, file.path),
+          getItemsFilePath(sourceIdentifier, file),
           newItemsJson,
         );
 
-        dbFiles[file.path] = {
-          ...dbFiles[file.path],
+        dbFiles[file] = {
+          ...dbFiles[file],
           updated_at: now.toISOString(),
           checked_at: now.toISOString(),
           sha1: contentSha1,
         };
         log.info(
-          `${sourceIndex}/${sourceIdentifiers.length} ${file.path} updated, ${newCount} new items, ${totalCount} total items`,
+          `${sourceIndex}/${sourceIdentifiers.length} ${file} updated, ${newCount} new items, ${totalCount} total items`,
         );
       }
     }

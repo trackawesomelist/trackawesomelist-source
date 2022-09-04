@@ -1,6 +1,7 @@
 import API from "./api.ts";
 import { RepoMeta, Source } from "../interface.ts";
 import { base64 } from "../deps.ts";
+import { got, gotWithCache, isUseCache } from "../util.ts";
 export default class github extends API {
   repo: string;
   headers: Headers;
@@ -29,19 +30,27 @@ export default class github extends API {
   }
   async getConent(filePath: string): Promise<string> {
     const url = `${this.apiPrefix}/repos/${this.repo}/contents/${filePath}`;
-    const result = await fetch(
-      url,
-      {
-        headers: this.headers,
-      },
-    );
-    if (result.ok) {
-      const data = await result.json();
-      const content = base64.decode(data.content);
-      return new TextDecoder().decode(content);
+    let result;
+    if (isUseCache()) {
+      result = await gotWithCache(
+        url,
+        {
+          headers: this.headers,
+        },
+      );
     } else {
-      throw new Error(`fetch ${url} failed, ${result.status}`);
+      result = await got(
+        url,
+        {
+          headers: this.headers,
+        },
+      );
     }
+
+    const data = JSON.parse(result);
+    const content = base64.decode(data.content);
+    const finalContent = new TextDecoder().decode(content);
+    return finalContent;
   }
   async getRepoMeta(): Promise<RepoMeta> {
     const url = `${this.apiPrefix}/repos/${this.repo}`;
