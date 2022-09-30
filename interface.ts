@@ -1,6 +1,29 @@
-import { Content } from "./deps.ts";
+import { Content, DB } from "./deps.ts";
+export interface WeekOfYear {
+  year: number;
+  week: number;
+  number: number;
+  path: string;
+  date: Date;
+  name: string;
+}
+export interface BuiltMarkdownInfo {
+  commitMessage: string;
+}
+export interface DayInfo {
+  year: number;
+  month: number;
+  day: number;
+  number: number;
+  path: string;
+  name: string;
+  date: Date;
+}
 export type LevelName = "debug" | "info" | "warn" | "error" | "fatal";
-
+export interface File {
+  source_identifier: string;
+  file: string;
+}
 export enum Level {
   Debug = 0,
   Info = 1,
@@ -29,6 +52,8 @@ export interface RawSourceFile {
   index?: boolean;
 }
 export interface PageItem {
+  source_identifier: string;
+  file: string;
   category: string;
   updated_at: string;
   updated_day_on: string;
@@ -42,7 +67,8 @@ export interface PageData {
   groups: PageGroup[];
 }
 export interface PageGroup {
-  updated_day_on: string;
+  group_name: string;
+  group_suffix: string;
   items: PageCategoryItem[];
 }
 export interface RawSourceFileWithType extends RawSourceFile {
@@ -68,13 +94,26 @@ export interface RunOptions {
   force: boolean;
   push: boolean;
   port: number;
+  db: DB;
 }
 export interface Item {
   updated_at: string;
   category: string;
+  markdown: string;
+  sha1: string;
+  source_identifier: string;
+  file: string;
+  checked_at: string;
+}
+export interface ItemDetail extends Item {
+  updated_day: number;
+  updated_week: number;
+  updated_day_info: DayInfo;
+  updated_week_info: WeekOfYear;
 }
 export interface DocItem {
-  markdown: string;
+  rawMarkdown: string;
+  formatedMarkdown: string;
   category: string;
   line: number;
 }
@@ -105,7 +144,7 @@ export interface ParsedFilename {
 export interface FileMeta {
   sha1: string;
   checked_at: string;
-  original_created_at: string;
+  document_created_at: string;
   updated_at: string;
   created_at: string;
 }
@@ -123,4 +162,5 @@ export interface DbMetaSource {
 }
 export interface DBMeta {
   sources: Record<string, DbMetaSource>;
+  checked_at: string;
 }

@@ -26,7 +26,7 @@ export * as base64 from "https://deno.land/std@0.153.0/encoding/base64.ts";
 export { default as camelCase } from "https://deno.land/x/lodash@4.17.15-es/camelCase.js";
 export { default as groupBy } from "https://deno.land/x/lodash@4.17.15-es/groupBy.js";
 export { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";
-
+export { DB } from "https://deno.land/x/sqlite@v3.5.0/mod.ts";
 // npm modules
 export { default as mustache } from "https://esm.sh/mustache@4.2.0";
 
@@ -38,5 +38,6 @@ export { selectAll } from "https://esm.sh/unist-util-select@4.0.1";
 export { u } from "https://esm.sh/unist-builder@3.0.0";
 export type {
   Content,
+  Link,
   Root,
 } from "https://esm.sh/v92/@types/mdast@3.0.10/index.d.ts";

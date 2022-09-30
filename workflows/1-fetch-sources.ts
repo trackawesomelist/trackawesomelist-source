@@ -1,5 +1,4 @@
 import {
-  getDbItemsJson,
   getDbMeta,
   getItemsFilePath,
   sha1,
@@ -11,6 +10,7 @@ import log from "../log.ts";
 import { Item, ItemsJson, RunOptions } from "../interface.ts";
 import initItems from "../init-items.ts";
 import Github from "../adapters/github.ts";
+import { getItems, updateItems } from "../db.ts";
 export default async function (options: RunOptions) {
   const sourceIdentifiers = options.sourceIdentifiers;
   const force = options.force;
@@ -19,6 +19,7 @@ export default async function (options: RunOptions) {
   const sourcesMap = config.sources;
   const dbMeta = await getDbMeta();
   const dbSources = dbMeta.sources;
+  const db = options.db;
 
   let sourceIndex = 0;
   for (const sourceIdentifier of sourceIdentifiers) {
@@ -28,7 +29,7 @@ export default async function (options: RunOptions) {
 
     if (!dbSources[sourceIdentifier]) {
       // need to init source
-      await initItems(source);
+      await initItems(db, source);
       continue;
     }
 
@@ -42,7 +43,7 @@ export default async function (options: RunOptions) {
       const fileConfig = files[file];
       if (!dbFileMeta) {
         // reinit items
-        await initItems(source);
+        await initItems(db, source);
 
         break;
       }
@@ -55,31 +56,30 @@ export default async function (options: RunOptions) {
       const diff = now.getTime() - dbFileUpdated.getTime();
 
       if (!force && diff / 1000 / 60 / 60 < file_min_updated_hours) {
+        // add max number function
         // not updated
         log.info(
-          `${file} updated less than ${file_min_updated_hours} hours, skip`,
+          `${sourceIdentifier}/${file} updated less than ${file_min_updated_hours} hours, skip`,
         );
         continue;
       } else if (!force) {
         log.info(
-          `${file} updated less than ${file_min_updated_hours} hours, force update`,
+          `${sourceIdentifier}/${file} updated less than ${file_min_updated_hours} hours, force update`,
         );
       }
       log.info(
-        `${sourceIndex}/${sourceIdentifiers.length} try updating ${file}`,
+        `${sourceIndex}/${sourceIdentifiers.length} try updating ${sourceIdentifier}/${file}`,
       );
-
       const content = await api.getConent(file);
       const contentSha1 = await sha1(content);
       const dbFileSha1 = dbFileMeta.sha1;
 
-      if (dbFileSha1 === contentSha1) {
+      if (dbFileSha1 === contentSha1 && !force) {
         log.info(`${file} is up to date, cause sha1 is same`);
         continue;
       } else {
-        const itemsJson = await getDbItemsJson(sourceIdentifier, file);
+        const items = await getItems(db, sourceIdentifier, file);
 
-        const items = itemsJson.items;
         const docItems = await parsers[fileConfig.type](content);
         // compare updated items
         const newItems: Record<string, Item> = {};
@@ -87,33 +87,42 @@ export default async function (options: RunOptions) {
         let totalCount = 0;
 
         for (const docItem of docItems) {
+          const itemSha1 = await sha1(docItem.rawMarkdown);
           totalCount++;
           // check markdown
-          if (items[docItem.markdown]) {
+          if (items[itemSha1]) {
             // it's a old item,
             // stay the same
-            newItems[docItem.markdown] = items[docItem.markdown];
+            newItems[itemSha1] = items[itemSha1];
           } else {
             newCount++;
+            const now = new Date();
             // yes
             // this is a new item
             // add it to items
-            newItems[docItem.markdown] = {
+            newItems[itemSha1] = {
+              source_identifier: sourceIdentifier,
+              file,
+              sha1: itemSha1,
+              markdown: docItem.formatedMarkdown,
               category: docItem.category,
-              updated_at: new Date().toISOString(),
+              updated_at: now.toISOString(),
+              checked_at: now.toISOString(),
             };
           }
         }
 
         // write to file
-        const newItemsJson: ItemsJson = {
-          ...itemsJson,
-          items: newItems,
-        };
-        await writeJSONFile(
-          getItemsFilePath(sourceIdentifier, file),
-          newItemsJson,
-        );
+        // const newItemsJson: ItemsJson = {
+        //   ...itemsJson,
+        //   items: newItems,
+        // };
+        // await writeJSONFile(
+        //   getItemsFilePath(sourceIdentifier, file),
+        //   newItemsJson,
+        // );
+
+        updateItems(db, sourceIdentifier, file, newItems);
 
         dbFiles[file] = {
           ...dbFiles[file],
@@ -122,12 +131,13 @@ export default async function (options: RunOptions) {
           sha1: contentSha1,
         };
         log.info(
-          `${sourceIndex}/${sourceIdentifiers.length} ${file} updated, ${newCount} new items, ${totalCount} total items`,
+          `${sourceIndex}/${sourceIdentifiers.length} ${sourceIdentifier}/${file} updated, ${newCount} new items, ${totalCount} total items`,
         );
       }
     }
     dbMeta.sources[sourceIdentifier].files = dbFiles;
     dbMeta.sources[sourceIdentifier].updated_at = new Date().toISOString();
+    dbMeta.checked_at = new Date().toISOString();
     // write to dbMeta
     await writeDbMeta(dbMeta);
   }

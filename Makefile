@@ -9,16 +9,20 @@ start:
 .Phony: startall
 startall:
 	deno run -A main.ts
+.Phony: startsource
+startsource:
+	deno run -A main.ts --source ${source}
+
 
 .Phony: startallforce
 startallforce:
 	deno run -A main.ts --force
 .Phony: fetch
 fetch:
-	deno run -A main.ts --stage fetch --source "ripienaar/free-for-dev"
+	deno run -A main.ts --stage fetch --source "ripienaar/free-for-dev" --force
 .Phony: fetchall
 fetchall:
-	make clean && make initdb && CACHE=1 deno run -A main.ts --stage fetch 
+	make clean && make initdb && CACHE=1 deno run -A main.ts --stage fetch
 .Phony: fetchforce
 fetchforce:
 	deno run -A main.ts --force --stage fetch --source "ripienaar/free-for-dev"
@@ -31,7 +35,7 @@ fetchsource:
 
 .Phony: buildmarkdown
 buildmarkdown:
-	deno run -A main.ts --stage buildmarkdown --push 0 --source "ripienaar/free-for-dev"
+	FORCE=1 deno run -A main.ts --stage buildmarkdown --push 1 --source "ripienaar/free-for-dev"
 .Phony: buildmarkdownall
 buildmarkdownall:
 	deno run -A main.ts --stage buildmarkdown --push 0
@@ -51,11 +55,11 @@ run:
 
 .Phony: initdb
 initdb:
-	[[ ! -d /db/meta.json ]] && mkdir -p ./db && echo '{"sources":{}}' > ./db/meta.json
+	[[ ! -d /db/meta.json ]] && mkdir -p ./db && cat db-meta-init.json > ./db/meta.json
 
 .Phony: prod-initdb
 prod-initdb:
-	[[ ! -d /prod-db/meta.json ]] && mkdir -p ./prod-db && echo '{"sources":{}}' > ./prod-db/meta.json
+	[[ ! -d /prod-db/meta.json ]] && mkdir -p ./prod-db && cat db-meta-init.json > ./prod-db/meta.json
 
 .Phony: clean
 clean:

@@ -11,8 +11,10 @@ import {
 import log from "./log.ts";
 import {
   Config,
+  DayInfo,
   DBMeta,
-  ItemsJson,
+  Item,
+  ItemDetail,
   ParsedFilename,
   ParsedItemsFilePath,
   RawConfig,
@@ -21,12 +23,168 @@ import {
   RawSourceFileWithType,
   Source,
   SourceFile,
+  WeekOfYear,
 } from "./interface.ts";
 import { INDEX_MARKDOWN_PATH } from "./constant.ts";
 import { NotFound } from "./error.ts";
+export const SECOND = 1e3;
+export const MINUTE = SECOND * 60;
+export const HOUR = MINUTE * 60;
+export const DAY = HOUR * 24;
+export const WEEK = DAY * 7;
+const DAYS_PER_WEEK = 7;
+enum Day {
+  Sun,
+  Mon,
+  Tue,
+  Wed,
+  Thu,
+  Fri,
+  Sat,
+}
+
+export const getDayNumber = (date: Date): number => {
+  return Number(
+    `${getFullYear(date)}${(getFullMonth(date))}${(getFullDay(date))}`,
+  );
+};
+export const getWeekNumber = (date: Date): number => {
+  return weekOfYear(date).number;
+};
+export const parseDayInfo = (day: number): DayInfo => {
+  const year = Math.floor(day / 10000);
+  const month = Math.floor(day / 100) % 100;
+  const dayNumber = day % 100;
+  return {
+    year,
+    name: `${year}-${addZero(month)}-${addZero(dayNumber)}`,
+    month,
+    day: dayNumber,
+    path: `${year}/${addZero(month)}/${addZero(dayNumber)}`,
+    number: day,
+    date: new Date(year, month - 1, dayNumber),
+  };
+};
+
+export function startDateOfWeek(date: Date, start_day = 1): Date {
+  // Returns the start of the week containing a 'date'. Monday 00:00 UTC is
+  // considered to be the boundary between adjacent weeks, unless 'start_day' is
+  // specified. A Date object is returned.
+
+  date = new Date(date.getTime());
+  const day_of_month = date.getUTCDate();
+  const day_of_week = date.getUTCDay();
+  const difference_in_days = (
+    day_of_week >= start_day
+      ? day_of_week - start_day
+      : day_of_week - start_day + 7
+  );
+  date.setUTCDate(day_of_month - difference_in_days);
+  date.setUTCHours(0);
+  date.setUTCMinutes(0);
+  date.setUTCSeconds(0);
+  date.setUTCMilliseconds(0);
+  return date;
+}
+export const parseWeekInfo = (week: number): WeekOfYear => {
+  // split by year and week
+  const year = Math.floor(week / 100);
+  const weekOfYear = week % 100;
+  // week to date
+
+  return {
+    year,
+    week: weekOfYear,
+    number: week,
+    path: `${year}/${addZero(weekOfYear)}`,
+    date: weekNumberToDate(week),
+    name: `${year}-${addZero(weekOfYear)}`,
+  };
+};
+
+export function weekNumberToDate(weekNumber: number): Date {
+  const year = Math.floor(weekNumber / 100);
+  const week = weekNumber % 100;
+  // Get first day of year
+  const yearStart = new Date(Date.UTC(year, 0, 1));
+
+  // year start monday date
+
+  const yearStartMondayDate = startDateOfWeek(yearStart);
+
+  const yearStartMondayFullYear = yearStartMondayDate.getUTCFullYear();
+
+  let yearFirstWeekMonday = yearStartMondayDate;
+  if (yearStartMondayFullYear !== year) {
+    // then year first week monday is next +7
+    yearFirstWeekMonday = new Date(yearStartMondayDate.getTime() + WEEK);
+  }
+
+  const weekMonday = yearFirstWeekMonday.getTime() + WEEK * (week - 1);
+  const weekSunday = weekMonday + WEEK - 1;
+  return new Date(weekMonday);
+}
+export function weekOfYear(date: Date): WeekOfYear {
+  const workingDate = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
+
+  const day = workingDate.getUTCDay();
+
+  const nearestThursday = workingDate.getUTCDate() +
+    Day.Thu -
+    (day === Day.Sun ? DAYS_PER_WEEK : day);
+
+  workingDate.setUTCDate(nearestThursday);
+
+  // Get first day of year
+  const yearStart = new Date(Date.UTC(workingDate.getUTCFullYear(), 0, 1));
+  const weekYear = workingDate.getUTCFullYear();
+  // return the calculated full weeks to nearest Thursday
+  const week = Math.ceil(
+    (workingDate.getTime() - yearStart.getTime() + DAY) / WEEK,
+  );
+  return {
+    year: weekYear,
+    week: week,
+    path: `${workingDate.getUTCFullYear()}/${week}`,
+    number: Number(`${weekYear}${addZero(week)}`),
+    date: weekNumberToDate(Number(`${weekYear}${addZero(week)}`)),
+    name: `${weekYear}-${addZero(week)}`,
+  };
+}
+
+export const addZero = function (num: number): string {
+  if (num < 10) {
+    return "0" + num;
+  } else {
+    return "" + num;
+  }
+};
+export function getItemsDetails(items: Record<string, Item>): ItemDetail[] {
+  const allItems: ItemDetail[] = [];
+  for (const itemSha1 of Object.keys(items)) {
+    const item = items[itemSha1];
+    const updated_at = item.updated_at;
+
+    allItems.push({
+      ...item,
+      updated_day: getDayNumber(new Date(updated_at)),
+      updated_week: getWeekNumber(new Date(updated_at)),
+      updated_day_info: parseDayInfo(getDayNumber(new Date(updated_at))),
+      updated_week_info: parseWeekInfo(getWeekNumber(new Date(updated_at))),
+    });
+  }
+  return allItems;
+}
+// this function is used to get the config from the config file
+//
+// and parse it to the right format
+
+// return the max value of the array
 
 export const defaultFileType = "markdownlist";
-
+// check is dev
 export function isDev() {
   return Deno.env.get("PROD") !== "1";
 }
@@ -130,6 +288,7 @@ export function getFormatedSource(
     files,
   };
 }
+// function for format file config value
 function formatFileConfigValue(
   fileValue?: string | RawSourceFile | null,
 ): RawSourceFileWithType {
@@ -185,6 +344,9 @@ export function getDbPath() {
   } else {
     return "prod-db";
   }
+}
+export function getSqlitePath() {
+  return path.join(getDbPath(), "sqlite.db");
 }
 export function getDataItemsPath() {
   return posixPath.join(getDbPath(), "items");
@@ -318,22 +480,6 @@ export async function writeDbMeta(dbMeta: DBMeta): Promise<void> {
   await writeJSONFile(dbMetaFilePath, dbMeta);
 }
 
-export async function getDbItemsJson(
-  sourceIdentifier: string,
-  file: string,
-): Promise<ItemsJson> {
-  const itemsFilesPath = getItemsFilePath(sourceIdentifier, file);
-  // first check local
-  try {
-    const dbMeta = await readJSONFile(itemsFilesPath) as ItemsJson;
-    return dbMeta;
-  } catch (_e) {
-    // not found, read from remote
-    const dbMeta = await getRemoteData<ItemsJson>(itemsFilesPath);
-    return dbMeta;
-  }
-}
-
 export function getRemoteData<T>(file: string): T {
   throw new Error("not implemented");
   // return {
@@ -365,21 +511,7 @@ export function getUTCDay(date: Date): string {
 export function urlToFilePath(url: string): string {
   const urlObj = new URL(url);
   const pathname = urlObj.pathname;
-  const basename = path.basename(pathname);
-  const splited = pathname.split("/");
-  const splitedTrimd = splited.filter((item) => item);
-  if (splitedTrimd.length === 2) {
-    return path.join(splitedTrimd.join(path.SEP), INDEX_MARKDOWN_PATH);
-  } else if (splitedTrimd.length > 2) {
-    splitedTrimd[splitedTrimd.length - 1] =
-      splitedTrimd[splitedTrimd.length - 1] + ".md";
-    return path.join(splitedTrimd.join(path.SEP));
-  } else if (splitedTrimd.length === 0) {
-    // readme
-    return INDEX_MARKDOWN_PATH;
-  } else {
-    return pathname;
-  }
+  return posixPath.join(pathname.slice(1), INDEX_MARKDOWN_PATH);
 }
 export async function got(
   url: string,
@@ -420,7 +552,7 @@ export async function writeCacheFile(
   url: string,
   method: string,
   body: string,
-  expired = 60 * 60 * 24 * 7 * 1000,
+  expired = 60 * 60 * 24 * 1000,
 ) {
   const [cacheFileFolder, cacheFilePath] = getCachedFileInfo(
     url,
@@ -434,7 +566,7 @@ export async function writeCacheFile(
 export async function readCachedFile(
   url: string,
   method: string,
-  expired = 60 * 60 * 24 * 7 * 1000,
+  expired = 60 * 60 * 24 * 1000,
 ): Promise<string> {
   // check folder is exists
   const cachedFolder = getCachedFileInfo(url, method, expired)[0];
@@ -463,7 +595,7 @@ export async function gotWithCache(
   let cacheFileContent;
   try {
     cacheFileContent = await readCachedFile(url, init?.method ?? "GET");
-    log.info(`use cache file for ${url}`);
+    log.debug(`use cache file for ${url}`);
   } catch (e) {
     if (e.name === "NotFound") {
       // ignore
@@ -478,4 +610,40 @@ export async function gotWithCache(
   const responseText = await got(url, init);
   await writeCacheFile(url, init?.method ?? "GET", responseText);
   return responseText;
+}
+
+export async function gotGithubStar(
+  owner: string,
+  repo: string,
+): Promise<string> {
+  const url = `https://img.shields.io/github/stars/${owner}/${repo}`;
+  const response = await gotWithCache(url);
+  const endWith = "</text></a></g></svg>";
+
+  if (response.endsWith(endWith)) {
+    const text = response.slice(0, -endWith.length);
+    const start = text.lastIndexOf(">") + 1;
+    const star = text.slice(start);
+    return star;
+  } else {
+    log.debug(`got github star failed for ${owner}/${repo}`);
+    return "";
+  }
+  // parse svg got start count
+}
+
+export async function promiseLimit<T>(
+  funcs: (() => Promise<T>)[],
+  limit = 100,
+): Promise<T[]> {
+  let results: T[] = [];
+  while (funcs.length) {
+    // 100 at a time
+    results = [
+      ...results,
+      ...await Promise.all(funcs.splice(0, limit).map((f) => f())),
+    ];
+    console.log(`processed ${limit}`);
+  }
+  return results;
 }

@@ -11,10 +11,11 @@ import {
   writeJSONFile,
 } from "./util.ts";
 import log from "./log.ts";
-import { fs, path } from "./deps.ts";
+import { DB, fs, path } from "./deps.ts";
 import parsers from "./parsers/mod.ts";
 import getGitBlame from "./get-git-blame.ts";
-export default async function initItems(source: Source) {
+import { updateItems } from "./db.ts";
+export default async function initItems(db: DB, source: Source) {
   // first get repo meta info from api
   const api = new Github(source);
   const meta = await api.getRepoMeta();
@@ -28,9 +29,10 @@ export default async function initItems(source: Source) {
   // then git clone the entire repo, and parse the files
   if (isExist) {
     // try to update
-    await Deno.run({
+    const p = Deno.run({
       cmd: ["git", "pull"],
     });
+    await p.status();
   } else {
     // ensure parent folder exists
     await fs.ensureDir(path.dirname(repoPath));
@@ -60,14 +62,21 @@ export default async function initItems(source: Source) {
     const content = await readTextFile(cachedFilePath);
     const docItems = await parsers[type](content);
     for (const docItem of docItems) {
+      const now = new Date();
       const commitInfo = blameInfoMap.get(docItem.line);
       if (commitInfo) {
+        const itemSha1 = await sha1(docItem.rawMarkdown);
         const commitTime = commitInfo.committerTime;
         const commitDate = new Date(Number(commitTime) * 1000);
         const updatedAt = commitDate.toISOString();
-        items[docItem.markdown] = {
+        items[itemSha1] = {
           category: docItem.category,
           updated_at: updatedAt,
+          source_identifier: source.identifier,
+          file,
+          markdown: docItem.formatedMarkdown,
+          sha1: itemSha1,
+          checked_at: now.toISOString(),
         };
       } else {
         throw new Error(
@@ -76,12 +85,7 @@ export default async function initItems(source: Source) {
       }
     }
     const contentSha1 = await sha1(content);
-    const now = new Date();
     // try to get items updated time
-    const itemsJson: ItemsJson = {
-      items: items,
-    };
-    const formatedPath = getItemsFilePath(source.identifier, file);
     // get created time and updated time from blameinfo
     let createdAt = now;
     let updatedAt = now;
@@ -100,13 +104,21 @@ export default async function initItems(source: Source) {
       sha1: contentSha1,
       updated_at: now.toISOString(),
       created_at: now.toISOString(),
-      original_created_at: createdAt.toISOString(),
+      document_created_at: createdAt.toISOString(),
       checked_at: now.toISOString(),
     };
     //write to file
-    await writeJSONFile(formatedPath, itemsJson);
-    log.info(`init ${formatedPath} success`);
+    // await writeJSONFile(formatedPath, itemsJson);
+    // write to db
+    updateItems(db, source.identifier, file, items);
+
+    log.info(
+      `init ${source.identifier}/${file} success, total ${
+        Object.keys(items).length
+      } items`,
+    );
   }
   dbMeta.sources = sources;
+  dbMeta.checked_at = now.toISOString();
   await writeDbMeta(dbMeta);
 }

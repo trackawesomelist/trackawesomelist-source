@@ -1,9 +1,22 @@
-file_min_updated_hours: 12 
+file_min_updated_hours: 12
 sources:
   ripienaar/free-for-dev:
+  # public-apis/public-apis:
+  #   files:
+  #     README.md:
+  #       index: true
+  #       type: markdowntable
+  sindresorhus/awesome:
+    files:
+      readme.md:
+        index: true
   EbookFoundation/free-programming-books:
     files:
       books/free-programming-books-langs.md:
         index: true
       books/free-programming-books-zh.md:
       books/free-programming-books-subjects.md:
+  vinta/awesome-python:
+  awesome-selfhosted/awesome-selfhosted:
+  avelino/awesome-go:
+  vuejs/awesome-vue:

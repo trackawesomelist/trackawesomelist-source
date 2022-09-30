@@ -1,11 +1,17 @@
-import { flags } from "./deps.ts";
+import { DB, flags } from "./deps.ts";
 
 import log from "./log.ts";
 
 import fetchSources from "./workflows/1-fetch-sources.ts";
 import buildMarkdown from "./workflows/2-build-markdown.ts";
 import serveSite from "./workflows/3-serve-site.ts";
-import { getConfig, getFormatedSource, isDebug, isDev } from "./util.ts";
+import {
+  getConfig,
+  getFormatedSource,
+  getSqlitePath,
+  isDebug,
+  isDev,
+} from "./util.ts";
 import { RunOptions } from "./interface.ts";
 export default async function main() {
   const args = flags.parse(Deno.args);
@@ -48,6 +54,7 @@ export default async function main() {
   if (isDebug()) {
     log.setLevel("debug");
   }
+
   let isForce = false;
   if (args.force !== undefined) {
     isForce = args.force;
@@ -84,14 +91,36 @@ export default async function main() {
   if (args.port !== undefined) {
     port = args.port;
   }
+
+  // init sqlite db
+  // te
+  // Open a database
+  const db = new DB(getSqlitePath());
+  db.execute(`
+    CREATE TABLE IF NOT EXISTS items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      sha1 TEXT NOT NULL,
+      markdown TEXT NOT NULL,
+      category TEXT ,
+      updated_at INT NOT NULL,
+      updated_day INT NOT NULL,
+      updated_week INT NOT NULL,
+      file TEXT NOT NULL,
+      source_identifier TEXT NOT NULL,
+      checked_at INT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_item
+    ON items (sha1, file, source_identifier);
+  `);
+
   const runOptions: RunOptions = {
     config: config,
     sourceIdentifiers,
     force: isForce,
     push,
     port,
+    db,
   };
-
   if (stage.includes("fetch")) {
     await fetchSources(runOptions);
   } else {
@@ -118,6 +147,8 @@ export default async function main() {
   } else {
     log.info("skip serve site");
   }
+  // Close connection
+  db.close();
 }
 
 if (import.meta.main) {

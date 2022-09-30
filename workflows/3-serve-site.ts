@@ -14,6 +14,7 @@ export default async function serveSite(runOptions: RunOptions) {
   const htmlTemplate = await readTextFile("./templates/index.html.mu");
   const handler = async (request: Request): Promise<Response> => {
     const filepath = urlToFilePath(request.url);
+    log.debug(`Request for ${filepath}`);
     const localPath = BASE_PATH + "/" + filepath;
     // check if file exists
     let finalPath: string | undefined;
