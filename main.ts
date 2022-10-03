@@ -98,7 +98,7 @@ export default async function main() {
   const db = new DB(getSqlitePath());
   db.execute(`
     CREATE TABLE IF NOT EXISTS items (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
       sha1 TEXT NOT NULL,
       markdown TEXT NOT NULL,
       category TEXT ,

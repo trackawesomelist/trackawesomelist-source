@@ -36,6 +36,9 @@ fetchsource:
 .Phony: buildmarkdown
 buildmarkdown:
 	FORCE=1 deno run -A main.ts --stage buildmarkdown --push 1 --source "ripienaar/free-for-dev"
+.Phony: buildsource
+buildsource:
+	FORCE=1 deno run -A main.ts --stage buildmarkdown --push 1 --source ${source}
 .Phony: buildmarkdownall
 buildmarkdownall:
 	deno run -A main.ts --stage buildmarkdown --push 0
@@ -63,7 +66,7 @@ prod-initdb:
 
 .Phony: clean
 clean:
-	rm -rf ./db
+	rm -rf ./db && make initdb
 
 .Phony: push
 push:

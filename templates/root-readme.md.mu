@@ -3,5 +3,5 @@
 ## Recently Updated
 
 {{#recentlyUpdated}}
-- [{{{name}}}]({{{url}}})
+- [{{{name}}}]({{{url}}}) - ([Source]({{{source_url}}}))
 {{/recentlyUpdated}}

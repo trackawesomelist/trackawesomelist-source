@@ -30,6 +30,11 @@ export { DB } from "https://deno.land/x/sqlite@v3.5.0/mod.ts";
 // npm modules
 export { default as mustache } from "https://esm.sh/mustache@4.2.0";
 
+export { gfm } from "https://esm.sh/micromark-extension-gfm@2.0.1";
+export {
+  gfmFromMarkdown,
+  gfmToMarkdown,
+} from "https://esm.sh/mdast-util-gfm@2.0.1";
 // export { default as kebabCase } from "https://jspm.dev/lodash@4.17.21/kebabCase";
 export { toMarkdown } from "https://esm.sh/mdast-util-to-markdown@1.3.0";
 export { fromMarkdown } from "https://esm.sh/mdast-util-from-markdown@1.2.0";
@@ -40,4 +45,6 @@ export type {
   Content,
   Link,
   Root,
+  TableCell,
+  TableRow,
 } from "https://esm.sh/v92/@types/mdast@3.0.10/index.d.ts";

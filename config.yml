@@ -1,11 +1,13 @@
 file_min_updated_hours: 12
 sources:
   ripienaar/free-for-dev:
-  # public-apis/public-apis:
-  #   files:
-  #     README.md:
-  #       index: true
-  #       type: markdowntable
+  public-apis/public-apis:
+    files:
+      README.md:
+        index: true
+        options:
+          type: table
+          max_heading_level: 3
   sindresorhus/awesome:
     files:
       readme.md:
@@ -16,7 +18,50 @@ sources:
         index: true
       books/free-programming-books-zh.md:
       books/free-programming-books-subjects.md:
+        options:
+          max_heading_level: 3
   vinta/awesome-python:
   awesome-selfhosted/awesome-selfhosted:
   avelino/awesome-go:
   vuejs/awesome-vue:
+    files:
+      README.md:
+        index: true
+        options:
+          min_heading_level: 3
+  rust-unofficial/awesome-rust:
+    files:
+      README.md:
+        index: true
+        options:
+          min_heading_level: 3
+  josephmisiti/awesome-machine-learning:
+  jaywcjlove/awesome-mac:
+  MunGell/awesome-for-beginners:
+  paragonie/awesome-appsec:
+    files:
+      README.md:
+        index: true
+        options:
+          min_heading_level: 2
+          type: heading
+          heading_level: 3
+          max_heading_level: 2
+  stevemao/awesome-git-addons:
+    files:
+      README.md:
+        index: true
+        options:
+          min_heading_level: 2
+          type: heading
+          heading_level: 3
+          max_heading_level: 2
+  agarrharr/awesome-macos-screensavers:
+    files:
+      readme.md:
+        index: true
+        options:
+          min_heading_level: 2
+          type: heading
+          heading_level: 3
+          max_heading_level: 2

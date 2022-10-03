@@ -1,6 +1,5 @@
 import { groupBy, mustache } from "./deps.ts";
 import { DB, fs, path } from "./deps.ts";
-import parsers from "./parsers/mod.ts";
 import {
   BuiltMarkdownInfo,
   DbMetaSource,
@@ -102,7 +101,7 @@ export default async function main(
     pageData,
   );
   await writeTextFile(dailyMarkdownPath, itemMarkdownContentRendered);
-  log.debug(`build ${dailyMarkdownPath} success`);
+  // log.debug(`build ${dailyMarkdownPath} success`);
   return {
     commitMessage,
   };

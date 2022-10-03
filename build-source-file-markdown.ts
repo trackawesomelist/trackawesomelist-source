@@ -1,6 +1,5 @@
 import { groupBy, mustache } from "./deps.ts";
 import { DB, fs, path } from "./deps.ts";
-import parsers from "./parsers/mod.ts";
 import {
   BuiltMarkdownInfo,
   DbMetaSource,
@@ -26,6 +25,7 @@ import {
   getDistRepoGitUrl,
   getDistRepoPath,
   getItemsDetails,
+  getRepoHTMLURL,
   getUTCDay,
   getWeekNumber,
   isDev,
@@ -48,14 +48,25 @@ export default async function main(
   file: File,
   sourceConfig: Source,
 ): Promise<BuiltMarkdownInfo> {
+  const dbMeta = await getDbMeta();
+  const dbSources = dbMeta.sources;
+  const dbSource = dbSources[sourceConfig.identifier];
   const sourceIdentifier = file.source_identifier;
   const originalFilepath = file.file;
   const commitMessage = `Update ${sourceIdentifier}/${originalFilepath}`;
   const sourceFileConfig = sourceConfig.files[originalFilepath];
   // get items
   const items = getItems(db, sourceIdentifier, originalFilepath);
+  const repoMeta = dbSource.meta;
   const pageData: PageData = {
     groups: [],
+    repo_meta: repoMeta,
+    file_config: sourceFileConfig,
+    source_file_url: getRepoHTMLURL(
+      repoMeta.url,
+      repoMeta.default_branch,
+      sourceFileConfig.filepath,
+    ),
   };
 
   const allItems: ItemDetail[] = getItemsDetails(items);
@@ -93,9 +104,10 @@ export default async function main(
   let dailyMarkdownRelativePath = INDEX_MARKDOWN_PATH;
   if (!sourceFileConfig.index) {
     // to README.md path
+    const filepathExtname = path.extname(originalFilepath);
     const originalFilepathWithoutExt = originalFilepath.slice(
       0,
-      -path.extname(originalFilepath),
+      -filepathExtname.length,
     );
     dailyMarkdownRelativePath = path.join(
       originalFilepathWithoutExt,

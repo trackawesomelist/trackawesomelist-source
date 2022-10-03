@@ -1,6 +1,5 @@
 import { groupBy, mustache } from "../deps.ts";
 import { fs, path } from "../deps.ts";
-import parsers from "../parsers/mod.ts";
 import {
   File,
   FileMeta,
@@ -20,6 +19,7 @@ import {
   getDbMeta,
   getDistRepoGitUrl,
   getDistRepoPath,
+  getRepoHTMLURL,
   getUTCDay,
   isDev,
   parseItemsFilepath,
@@ -139,9 +139,16 @@ export default async function buildMarkdown(options: RunOptions) {
       const sourceConfig = sourcesConfig[item.sourceIdentifier];
 
       const sourceFileConfig = sourceConfig.files[item.filepath];
+      const sourceMeta = dbSources[item.sourceIdentifier].meta;
+
       return {
         name: item.sourceIdentifier + "/" + sourceFileConfig.name,
         url: sourceFileConfig.pathname,
+        source_url: getRepoHTMLURL(
+          sourceConfig.url,
+          sourceMeta.default_branch,
+          item.filepath,
+        ),
       };
     });
     const indexPageData = {

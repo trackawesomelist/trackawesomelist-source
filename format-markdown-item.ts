@@ -1,13 +1,14 @@
-import { DocItem } from "../interface.ts";
-import { Content, fromMarkdown, Link, toMarkdown, visit } from "../deps.ts";
+import { DocItem, FileInfo } from "./interface.ts";
+import { Content, Link, Root, toMarkdown, visit } from "./deps.ts";
+
 import {
   childrenToMarkdown,
   childrenToRoot,
   gotGithubStar,
   isMock,
   promiseLimit,
-} from "../util.ts";
-import log from "../log.ts";
+} from "./util.ts";
+import log from "./log.ts";
 const GithubSpecialOwner = [
   "marketplace",
   "help",
@@ -167,11 +168,19 @@ export interface MatchedNode {
   node: Link;
   meta: Record<string, string>;
 }
-export async function formatItemMarkdown(item: Content): Promise<Content> {
+export default async function formatItemMarkdown<T>(
+  item: Content | Root,
+  fileInfo: FileInfo,
+): Promise<Content | Root> {
+  const fileConfig = fileInfo.fileConfig;
+  const repoMeta = fileInfo.repoMeta;
+  const repoUrl = repoMeta.url;
+  const defaultBranch = repoMeta.default_branch;
+  const { options, filepath } = fileConfig;
   // get all github link, and add badge
   const matchedNodes: MatchedNode[] = [];
   visit(item, (node) => {
-    if (node.type === "link") {
+    if (node.type === "link" && node.url.startsWith("https")) {
       const url = node.url;
       try {
         const urlObj = new URL(url);
@@ -195,6 +204,21 @@ export async function formatItemMarkdown(item: Content): Promise<Content> {
       } catch (e) {
         log.debug("url parse error", url, e);
       }
+    } else if (node.type === "link") {
+      // transform relative link to absolute link
+      const url = node.url;
+      if (url.startsWith("/")) {
+        node.url = `${repoUrl}/blob/${defaultBranch}${url}`;
+      } else {
+        node.url = `${repoUrl}/blob/${defaultBranch}/${filepath}/${url}`;
+      }
+    } else if (node.type === "image" && !node.url.startsWith("http")) {
+      const url = node.url;
+      if (url.startsWith("/")) {
+        node.url = `${repoUrl}/raw/${defaultBranch}${url}`;
+      } else {
+        node.url = `${repoUrl}/raw/${defaultBranch}/${url}`;
+      }
     }
   });
   if (!isMock()) {
@@ -216,78 +240,4 @@ export async function formatItemMarkdown(item: Content): Promise<Content> {
     }));
   }
   return item;
-}
-
-export default async function (content: string): Promise<DocItem[]> {
-  const items: DocItem[] = [];
-  const tree = fromMarkdown(content, "utf8", {});
-  let index = 0;
-  let currentLevel = 0;
-  let currentSubCategory = "";
-  let currentCategory = "";
-  let lowestHeadingLevel = 3;
-  // first check valided sections
-  const validSections: Content[] = [];
-  for (const rootNode of tree.children) {
-    if (rootNode.type === "heading") {
-      currentLevel = rootNode.depth;
-      if (currentLevel > lowestHeadingLevel) {
-        lowestHeadingLevel = currentLevel;
-      }
-      validSections.push(rootNode);
-    } else if (rootNode.type === "list") {
-      // check if all links is author link
-      // if so, it's a table of content
-      // ignore it
-      let isToc = true;
-      visit(childrenToRoot(rootNode.children), "link", (node) => {
-        if (!node.url.startsWith("#")) {
-          isToc = false;
-        }
-      });
-      if (!isToc) {
-        validSections.push(rootNode);
-      }
-    }
-  }
-  const funcs: (() => Promise<DocItem>)[] = [];
-  for (const rootNode of validSections) {
-    if (rootNode.type === "heading") {
-      currentLevel = rootNode.depth;
-      if (lowestHeadingLevel <= 3 && currentLevel === lowestHeadingLevel - 1) {
-        currentCategory = toMarkdown(childrenToRoot(rootNode.children));
-      } else if (currentLevel === lowestHeadingLevel) {
-        currentSubCategory = toMarkdown(childrenToRoot(rootNode.children));
-      }
-    } else if (rootNode.type === "list") {
-      // console.log("rootNode", rootNode);
-
-      for (const item of rootNode.children) {
-        if (item.type === "listItem") {
-          let category = "";
-          if (currentCategory) {
-            category = currentCategory.trim().replace(/\n/g, " ");
-          }
-          if (currentSubCategory) {
-            if (category) {
-              category += " / ";
-            }
-            category += currentSubCategory.trim().replace(/\n/g, " ");
-          }
-          funcs.push(() => {
-            return formatItemMarkdown(item).then((formatedItem) => {
-              return {
-                formatedMarkdown: toMarkdown(formatedItem).trim(),
-                rawMarkdown: toMarkdown(item).trim(),
-                category: category,
-                line: item.position!.end.line,
-              };
-            });
-          });
-        }
-      }
-    }
-  }
-
-  return promiseLimit<DocItem>(funcs, 100);
 }

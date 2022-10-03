@@ -54,31 +54,28 @@ export default class github extends API {
   }
   async getRepoMeta(): Promise<RepoMeta> {
     const url = `${this.apiPrefix}/repos/${this.repo}`;
-    const result = await fetch(
+    const json = await gotWithCache(
       url,
       {
         headers: this.headers,
       },
     );
-    if (result.ok) {
-      const data = await result.json();
+    const data = JSON.parse(json);
 
-      const repoMeta: RepoMeta = {
-        name: data.name,
-        description: data.description,
-        url: data.html_url,
-        language: data.language,
-        stargazers_count: data.stargazers_count,
-        watchers_count: data.watchers_count,
-        forks_count: data.forks_count,
-        tags: data.topics,
-        updated_at: data.pushed_at,
-        created_at: data.created_at,
-        checked_at: new Date().toISOString(),
-      };
-      return repoMeta;
-    } else {
-      throw new Error(`fetch ${url} failed, ${result.status}`);
-    }
+    const repoMeta: RepoMeta = {
+      default_branch: data.default_branch,
+      name: data.name,
+      description: data.description,
+      url: data.html_url,
+      language: data.language,
+      stargazers_count: data.stargazers_count,
+      watchers_count: data.watchers_count,
+      forks_count: data.forks_count,
+      tags: data.topics,
+      updated_at: data.pushed_at,
+      created_at: data.created_at,
+      checked_at: new Date().toISOString(),
+    };
+    return repoMeta;
   }
 }

@@ -10,6 +10,12 @@ export interface WeekOfYear {
 export interface BuiltMarkdownInfo {
   commitMessage: string;
 }
+export interface ParseOptions {
+  min_heading_level?: number;
+  max_heading_level?: number;
+  heading_level?: number; // only need for heading type
+  type: "table" | "list";
+}
 export interface DayInfo {
   year: number;
   month: number;
@@ -48,8 +54,8 @@ export interface RawConfig {
   file_min_updated_hours: number;
 }
 export interface RawSourceFile {
-  type?: string;
   index?: boolean;
+  options?: ParseOptions;
 }
 export interface PageItem {
   source_identifier: string;
@@ -65,6 +71,19 @@ export interface PageCategoryItem {
 }
 export interface PageData {
   groups: PageGroup[];
+  repo_meta?: RepoMeta;
+  file_config?: FileConfig;
+  source_file_url?: string;
+}
+export interface FileInfo {
+  repoMeta: RepoMeta;
+  fileConfig: FileConfig;
+  sourceIdentifier: string;
+}
+export interface FormatMarkdownItemOptions {
+  repoUrl: string;
+  defaultBranch: string;
+  filepath: string;
 }
 export interface PageGroup {
   group_name: string;
@@ -72,18 +91,18 @@ export interface PageGroup {
   items: PageCategoryItem[];
 }
 export interface RawSourceFileWithType extends RawSourceFile {
-  type: string;
+  options: ParseOptions;
 }
-export interface SourceFile extends RawSourceFile {
-  original_filepath: string;
+export interface FileConfig extends RawSourceFile {
+  filepath: string;
   pathname: string;
-  type: string;
   name: string;
+  options: ParseOptions;
 }
 export interface Source {
   identifier: string;
   url: string;
-  files: Record<string, SourceFile>;
+  files: Record<string, FileConfig>;
 }
 export interface Config extends RawConfig {
   sources: Record<string, Source>;
@@ -122,6 +141,7 @@ export interface RepoMeta {
   name: string;
   description: string;
   url: string;
+  default_branch: string;
   language: string | undefined;
   stargazers_count: number;
   watchers_count: number;

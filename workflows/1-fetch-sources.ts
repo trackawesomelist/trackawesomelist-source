@@ -5,7 +5,7 @@ import {
   writeDbMeta,
   writeJSONFile,
 } from "../util.ts";
-import parsers from "../parsers/mod.ts";
+import parser from "../parser/mod.ts";
 import log from "../log.ts";
 import { Item, ItemsJson, RunOptions } from "../interface.ts";
 import initItems from "../init-items.ts";
@@ -73,6 +73,12 @@ export default async function (options: RunOptions) {
       const content = await api.getConent(file);
       const contentSha1 = await sha1(content);
       const dbFileSha1 = dbFileMeta.sha1;
+      log.debug(
+        "dbFileSha1",
+        dbFileSha1,
+        "latest file contentSha1",
+        contentSha1,
+      );
 
       if (dbFileSha1 === contentSha1 && !force) {
         log.info(`${file} is up to date, cause sha1 is same`);
@@ -80,7 +86,11 @@ export default async function (options: RunOptions) {
       } else {
         const items = await getItems(db, sourceIdentifier, file);
 
-        const docItems = await parsers[fileConfig.type](content);
+        const docItems = await parser(content, {
+          fileConfig,
+          sourceIdentifier: sourceIdentifier,
+          repoMeta: dbSource.meta,
+        });
         // compare updated items
         const newItems: Record<string, Item> = {};
         let newCount = 0;

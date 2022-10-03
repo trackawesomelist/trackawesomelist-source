@@ -13,6 +13,7 @@ import {
   Config,
   DayInfo,
   DBMeta,
+  FileConfig,
   Item,
   ItemDetail,
   ParsedFilename,
@@ -22,7 +23,6 @@ import {
   RawSourceFile,
   RawSourceFileWithType,
   Source,
-  SourceFile,
   WeekOfYear,
 } from "./interface.ts";
 import { INDEX_MARKDOWN_PATH } from "./constant.ts";
@@ -183,7 +183,7 @@ export function getItemsDetails(items: Record<string, Item>): ItemDetail[] {
 
 // return the max value of the array
 
-export const defaultFileType = "markdownlist";
+export const defaultFileType = "list";
 // check is dev
 export function isDev() {
   return Deno.env.get("PROD") !== "1";
@@ -201,6 +201,13 @@ export function isMock() {
 
 export function isDebug() {
   return Deno.env.get("DEBUG") === "1";
+}
+export function getRepoHTMLURL(
+  url: string,
+  defaultBranch: string,
+  file: string,
+): string {
+  return `${url}/blob/${defaultBranch}/${file}`;
 }
 export function getCachePath() {
   return path.join(Deno.cwd(), "cache");
@@ -228,7 +235,7 @@ export function getFormatedSource(
 ): Source {
   let url = `https://github.com/${key}`;
 
-  let files: Record<string, SourceFile> = {};
+  let files: Record<string, FileConfig> = {};
   if (value) {
     if (value.url) {
       url = value.url;
@@ -249,7 +256,7 @@ export function getFormatedSource(
         }
         files[fileKey] = {
           ...fileConfig,
-          original_filepath: fileKey,
+          filepath: fileKey,
           pathname: `/${key}/${
             fileConfig.index ? "" : removeExtname(fileKey) +
               "/"
@@ -273,11 +280,13 @@ export function getFormatedSource(
     // todo
     files = {
       [INDEX_MARKDOWN_PATH]: {
-        original_filepath: INDEX_MARKDOWN_PATH,
+        filepath: INDEX_MARKDOWN_PATH,
         pathname: `/${key}/`,
         name: INDEX_MARKDOWN_PATH,
-        type: defaultFileType,
         index: true,
+        options: {
+          type: defaultFileType,
+        },
       },
     };
   }
@@ -294,16 +303,16 @@ function formatFileConfigValue(
 ): RawSourceFileWithType {
   if (!fileValue) {
     return {
-      type: defaultFileType,
+      options: { type: defaultFileType },
     };
   } else if (typeof fileValue === "string") {
     return {
-      type: defaultFileType,
+      options: { type: defaultFileType },
     };
   } else {
     return {
       ...fileValue,
-      type: fileValue.type || defaultFileType,
+      options: { type: defaultFileType, ...fileValue.options },
     };
   }
 }
@@ -634,7 +643,7 @@ export async function gotGithubStar(
 
 export async function promiseLimit<T>(
   funcs: (() => Promise<T>)[],
-  limit = 100,
+  limit = 1000,
 ): Promise<T[]> {
   let results: T[] = [];
   while (funcs.length) {
@@ -643,7 +652,7 @@ export async function promiseLimit<T>(
       ...results,
       ...await Promise.all(funcs.splice(0, limit).map((f) => f())),
     ];
-    console.log(`processed ${limit}`);
+    log.debug(`promise limit ${funcs.length} left`);
   }
   return results;
 }

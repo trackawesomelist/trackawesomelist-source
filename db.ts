@@ -14,16 +14,24 @@ export function updateItems(
   file: string,
   items: Record<string, Item>,
 ) {
+  const itemKeys = Object.keys(items);
+  if (itemKeys.length === 0) {
+    return;
+  }
+  // check items length
   // delete all old items then write new items;
-  db.query("delete from items where source_identifier = :source_identifier", {
-    source_identifier: sourceIdentifier,
-  });
+  db.query(
+    "delete from items where source_identifier = :source_identifier and file = :file",
+    {
+      source_identifier: sourceIdentifier,
+      file: file,
+    },
+  );
   let insertQuery =
     "insert into items (source_identifier, file,category, markdown, updated_at, sha1, checked_at, updated_day, updated_week) values ";
   // tets write new items
   const insertValues: StringOrNumber[] = [];
   let index = 0;
-  const itemKeys = Object.keys(items);
   for (const itemKey of itemKeys) {
     const item = items[itemKey];
     insertQuery += "(?,?,?,?,?,?,?,?,?)";

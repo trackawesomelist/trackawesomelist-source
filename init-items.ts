@@ -12,7 +12,7 @@ import {
 } from "./util.ts";
 import log from "./log.ts";
 import { DB, fs, path } from "./deps.ts";
-import parsers from "./parsers/mod.ts";
+import parser from "./parser/mod.ts";
 import getGitBlame from "./get-git-blame.ts";
 import { updateItems } from "./db.ts";
 export default async function initItems(db: DB, source: Source) {
@@ -25,12 +25,20 @@ export default async function initItems(db: DB, source: Source) {
   const repoPath = path.join(getCachePath(), "repos", source.identifier);
 
   const isExist = await exists(repoPath);
+  log.debug(`repo ${repoPath} exist cache, try to pull updates`);
 
   // then git clone the entire repo, and parse the files
   if (isExist) {
     // try to update
+    const args: string[] = [
+      "--work-tree",
+      repoPath,
+      "--git-dir",
+      path.join(repoPath, ".git"),
+    ];
+
     const p = Deno.run({
-      cmd: ["git", "pull"],
+      cmd: ["git"].concat(args).concat(["pull"]),
     });
     await p.status();
   } else {
@@ -52,7 +60,7 @@ export default async function initItems(db: DB, source: Source) {
   };
 
   for (const file of Object.keys(source.files)) {
-    const type = source.files[file].type;
+    const fileConfig = source.files[file];
     const blameInfoMap = await getGitBlame(file, {
       workTree: repoPath,
       gitDir: path.join(repoPath, ".git"),
@@ -60,7 +68,11 @@ export default async function initItems(db: DB, source: Source) {
     const items: Record<string, Item> = {};
     const cachedFilePath = path.join(repoPath, file);
     const content = await readTextFile(cachedFilePath);
-    const docItems = await parsers[type](content);
+    const docItems = await parser(content, {
+      fileConfig,
+      sourceIdentifier: source.identifier,
+      repoMeta: meta,
+    });
     for (const docItem of docItems) {
       const now = new Date();
       const commitInfo = blameInfoMap.get(docItem.line);
