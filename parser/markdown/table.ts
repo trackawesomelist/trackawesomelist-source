@@ -90,7 +90,7 @@ export default async function (
                     let tableHeaderCellMarkdown = "";
                     try {
                       tableHeaderCellMarkdown = toMarkdown(
-                        childrenToRoot(tableHeaderCell.children),
+                        tableHeaderCell,
                         {
                           extensions: [gfmToMarkdown()],
                         },
@@ -100,7 +100,7 @@ export default async function (
                       console.log("tableHeaderCell", tableHeaderCell);
                     }
                     const rowCellMarkdown = toMarkdown(
-                      childrenToRoot(child.children),
+                      child,
                       {
                         extensions: [gfmToMarkdown()],
                       },

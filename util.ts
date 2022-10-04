@@ -291,11 +291,16 @@ export function getFormatedSource(
     };
   }
 
-  return {
+  const sourceConfig: Source = {
     identifier: key,
     url,
     files,
   };
+
+  if (value && value.default_branch) {
+    sourceConfig.default_branch = value.default_branch;
+  }
+  return sourceConfig;
 }
 // function for format file config value
 function formatFileConfigValue(

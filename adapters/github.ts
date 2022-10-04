@@ -1,5 +1,5 @@
 import API from "./api.ts";
-import { RepoMeta, Source } from "../interface.ts";
+import { RepoMeta, RepoMetaOverride, Source } from "../interface.ts";
 import { base64 } from "../deps.ts";
 import { got, gotWithCache, isUseCache } from "../util.ts";
 export default class github extends API {
@@ -52,7 +52,7 @@ export default class github extends API {
     const finalContent = new TextDecoder().decode(content);
     return finalContent;
   }
-  async getRepoMeta(): Promise<RepoMeta> {
+  async getRepoMeta(overrieds?: RepoMetaOverride): Promise<RepoMeta> {
     const url = `${this.apiPrefix}/repos/${this.repo}`;
     const json = await gotWithCache(
       url,
@@ -62,7 +62,7 @@ export default class github extends API {
     );
     const data = JSON.parse(json);
 
-    const repoMeta: RepoMeta = {
+    let repoMeta: RepoMeta = {
       default_branch: data.default_branch,
       name: data.name,
       description: data.description,
@@ -76,6 +76,10 @@ export default class github extends API {
       created_at: data.created_at,
       checked_at: new Date().toISOString(),
     };
+    // add overrides
+    if (overrieds) {
+      repoMeta = Object.assign(repoMeta, overrieds);
+    }
     return repoMeta;
   }
 }

@@ -3,12 +3,16 @@ import { Content, fromMarkdown, Link, toMarkdown, visit } from "../../deps.ts";
 import { childrenToRoot, getRepoHTMLURL, promiseLimit } from "../../util.ts";
 import log from "../../log.ts";
 import formatMarkdownItem from "../../format-markdown-item.ts";
+import formatCategory from "../../format-category.ts";
 export default function (
   content: string,
   fileInfo: FileInfo,
 ): Promise<DocItem[]> {
   const fileConfig = fileInfo.fileConfig;
   const parseOptions = fileConfig.options;
+  const isParseCategory = parseOptions.is_parse_category === undefined
+    ? true
+    : parseOptions.is_parse_category;
   const items: DocItem[] = [];
   const tree = fromMarkdown(content, "utf8", {});
   let index = 0;
@@ -19,6 +23,7 @@ export default function (
   // first check valided sections
   const validSections: Content[] = [];
   let isReachedValidSection = false;
+  const max_heading_level = parseOptions.max_heading_level || 2;
   for (const rootNode of tree.children) {
     // start with the first valid ma  x_heading_level
 
@@ -26,7 +31,7 @@ export default function (
       // check is valid now
       if (
         rootNode.type === "heading" &&
-        rootNode.depth === parseOptions.max_heading_level
+        rootNode.depth === max_heading_level
       ) {
         isReachedValidSection = true;
       } else {
@@ -69,18 +74,23 @@ export default function (
   }
   const min_heading_level = parseOptions.min_heading_level ||
     lowestHeadingLevel;
-  const max_heading_level = parseOptions.max_heading_level || 2;
-
   const funcs: (() => Promise<DocItem>)[] = [];
   for (const rootNode of validSections) {
     if (rootNode.type === "heading") {
       currentLevel = rootNode.depth;
+
       if (
         currentLevel < min_heading_level && currentLevel >= max_heading_level
       ) {
-        currentCategory = toMarkdown(childrenToRoot(rootNode.children));
+        currentCategory = formatCategory(
+          childrenToRoot(rootNode.children),
+          fileInfo,
+        );
       } else if (currentLevel === min_heading_level) {
-        currentSubCategory = toMarkdown(childrenToRoot(rootNode.children));
+        currentSubCategory = formatCategory(
+          childrenToRoot(rootNode.children),
+          fileInfo,
+        );
       }
     } else if (rootNode.type === "list") {
       for (const item of rootNode.children) {
@@ -100,7 +110,7 @@ export default function (
               return {
                 formatedMarkdown: toMarkdown(formatedItem).trim(),
                 rawMarkdown: toMarkdown(item).trim(),
-                category: category,
+                category: isParseCategory ? category : "",
                 line: item.position!.end.line,
               };
             });

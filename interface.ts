@@ -10,11 +10,15 @@ export interface WeekOfYear {
 export interface BuiltMarkdownInfo {
   commitMessage: string;
 }
+export interface RepoMetaOverride {
+  default_branch?: string;
+}
 export interface ParseOptions {
   min_heading_level?: number;
   max_heading_level?: number;
   heading_level?: number; // only need for heading type
   type: "table" | "list";
+  is_parse_category?: boolean;
 }
 export interface DayInfo {
   year: number;
@@ -42,6 +46,7 @@ export interface ApiInfo {
   headers: Headers;
 }
 export interface RawSource {
+  default_branch?: string;
   url?: string;
   files?: Record<string, RawSourceFile> | string;
 }
@@ -102,6 +107,7 @@ export interface FileConfig extends RawSourceFile {
 export interface Source {
   identifier: string;
   url: string;
+  default_branch?: string;
   files: Record<string, FileConfig>;
 }
 export interface Config extends RawConfig {

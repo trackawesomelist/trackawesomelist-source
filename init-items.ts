@@ -18,7 +18,11 @@ import { updateItems } from "./db.ts";
 export default async function initItems(db: DB, source: Source) {
   // first get repo meta info from api
   const api = new Github(source);
-  const meta = await api.getRepoMeta();
+  const metaOverrides: RepoMetaOverride = {};
+  if (source.default_branch) {
+    metaOverrides.default_branch = source.default_branch;
+  }
+  const meta = await api.getRepoMeta(metaOverrides);
   const dbMeta = await getDbMeta();
   const sources = dbMeta.sources;
   //check repo folder is empty
@@ -47,7 +51,14 @@ export default async function initItems(db: DB, source: Source) {
     log.info(`cloning ${api.getCloneUrl()} to ${repoPath}`);
     // try to clone
     const p = Deno.run({
-      cmd: ["git", "clone", api.getCloneUrl(), repoPath],
+      cmd: [
+        "git",
+        "clone",
+        "-b",
+        meta.default_branch,
+        api.getCloneUrl(),
+        repoPath,
+      ],
     });
     await p.status();
   }

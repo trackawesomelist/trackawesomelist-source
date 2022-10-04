@@ -180,6 +180,27 @@ export default async function formatItemMarkdown<T>(
   // get all github link, and add badge
   const matchedNodes: MatchedNode[] = [];
   visit(item, (node) => {
+    if (node.type === "html") {
+      if (node.value.includes("<img")) {
+        // regex replace img url
+        node.value = node.value.replace(/src="([^"]+)"/g, (match, p1) => {
+          const url = p1;
+          let formated = p1;
+          if (url.startsWith("http")) {
+            // do nothing
+          } else if (url.startsWith("/")) {
+            formated = `${repoUrl}/raw/${defaultBranch}${url}`;
+          } else {
+            formated = `${repoUrl}/raw/${defaultBranch}/${url}`;
+          }
+          const urlObj = new URL(formated);
+          if (urlObj.hostname === "github.com") {
+            formated = formated.replace("/blob/", "/raw/");
+          }
+          return `src="${formated}"`;
+        });
+      }
+    }
     if (node.type === "link" && node.url.startsWith("https")) {
       const url = node.url;
       try {
@@ -218,6 +239,13 @@ export default async function formatItemMarkdown<T>(
         node.url = `${repoUrl}/raw/${defaultBranch}${url}`;
       } else {
         node.url = `${repoUrl}/raw/${defaultBranch}/${url}`;
+      }
+    }
+    // check is there is blob, replace to raw
+    if (node.type === "image" && node.url.includes("blob")) {
+      const urlObj = new URL(node.url);
+      if (urlObj.hostname === "github.com") {
+        node.url = node.url.replace("/blob/", "/raw/");
       }
     }
   });
