@@ -7,7 +7,8 @@ export default function (
   content: string,
   options: FileInfo,
 ): Promise<DocItem[]> {
-  const type = options.fileConfig.options.type;
+  const fileConfig = options.sourceConfig.files[options.filepath];
+  const type = fileConfig.options.type;
   if (type === "list") {
     return markdownList(content, options);
   }

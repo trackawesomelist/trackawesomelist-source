@@ -5,55 +5,53 @@ endif
 
 .Phony: start
 start:
-	deno run -A main.ts --source "ripienaar/free-for-dev"
+	deno run -A tal.ts "ripienaar/free-for-dev"
 .Phony: startall
 startall:
-	deno run -A main.ts
+	deno run -A tal.ts
 .Phony: startsource
 startsource:
-	deno run -A main.ts --source ${source}
+	deno run -A tal.ts ${source}
 
+.Phony: all
+all:
+	FORCE=1 deno run -A tal.ts --html "ripienaar/free-for-dev"
 
 .Phony: startallforce
 startallforce:
-	deno run -A main.ts --force
+	deno run -A tal.ts --force
 .Phony: fetch
 fetch:
-	deno run -A main.ts --stage fetch --source "ripienaar/free-for-dev" --force
+	deno run -A tal.ts --no-markdown --no-serve "ripienaar/free-for-dev" --force
 .Phony: fetchall
 fetchall:
-	make clean && make initdb && CACHE=1 deno run -A main.ts --stage fetch
-.Phony: fetchforce
-fetchforce:
-	deno run -A main.ts --force --stage fetch --source "ripienaar/free-for-dev"
+	make clean && make initdb && deno run -A tal.ts --no-markdown --no-serve
 .Phony: fetchsource
 fetchsource:
-	deno run -A main.ts --stage fetch --source ${source}
+	deno run -A tal.ts --no-markdown --no-serve ${source}
 
 
 
 
 .Phony: buildmarkdown
 buildmarkdown:
-	FORCE=1 deno run -A main.ts --stage buildmarkdown --push 1 --source "ripienaar/free-for-dev"
+	FORCE=1 deno run -A tal.ts --no-fetch --source "ripienaar/free-for-dev"
 .Phony: buildsource
 buildsource:
-	FORCE=1 deno run -A main.ts --stage buildmarkdown --push 1 --source ${source}
+	FORCE=1 deno run -A tal.ts --no-fetch --source ${source}
 .Phony: buildmarkdownall
 buildmarkdownall:
-	deno run -A main.ts --stage buildmarkdown --push 0
+	deno run -A tal.ts --no-fetch
 
 
 .Phony: serve
 serve:
-	deno run -A --watch=main.ts,templates/ main.ts --stage serve
+	deno run -A --watch=tal.ts,templates/ tal.ts --no-fetch --no-markdown
 
 
 .Phony: run
 run:
-	deno run -A --watch=main.ts,templates/ main.ts --stage buildmarkdown,serve --push 0
-
-# check is folder exists
+	FORCE=1 deno run -A --watch=tal.ts,templates/ main.ts --no-fetch
 
 
 .Phony: initdb
@@ -66,7 +64,7 @@ prod-initdb:
 
 .Phony: clean
 clean:
-	rm -rf ./db && make initdb
+	rm -rf ./db rm -rf ./public && make initdb
 
 .Phony: push
 push:
@@ -75,3 +73,16 @@ push:
 .Phony: testbooks
 testbooks:
 	deno test -A parsers/markdownlist_test.ts --filter="#2"
+.Phony: buildsite
+buildsite:
+	FORCE=1 deno run -A tal.ts --no-fetch --html "ripienaar/free-for-dev"
+.Phony: buildsitesource
+buildsitesource:
+	FORCE=1 deno run -A tal.ts --no-fetch --html ${source}
+.Phony: buildsiteall
+buildsiteall:
+	deno run -A tal.ts --no-fetch --html
+
+.Phony: servepublic
+servepublic:
+	deno run -A https://deno.land/std@0.159.0/http/file_server.ts ./public -p 8000

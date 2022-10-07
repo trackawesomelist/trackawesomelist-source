@@ -1,5 +1,12 @@
-import { DocItem, FileInfo, ParseOptions, Root } from "../../interface.ts";
-import { Content, fromMarkdown, Link, toMarkdown, visit } from "../../deps.ts";
+import { DocItem, FileInfo, ParseOptions } from "../../interface.ts";
+import {
+  Content,
+  fromMarkdown,
+  Link,
+  Root,
+  toMarkdown,
+  visit,
+} from "../../deps.ts";
 import { childrenToRoot, promiseLimit } from "../../util.ts";
 import log from "../../log.ts";
 import formatMarkdownItem from "../../format-markdown-item.ts";
@@ -7,7 +14,8 @@ export default function (
   content: string,
   fileInfo: FileInfo,
 ): Promise<DocItem[]> {
-  const fileConfig = fileInfo.fileConfig;
+  const sourceConfig = fileInfo.sourceConfig;
+  const fileConfig = sourceConfig.files[fileInfo.filepath];
   const options = fileConfig.options;
   const items: DocItem[] = [];
   const tree = fromMarkdown(content, "utf8", {});

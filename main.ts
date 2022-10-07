@@ -1,97 +1,48 @@
-import { DB, flags } from "./deps.ts";
-
+import { Command, DB, flags } from "./deps.ts";
 import log from "./log.ts";
-
-import fetchSources from "./workflows/1-fetch-sources.ts";
-import buildMarkdown from "./workflows/2-build-markdown.ts";
-import serveSite from "./workflows/3-serve-site.ts";
+import fetchSources from "./fetch-sources.ts";
+import build from "./build.ts";
+import serverMarkdown from "./serve-markdown.ts";
+import servePublic from "./serve-public.ts";
 import {
   getConfig,
+  getDbMetaFilePath,
   getFormatedSource,
   getSqlitePath,
-  isDebug,
   isDev,
+  writeJSONFile,
 } from "./util.ts";
-import { RunOptions } from "./interface.ts";
-export default async function main() {
-  const args = flags.parse(Deno.args);
-
-  let stage: string[] = [];
-
-  if (args.fetch) {
-    // only source
-    stage = stage.concat([
-      "fetch",
-      "format",
-    ]);
-  } else if (args.build) {
-    // only build stage
-    stage = stage.concat([
-      "buildmarkdown",
-    ]);
-  } else if (args.serve) {
-    // only build stage
-    stage = stage.concat([
-      "buildmarkdown",
-      "serve",
-    ]);
-  } else {
-    stage = stage.concat([
-      "fetch",
-      "buildmarkdown",
-    ]);
-    if (isDev()) {
-      stage.push("serve");
-    }
-  }
-  if (args.stage) {
-    stage = (args.stage).split(",");
-  }
-  if (args["extra-stage"]) {
-    const extraStages = (args["extra-stage"]).split(",");
-    stage = stage.concat(extraStages);
-  }
-  if (isDebug()) {
+import { CliOptions, RunOptions } from "./interface.ts";
+// import db init meta json
+import dbInitMeta from "./db-meta-init.json" assert { type: "json" };
+export default async function main(cliOptions: CliOptions, ...args: string[]) {
+  if (cliOptions.debug) {
     log.setLevel("debug");
   }
-
-  let isForce = false;
-  if (args.force !== undefined) {
-    isForce = args.force;
-  } else if (Deno.env.get("FORCE") === "1") {
-    isForce = true;
-  }
-
   const config = await getConfig();
-
-  let sourceIdentifiers: string[] = Object.keys(config.sources);
-  if (Deno.env.get("SOURCE") || args.source) {
-    if (args.source) {
-      sourceIdentifiers = args.source.split(",");
-    } else if (Deno.env.get("SOURCE")) {
-      sourceIdentifiers = Deno.env.get("SOURCE")!.split(",");
-    }
-    // check if source exists
-    for (const sourceIdentifier of sourceIdentifiers) {
-      if (config.sources[sourceIdentifier] === undefined) {
-        config.sources[sourceIdentifier] = getFormatedSource(
-          sourceIdentifier,
-          null,
-        );
-      }
+  const sourceIdentifiers: string[] = args.length > 0
+    ? args
+    : Object.keys(config.sources);
+  // check if source exists
+  for (const sourceIdentifier of sourceIdentifiers) {
+    if (config.sources[sourceIdentifier] === undefined) {
+      config.sources[sourceIdentifier] = getFormatedSource(
+        sourceIdentifier,
+        null,
+      );
     }
   }
-  let push = false;
-  if (args.push !== undefined) {
-    if (args.push === "1") {
-      push = true;
+  const isBuildHtml = cliOptions.html || false;
+  const autoInit = cliOptions.autoInit;
+  if (autoInit || (autoInit === undefined && isDev())) {
+    // check is db meta exists
+    const dbMetaFilePath = getDbMetaFilePath();
+    if (!await Deno.stat(dbMetaFilePath).catch(() => false)) {
+      log.info("db meta not found, auto init");
+      // copy db-meta-init.json
+      await writeJSONFile(dbMetaFilePath, dbInitMeta);
     }
   }
-  let port = 8000;
-  if (args.port !== undefined) {
-    port = args.port;
-  }
-
   // init sqlite db
   // te
   // Open a database
@@ -116,41 +67,30 @@ export default async function main() {
   const runOptions: RunOptions = {
     config: config,
     sourceIdentifiers,
-    force: isForce,
-    push,
-    port,
     db,
+    ...cliOptions,
   };
-  if (stage.includes("fetch")) {
+  if (cliOptions.fetch) {
     await fetchSources(runOptions);
   } else {
-    log.info("skip fetch stage");
+    log.info("skip fetch sources");
   }
-
-  try {
-    // 2. build markdowns
-    if (stage.includes("buildmarkdown")) {
-      await buildMarkdown(runOptions);
-    } else {
-      // test
-      log.info("skip buildmarkdown stage");
-    }
-  } catch (e) {
-    // log.error(e);
-    throw e;
-  }
+  // 2. build markdowns, and htmls
+  await build(runOptions);
 
   // 3. serve site
-  if (stage.includes("serve")) {
+  if (runOptions.serve) {
     log.info("serve site");
-    await serveSite(runOptions);
+    // check is there is html
+    if (isBuildHtml) {
+      servePublic();
+    } else {
+      // serve to markdown preview files
+      await serverMarkdown(runOptions);
+    }
   } else {
     log.info("skip serve site");
   }
   // Close connection
   db.close();
-}
-
-if (import.meta.main) {
-  main();
 }

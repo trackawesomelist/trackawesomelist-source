@@ -1,7 +1,7 @@
-# Title
+{{{nav}}}
 
 {{#groups}}
-## {{{group_name}}}{{{group_suffix}}}
+## [{{{group_name}}}{{{group_suffix}}}]({{{group_url}}})
 
 {{#items}}
 {{#category}}
@@ -13,3 +13,5 @@
 
 {{/items}}
 {{/groups}}
+
+{{{footer}}}

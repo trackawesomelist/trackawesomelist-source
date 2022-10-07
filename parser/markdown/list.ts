@@ -1,4 +1,4 @@
-import { DocItem, FileInfo, ParseparseOptions } from "../../interface.ts";
+import { DocItem, FileInfo, ParseOptions } from "../../interface.ts";
 import { Content, fromMarkdown, Link, toMarkdown, visit } from "../../deps.ts";
 import { childrenToRoot, getRepoHTMLURL, promiseLimit } from "../../util.ts";
 import log from "../../log.ts";
@@ -8,7 +8,8 @@ export default function (
   content: string,
   fileInfo: FileInfo,
 ): Promise<DocItem[]> {
-  const fileConfig = fileInfo.fileConfig;
+  const sourceConfig = fileInfo.sourceConfig;
+  const fileConfig = sourceConfig.files[fileInfo.filepath];
   const parseOptions = fileConfig.options;
   const isParseCategory = parseOptions.is_parse_category === undefined
     ? true

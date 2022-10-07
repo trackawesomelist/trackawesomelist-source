@@ -4,13 +4,13 @@ import {
   sha1,
   writeDbMeta,
   writeJSONFile,
-} from "../util.ts";
-import parser from "../parser/mod.ts";
-import log from "../log.ts";
-import { Item, ItemsJson, RunOptions } from "../interface.ts";
-import initItems from "../init-items.ts";
-import Github from "../adapters/github.ts";
-import { getItems, updateItems } from "../db.ts";
+} from "./util.ts";
+import parser from "./parser/mod.ts";
+import log from "./log.ts";
+import { Item, ItemsJson, RunOptions } from "./interface.ts";
+import initItems from "./init-items.ts";
+import Github from "./adapters/github.ts";
+import { getItems, updateItems } from "./db.ts";
 export default async function (options: RunOptions) {
   const sourceIdentifiers = options.sourceIdentifiers;
   const force = options.force;
@@ -87,14 +87,15 @@ export default async function (options: RunOptions) {
         const items = await getItems(db, sourceIdentifier, file);
 
         const docItems = await parser(content, {
-          fileConfig,
-          sourceIdentifier: sourceIdentifier,
-          repoMeta: dbSource.meta,
+          sourceConfig: source,
+          filepath: file,
+          sourceMeta: dbSource,
         });
-        // compare updated items
+        //compare updated items
         const newItems: Record<string, Item> = {};
         let newCount = 0;
         let totalCount = 0;
+        let updatedAt = new Date(0);
 
         for (const docItem of docItems) {
           const itemSha1 = await sha1(docItem.rawMarkdown);
@@ -104,6 +105,9 @@ export default async function (options: RunOptions) {
             // it's a old item,
             // stay the same
             newItems[itemSha1] = items[itemSha1];
+            if (new Date(items[itemSha1].updated_at) > updatedAt) {
+              updatedAt = new Date(items[itemSha1].updated_at);
+            }
           } else {
             newCount++;
             const now = new Date();
@@ -119,24 +123,17 @@ export default async function (options: RunOptions) {
               updated_at: now.toISOString(),
               checked_at: now.toISOString(),
             };
+            if (now > updatedAt) {
+              updatedAt = now;
+            }
           }
         }
-
-        // write to file
-        // const newItemsJson: ItemsJson = {
-        //   ...itemsJson,
-        //   items: newItems,
-        // };
-        // await writeJSONFile(
-        //   getItemsFilePath(sourceIdentifier, file),
-        //   newItemsJson,
-        // );
 
         updateItems(db, sourceIdentifier, file, newItems);
 
         dbFiles[file] = {
           ...dbFiles[file],
-          updated_at: now.toISOString(),
+          updated_at: updatedAt.toISOString(),
           checked_at: now.toISOString(),
           sha1: contentSha1,
         };

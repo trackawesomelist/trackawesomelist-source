@@ -69,7 +69,7 @@ export default class github extends API {
       url: data.html_url,
       language: data.language,
       stargazers_count: data.stargazers_count,
-      watchers_count: data.watchers_count,
+      subscribers_count: data.subscribers_count,
       forks_count: data.forks_count,
       tags: data.topics,
       updated_at: data.pushed_at,

@@ -1,4 +1,7 @@
 file_min_updated_hours: 12
+site:
+  title: Track Awesome List
+  description: A curated list of awesome things related to tracking
 sources:
   ripienaar/free-for-dev:
   public-apis/public-apis:

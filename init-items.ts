@@ -1,4 +1,4 @@
-import { Item, ItemsJson, Source } from "./interface.ts";
+import { Item, ItemsJson, RepoMetaOverride, Source } from "./interface.ts";
 import Github from "./adapters/github.ts";
 import {
   exists,
@@ -80,10 +80,11 @@ export default async function initItems(db: DB, source: Source) {
     const cachedFilePath = path.join(repoPath, file);
     const content = await readTextFile(cachedFilePath);
     const docItems = await parser(content, {
-      fileConfig,
-      sourceIdentifier: source.identifier,
-      repoMeta: meta,
+      sourceConfig: source,
+      sourceMeta: sources[source.identifier],
+      filepath: file,
     });
+    let latestUpdatedAt = new Date(0);
     for (const docItem of docItems) {
       const now = new Date();
       const commitInfo = blameInfoMap.get(docItem.line);
@@ -101,6 +102,9 @@ export default async function initItems(db: DB, source: Source) {
           sha1: itemSha1,
           checked_at: now.toISOString(),
         };
+        if (commitDate.getTime() > latestUpdatedAt.getTime()) {
+          latestUpdatedAt = commitDate;
+        }
       } else {
         throw new Error(
           `no commit info for ${source.identifier} ${file} ${docItem.line}`,
@@ -111,23 +115,19 @@ export default async function initItems(db: DB, source: Source) {
     // try to get items updated time
     // get created time and updated time from blameinfo
     let createdAt = now;
-    let updatedAt = now;
     for (const blame of blameInfoMap.values()) {
       const commitTime = blame.committerTime;
       const commitDate = new Date(Number(commitTime) * 1000);
       if (commitDate < createdAt) {
         createdAt = commitDate;
       }
-      if (commitDate > updatedAt) {
-        updatedAt = commitDate;
-      }
     }
 
     sources[source.identifier].files[file] = {
       sha1: contentSha1,
-      updated_at: now.toISOString(),
-      created_at: now.toISOString(),
-      document_created_at: createdAt.toISOString(),
+      updated_at: latestUpdatedAt.toISOString(),
+      meta_created_at: now.toISOString(),
+      created_at: createdAt.toISOString(),
       checked_at: now.toISOString(),
     };
     //write to file

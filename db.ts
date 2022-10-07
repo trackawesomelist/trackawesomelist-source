@@ -120,6 +120,39 @@ export function getDayItems(
   }
   return items;
 }
+export function getWeekItems(
+  db: DB,
+  number: number,
+): Record<string, Item> {
+  const sql =
+    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_week=:number";
+  const items: Record<string, Item> = {};
+  for (
+    const [
+      markdown,
+      category,
+      updated_at,
+      sha1,
+      checked_at,
+      sourceIdentifier,
+      file,
+    ] of db
+      .query(sql, {
+        number,
+      })
+  ) {
+    items[sha1 as string] = {
+      file: file as string,
+      source_identifier: sourceIdentifier as string,
+      markdown: markdown as string,
+      category: category as string,
+      updated_at: new Date(updated_at as number).toISOString(),
+      sha1: sha1 as string,
+      checked_at: new Date(checked_at as number).toISOString(),
+    };
+  }
+  return items;
+}
 
 export function getUpdatedFiles(
   db: DB,

@@ -4,6 +4,7 @@ import { Content, Link, Root, toMarkdown, visit } from "./deps.ts";
 import {
   childrenToMarkdown,
   childrenToRoot,
+  getDomain,
   gotGithubStar,
   isMock,
   promiseLimit,
@@ -172,17 +173,21 @@ export default async function formatItemMarkdown<T>(
   item: Content | Root,
   fileInfo: FileInfo,
 ): Promise<Content | Root> {
-  const fileConfig = fileInfo.fileConfig;
-  const repoMeta = fileInfo.repoMeta;
+  const sourceConfig = fileInfo.sourceConfig;
+  const filepath = fileInfo.filepath;
+  const fileConfig = sourceConfig.files[filepath];
+  const sourceMeta = fileInfo.sourceMeta;
+  const repoMeta = sourceMeta.meta;
   const repoUrl = repoMeta.url;
   const defaultBranch = repoMeta.default_branch;
-  const { options, filepath } = fileConfig;
+  const { options } = fileConfig;
   // get all github link, and add badge
   const matchedNodes: MatchedNode[] = [];
   visit(item, (node) => {
     if (node.type === "html") {
       if (node.value.includes("<img")) {
         // regex replace img url
+        // @ts-ignore: hard to type
         node.value = node.value.replace(/src="([^"]+)"/g, (match, p1) => {
           const url = p1;
           let formated = p1;

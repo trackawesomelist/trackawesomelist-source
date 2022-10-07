@@ -1,5 +1,6 @@
 import {
   Content,
+  DateTimeFormatter,
   fs,
   path,
   posixPath,
@@ -10,6 +11,7 @@ import {
 } from "./deps.ts";
 import log from "./log.ts";
 import {
+  BaseFeed,
   Config,
   DayInfo,
   DBMeta,
@@ -25,7 +27,7 @@ import {
   Source,
   WeekOfYear,
 } from "./interface.ts";
-import { INDEX_MARKDOWN_PATH } from "./constant.ts";
+import { DEV_DOMAIN, INDEX_MARKDOWN_PATH, PROD_DOMAIN } from "./constant.ts";
 import { NotFound } from "./error.ts";
 export const SECOND = 1e3;
 export const MINUTE = SECOND * 60;
@@ -188,8 +190,12 @@ export const defaultFileType = "list";
 export function isDev() {
   return Deno.env.get("PROD") !== "1";
 }
+export function getDomain() {
+  return isDev() ? DEV_DOMAIN : PROD_DOMAIN;
+}
 export function isUseCache() {
-  return Deno.env.get("CACHE") === "1";
+  return true;
+  // return Deno.env.get("CACHE") === "1";
 }
 export function isMock() {
   if (isDev()) {
@@ -199,9 +205,6 @@ export function isMock() {
   }
 }
 
-export function isDebug() {
-  return Deno.env.get("DEBUG") === "1";
-}
 export function getRepoHTMLURL(
   url: string,
   defaultBranch: string,
@@ -220,8 +223,8 @@ export async function getConfig(): Promise<Config> {
     rawConfig.file_min_updated_hours = 12;
   }
   const config: Config = {
+    ...rawConfig,
     sources: {},
-    file_min_updated_hours: rawConfig.file_min_updated_hours,
   };
   for (const key of Object.keys(rawConfig.sources)) {
     const value = rawConfig.sources[key];
@@ -336,8 +339,18 @@ export function getDistPath() {
     return "prod-dist";
   }
 }
+export function getPublicPath() {
+  if (isDev()) {
+    return "public";
+  } else {
+    return "prod-public";
+  }
+}
 export function getDistRepoPath() {
   return path.join(getDistPath(), "repo");
+}
+export function getStaticPath() {
+  return "static";
 }
 export function getDistRepoGitUrl() {
   const envRepo = Deno.env.get("DIST_REPO");
@@ -525,7 +538,12 @@ export function getUTCDay(date: Date): string {
 export function urlToFilePath(url: string): string {
   const urlObj = new URL(url);
   const pathname = urlObj.pathname;
-  return posixPath.join(pathname.slice(1), INDEX_MARKDOWN_PATH);
+  // is ends with /
+  if (pathname.endsWith("/")) {
+    return posixPath.join(pathname.slice(1), INDEX_MARKDOWN_PATH);
+  } else {
+    return pathname.slice(1);
+  }
 }
 export async function got(
   url: string,
@@ -660,4 +678,38 @@ export async function promiseLimit<T>(
     log.debug(`promise limit ${funcs.length} left`);
   }
   return results;
+}
+export const formatUTC = (date: Date, formatString: string) => {
+  date = new Date(date.getTime() + 0 * 60 * 60 * 1000);
+  const formatter = new DateTimeFormatter(formatString);
+  return formatter.format(date, {
+    timeZone: "UTC",
+  });
+};
+export const formatHumanTime = (date: Date) => {
+  const now = new Date();
+
+  const nowYear = formatUTC(now, "yyyy");
+  const dateYear = formatUTC(date, "yyyy");
+  const isThisYear = nowYear === dateYear;
+
+  if (isThisYear) {
+    return formatUTC(date, "MM/dd");
+  } else {
+    return formatUTC(date, "yy/MM/dd");
+  }
+};
+export const formatNumber = (num: number): string => {
+  const formatter = Intl.NumberFormat("en", { notation: "compact" });
+  return formatter.format(num);
+};
+
+export function getBaseFeed(): BaseFeed {
+  const domain = getDomain();
+  return {
+    version: "https://jsonfeed.org/version/1",
+    icon: `${domain}/icon.png`,
+    favicon: `${domain}/favicon.ico`,
+    language: "en",
+  };
 }

@@ -1,4 +1,4 @@
-import { DocItem, FileInfo, ParseOptions } from "../../interface.ts";
+import { DocItem, FileConfigInfo, ParseOptions } from "../../interface.ts";
 import {
   Content,
   fromMarkdown,
@@ -13,9 +13,10 @@ import { gfm, gfmFromMarkdown, gfmToMarkdown } from "../../deps.ts";
 
 export default async function (
   content: string,
-  fileInfo: FileInfo,
+  fileInfo: FileConfigInfo,
 ): Promise<DocItem[]> {
-  const fileConfig = fileInfo.fileConfig;
+  const sourceConfig = fileInfo.sourceConfig;
+  const fileConfig = sourceConfig.files[fileInfo.filepath];
   const options = fileConfig.options;
   const items: DocItem[] = [];
   const tree = fromMarkdown(content, "utf8", {

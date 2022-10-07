@@ -1,17 +1,12 @@
-# {{{repo_meta.name}}}
+# {{{title}}}
 
-[Source Github Link]({{{source_file_url}}})
+{{{description}}}
 
-{{#groups}}
-## {{{group_name}}}{{{group_suffix}}}
+{{{_nav_text}}}
 
 {{#items}}
-{{#category}}
-### {{{category}}}
+## [{{{title}}}{{{_title_suffix}}}]({{{url}}})
 
-{{/category}}
-{{#items}}{{{markdown}}}
+{{{content_text}}}
 {{/items}}
 
-{{/items}}
-{{/groups}}

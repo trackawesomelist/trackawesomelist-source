@@ -54,46 +54,33 @@ export interface ParsedItemsFilePath {
   originalFilepath: string;
   sourceIdentifier: string;
 }
+export interface Site {
+  title: string;
+  description: string;
+}
 export interface RawConfig {
   sources: Record<string, RawSource | undefined>;
   file_min_updated_hours: number;
+  site: Site;
 }
 export interface RawSourceFile {
   index?: boolean;
   options?: ParseOptions;
 }
-export interface PageItem {
-  source_identifier: string;
-  file: string;
-  category: string;
-  updated_at: string;
-  updated_day_on: string;
-  markdown: string;
+
+export interface FileConfigInfo {
+  sourceConfig: Source;
+  filepath: string;
 }
-export interface PageCategoryItem {
-  category: string;
-  items: PageItem[];
-}
-export interface PageData {
-  groups: PageGroup[];
-  repo_meta?: RepoMeta;
-  file_config?: FileConfig;
-  source_file_url?: string;
-}
-export interface FileInfo {
-  repoMeta: RepoMeta;
-  fileConfig: FileConfig;
-  sourceIdentifier: string;
+export interface FileInfo extends FileConfigInfo {
+  sourceMeta: DbMetaSource;
+  sourceConfig: Source;
+  filepath: string;
 }
 export interface FormatMarkdownItemOptions {
   repoUrl: string;
   defaultBranch: string;
   filepath: string;
-}
-export interface PageGroup {
-  group_name: string;
-  group_suffix: string;
-  items: PageCategoryItem[];
 }
 export interface RawSourceFileWithType extends RawSourceFile {
   options: ParseOptions;
@@ -113,13 +100,21 @@ export interface Source {
 export interface Config extends RawConfig {
   sources: Record<string, Source>;
 }
-export interface RunOptions {
+export interface RunOptions extends CliOptions {
   config: Config;
   sourceIdentifiers: string[];
-  force: boolean;
-  push: boolean;
-  port: number;
   db: DB;
+}
+export interface CliOptions {
+  debug?: boolean;
+  force?: boolean;
+  push?: boolean;
+  autoInit?: boolean;
+  markdown: boolean;
+  fetch: boolean;
+  html?: boolean;
+  serve: boolean;
+  port: number;
 }
 export interface Item {
   updated_at: string;
@@ -150,7 +145,7 @@ export interface RepoMeta {
   default_branch: string;
   language: string | undefined;
   stargazers_count: number;
-  watchers_count: number;
+  subscribers_count: number;
   forks_count: number;
   tags: string[];
   created_at: string;
@@ -170,9 +165,9 @@ export interface ParsedFilename {
 export interface FileMeta {
   sha1: string;
   checked_at: string;
-  document_created_at: string;
-  updated_at: string;
   created_at: string;
+  updated_at: string;
+  meta_created_at: string;
 }
 
 export interface FileMetaWithSource extends FileMeta {
@@ -189,4 +184,43 @@ export interface DbMetaSource {
 export interface DBMeta {
   sources: Record<string, DbMetaSource>;
   checked_at: string;
+}
+
+export interface Author {
+  url: string;
+  name: string;
+  avatar?: string;
+}
+
+export interface FeedItem {
+  id: string;
+  image?: string;
+  url: string;
+  _slug: string;
+  date_published: string;
+  date_modified: string;
+  tags?: string[];
+  external_url?: string;
+  authors?: Author[];
+  title: string;
+  _title_suffix: string;
+  author?: Author;
+  content_text: string;
+  content_html: string;
+}
+
+export interface BaseFeed {
+  version: string;
+  icon: string;
+  favicon: string;
+  language: string;
+}
+export interface Feed extends BaseFeed {
+  title: string;
+  _seo_title: string;
+  description: string;
+  home_page_url: string;
+  feed_url: string;
+  items: FeedItem[];
+  _nav_text: string;
 }
