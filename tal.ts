@@ -7,6 +7,8 @@ export default async function tal() {
     .description("Track Markdown Files Changes")
     .env("DEBUG=<enable:boolean>", "Enable debug output.")
     .env("FORCE=<enable:boolean>", "Enable force update.")
+    .env("PUSH=<enable:boolean>", "Enable push to remote repo.")
+    .env("LIMIT=<enable:number>", "Limit sources to build, for debug.")
     .option("-d, --debug", "Enable debug output.")
     .option("-f, --force", "Force update.")
     .option("-p, --push", "Push markdown to remote.")
@@ -14,6 +16,7 @@ export default async function tal() {
     .option("--no-markdown", "do not build markdown file.")
     .option("--html", "Build html files.")
     .option("--no-serve", "Serve site.")
+    .option("--limit <limit:number>", "Limit number of sources to process.")
     .option(
       "--no-auto-init",
       "do not auto init db meta, for avoid load remote db failed",

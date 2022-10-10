@@ -17,6 +17,9 @@ startsource:
 all:
 	FORCE=1 deno run -A tal.ts --html "ripienaar/free-for-dev"
 
+.Phony: allall
+allall:
+	FORCE=1 deno run -A tal.ts --html
 .Phony: startallforce
 startallforce:
 	deno run -A tal.ts --force

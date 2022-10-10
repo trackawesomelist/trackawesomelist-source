@@ -1,4 +1,10 @@
-import { Item, ItemsJson, RepoMetaOverride, Source } from "./interface.ts";
+import {
+  FileInfo,
+  Item,
+  ItemsJson,
+  RepoMetaOverride,
+  Source,
+} from "./interface.ts";
 import Github from "./adapters/github.ts";
 import {
   exists,
@@ -63,7 +69,7 @@ export default async function initItems(db: DB, source: Source) {
     await p.status();
   }
   const now = new Date();
-  sources[source.identifier] = {
+  sources[source.identifier] = sources[source.identifier] || {
     created_at: now.toISOString(),
     updated_at: now.toISOString(),
     meta,
@@ -79,11 +85,12 @@ export default async function initItems(db: DB, source: Source) {
     const items: Record<string, Item> = {};
     const cachedFilePath = path.join(repoPath, file);
     const content = await readTextFile(cachedFilePath);
-    const docItems = await parser(content, {
+    const fileInfo: FileInfo = {
       sourceConfig: source,
       sourceMeta: sources[source.identifier],
       filepath: file,
-    });
+    };
+    const docItems = await parser(content, fileInfo);
     let latestUpdatedAt = new Date(0);
     for (const docItem of docItems) {
       const now = new Date();
@@ -133,7 +140,8 @@ export default async function initItems(db: DB, source: Source) {
     //write to file
     // await writeJSONFile(formatedPath, itemsJson);
     // write to db
-    updateItems(db, source.identifier, file, items);
+
+    updateItems(db, fileInfo, items);
 
     log.info(
       `init ${source.identifier}/${file} success, total ${

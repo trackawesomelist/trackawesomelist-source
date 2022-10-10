@@ -7,7 +7,7 @@ import {
 } from "./util.ts";
 import parser from "./parser/mod.ts";
 import log from "./log.ts";
-import { Item, ItemsJson, RunOptions } from "./interface.ts";
+import { FileInfo, Item, ItemsJson, RunOptions } from "./interface.ts";
 import initItems from "./init-items.ts";
 import Github from "./adapters/github.ts";
 import { getItems, updateItems } from "./db.ts";
@@ -31,6 +31,19 @@ export default async function (options: RunOptions) {
       // need to init source
       await initItems(db, source);
       continue;
+    } else {
+      // check is all files is init
+      const dbSource = dbSources[sourceIdentifier];
+      const dbFiles = dbSource.files;
+      const dbFileKeys = Object.keys(dbFiles);
+      const isAllFilesInit = Object.keys(files).every((file) => {
+        return dbFileKeys.includes(file);
+      });
+      if (!isAllFilesInit) {
+        // need to init source
+        await initItems(db, source);
+        continue;
+      }
     }
 
     const dbSource = dbSources[sourceIdentifier];
@@ -85,12 +98,13 @@ export default async function (options: RunOptions) {
         continue;
       } else {
         const items = await getItems(db, sourceIdentifier, file);
-
-        const docItems = await parser(content, {
+        const fileInfo: FileInfo = {
           sourceConfig: source,
           filepath: file,
           sourceMeta: dbSource,
-        });
+        };
+
+        const docItems = await parser(content, fileInfo);
         //compare updated items
         const newItems: Record<string, Item> = {};
         let newCount = 0;
@@ -129,7 +143,7 @@ export default async function (options: RunOptions) {
           }
         }
 
-        updateItems(db, sourceIdentifier, file, newItems);
+        updateItems(db, fileInfo, newItems);
 
         dbFiles[file] = {
           ...dbFiles[file],

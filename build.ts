@@ -1,25 +1,34 @@
 import { groupBy, mustache } from "./deps.ts";
 import { fs, path } from "./deps.ts";
 import {
+  Feed,
+  FeedItem,
   File,
   FileInfo,
   FileMeta,
   FileMetaWithSource,
   Item,
   ItemsJson,
-  PageCategoryItem,
-  PageData,
-  PageItem,
+  List,
+  ListItem,
   RunOptions,
 } from "./interface.ts";
-import { INDEX_MARKDOWN_PATH, RECENTLY_UPDATED_COUNT } from "./constant.ts";
+import {
+  INDEX_MARKDOWN_PATH,
+  RECENTLY_UPDATED_COUNT,
+  TOP_REPOS_COUNT,
+} from "./constant.ts";
 import {
   exists,
+  getAllSourceCategories,
+  getBaseFeed,
   getDataItemsPath,
   getDataRawPath,
   getDbMeta,
   getDistRepoGitUrl,
   getDistRepoPath,
+  getIndexFileConfig,
+  getItemsDetails,
   getPublicPath,
   getRepoHTMLURL,
   getStaticPath,
@@ -37,17 +46,23 @@ import {
 import log from "./log.ts";
 import {
   getItems,
+  getLatestItemsByDay,
+  getLatestItemsByWeek,
   getUpdatedDays,
   getUpdatedFiles,
   getUpdatedWeeks,
 } from "./db.ts";
-import buildSourceFileMarkdown from "./build-source-file-markdown.ts";
-import buildDayMarkdown from "./build-day-markdown.ts";
+import buildBySource from "./build-by-source.ts";
+import buildByTime, {
+  itemsToFeedItems,
+  itemsToFeedItemsByDate,
+} from "./build-by-time.ts";
 import buildHtmlFile from "./build-html.ts";
 
 export default async function buildMarkdown(options: RunOptions) {
   const config = options.config;
   const sourcesConfig = config.sources;
+  const sourcesKeys = Object.keys(sourcesConfig);
   const isBuildSite = options.html;
   const isBuildMarkdown = options.markdown;
   if (!isBuildSite && !isBuildMarkdown) {
@@ -76,7 +91,18 @@ export default async function buildMarkdown(options: RunOptions) {
     const distRepoPath = getDistRepoPath();
     // is exist
     if (options.push) {
-      const isExist = await exists(distRepoPath);
+      let isExist = await exists(distRepoPath);
+      // is exist, check is a git root dir
+      if (isExist) {
+        const isGitRootExist = await exists(path.join(distRepoPath, ".git"));
+        if (!isGitRootExist) {
+          // remote dir
+          await Deno.remove(distRepoPath, {
+            recursive: true,
+          });
+          isExist = false;
+        }
+      }
       if (!isExist) {
         // try to sync from remote
         log.info("cloning from remote...");
@@ -102,7 +128,6 @@ export default async function buildMarkdown(options: RunOptions) {
         await p.status();
       }
     }
-    const dayTemplateContent = await readTextFile("./templates/day.md.mu");
     const rootTemplateContent = await readTextFile(
       "./templates/root-readme.md.mu",
     );
@@ -118,21 +143,12 @@ export default async function buildMarkdown(options: RunOptions) {
         sourceMeta: dbSources[sourceConfig.identifier],
         filepath: file.file,
       };
-      if (isBuildMarkdown) {
-        const builtInfo = await buildSourceFileMarkdown(
-          db,
-          fileInfo,
-          options,
-        );
-        commitMessage += builtInfo.commitMessage + "\n";
-      }
-      // build html
-      // if (isBuildSite) {
-      //   await buildHtmlFile(
-      //     path.join(getDistRepoPath(), sourceConfig.identifier, file.file),
-      //     htmlTemplate,
-      //   );
-      // }
+      const builtInfo = await buildBySource(
+        db,
+        fileInfo,
+        options,
+      );
+      commitMessage += builtInfo.commitMessage + "\n";
     }
 
     // update day file
@@ -141,28 +157,18 @@ export default async function buildMarkdown(options: RunOptions) {
     });
 
     for (const day of updatedDays) {
-      if (isBuildMarkdown) {
-        const builtInfo = await buildDayMarkdown(db, day.number, options);
-        commitMessage += builtInfo.commitMessage + "\n";
-      }
-      // build html
-      // if (isBuildSite) {
-      //   await buildHtmlFile(
-      //     path.join(getDistRepoPath(), day.path, INDEX_MARKDOWN_PATH),
-      //     htmlTemplate,
-      //   );
-      // }
+      const builtInfo = await buildByTime(db, day.number, options);
+      commitMessage += builtInfo.commitMessage + "\n";
     }
     // update week file
     const updatedWeeks = getUpdatedWeeks(db, {
       since_date: new Date(lastCheckedAt),
     });
     for (const day of updatedWeeks) {
-      if (isBuildMarkdown) {
-        const builtInfo = await buildDayMarkdown(db, day.number, options);
-        commitMessage += builtInfo.commitMessage + "\n";
-      }
+      const builtInfo = await buildByTime(db, day.number, options);
+      commitMessage += builtInfo.commitMessage + "\n";
     }
+
     const dbSourcesKeys = Object.keys(dbSources);
     const allFilesMeta: FileMetaWithSource[] = [];
     for (const sourceIdentifier of dbSourcesKeys) {
@@ -188,7 +194,7 @@ export default async function buildMarkdown(options: RunOptions) {
       const sourceMeta = dbSources[item.sourceIdentifier].meta;
 
       return {
-        name: item.sourceIdentifier + "/" + sourceFileConfig.name,
+        name: sourceFileConfig.name,
         url: sourceFileConfig.pathname + INDEX_MARKDOWN_PATH,
         source_url: getRepoHTMLURL(
           sourceConfig.url,
@@ -197,30 +203,148 @@ export default async function buildMarkdown(options: RunOptions) {
         ),
       };
     });
-    const indexPageData = {
-      recentlyUpdated,
-    };
-    // write to index
-    const itemMarkdownContentRendered = mustache.render(
-      rootTemplateContent,
-      indexPageData,
-    );
-    const indexMarkdownDistPath = path.join(
-      getDistRepoPath(),
-      INDEX_MARKDOWN_PATH,
-    );
-    if (isBuildMarkdown) {
-      await writeTextFile(indexMarkdownDistPath, itemMarkdownContentRendered);
+    // top 50 repos
+    const sortedRepos = dbSourcesKeys.sort(
+      (aSourceIdentifier, bSourceIdentifier) => {
+        const sourceMeta = dbSources[aSourceIdentifier];
+        const aMeta = dbSources[aSourceIdentifier];
+        const bMeta = dbSources[bSourceIdentifier];
+        const unmaintainedTime = new Date().getTime() -
+          2 * 365 * 24 * 60 * 60 * 1000;
 
-      log.info(`build ${indexMarkdownDistPath} success`);
-    }
-    if (isBuildSite) {
-      await buildHtmlFile(
-        indexMarkdownDistPath,
-        htmlTemplate,
+        let aAddedScore =
+          (new Date(aMeta.updated_at).getTime() - unmaintainedTime) /
+          100000;
+
+        let bAddedScore =
+          (new Date(bMeta.updated_at).getTime() - unmaintainedTime) /
+          100000;
+
+        if (aMeta.meta.stargazers_count < 20000) {
+          aAddedScore = aAddedScore / 10;
+        }
+
+        if (bMeta.meta.stargazers_count < 20000) {
+          bAddedScore = bAddedScore / 10;
+        }
+
+        const score = bMeta.meta.stargazers_count + bAddedScore -
+          (aAddedScore + aMeta.meta.stargazers_count);
+
+        return score;
+      },
+    ).slice(0, TOP_REPOS_COUNT).map((sourceIdentifier) => {
+      const sourceConfig = sourcesConfig[sourceIdentifier];
+
+      const sourceFileConfig = getIndexFileConfig(sourceConfig.files);
+      const sourceMeta = dbSources[sourceIdentifier].meta;
+
+      return {
+        name: sourceFileConfig.name,
+        url: sourceFileConfig.pathname + INDEX_MARKDOWN_PATH,
+        source_url: getRepoHTMLURL(
+          sourceConfig.url,
+          sourceMeta.default_branch,
+          sourceFileConfig.filepath,
+        ),
+      };
+    });
+    for (let i = 0; i < 2; i++) {
+      const isDay = i === 0;
+      let lastItems: Record<string, Item> = {};
+      if (isDay) {
+        lastItems = getLatestItemsByDay(db, 150);
+      } else {
+        lastItems = getLatestItemsByWeek(db, 300);
+      }
+
+      const feedItems = itemsToFeedItemsByDate(lastItems, config, isDay);
+
+      const indexMarkdownDistPath = path.join(
+        getDistRepoPath(),
+        isDay ? INDEX_MARKDOWN_PATH : `week/${INDEX_MARKDOWN_PATH}`,
       );
-    }
+      const baseFeed = getBaseFeed();
+      const indexFeed: Feed = {
+        ...baseFeed,
+        title: "Track Awesome List Updates Daily",
+        description: config.site.description,
+        _nav_text: "",
+        _seo_title:
+          `${config.site.title} - Track your Favorite Github Awesome Repo Weekly`,
+        home_page_url: config.site.url,
+        feed_url: config.site.url + "/feed.json",
+        items: [
+          ...feedItems.slice(1),
+        ],
+      };
+      const groupByCategory = (sourceIdentifier: string) => {
+        const sourceConfig = sourcesConfig[sourceIdentifier];
+        return sourceConfig.category;
+      };
+      const listGroups = groupBy(sourcesKeys, groupByCategory);
 
+      const list: List[] = Object.keys(listGroups).map((category) => {
+        const sourceIdentifiers = listGroups[category];
+        const items = sourceIdentifiers.map((sourceIdentifier: string) => {
+          const sourceConfig = sourcesConfig[sourceIdentifier];
+          const indexFileConfig = getIndexFileConfig(sourceConfig.files);
+          const item: ListItem = {
+            name: indexFileConfig.name,
+            url: indexFileConfig.pathname + INDEX_MARKDOWN_PATH,
+          };
+          return item;
+        });
+        return {
+          category,
+          items,
+        };
+      });
+      const indexPageData = {
+        recentlyUpdated,
+        sortedRepos,
+        items: feedItems,
+        list,
+        feed: {
+          ...indexFeed,
+          items: [],
+        },
+      };
+      // write to index
+      const itemMarkdownContentRendered = mustache.render(
+        rootTemplateContent,
+        indexPageData,
+      );
+      if (isBuildMarkdown) {
+        await writeTextFile(indexMarkdownDistPath, itemMarkdownContentRendered);
+
+        log.info(`build ${indexMarkdownDistPath} success`);
+      }
+      if (isBuildSite) {
+        await buildHtmlFile(
+          indexMarkdownDistPath,
+          htmlTemplate,
+        );
+
+        // build feed json
+        const feedJsonDistPath = path.join(
+          getPublicPath(),
+          isDay ? "feed.json" : `week/feed.json`,
+        );
+        await writeJSONFile(feedJsonDistPath, indexFeed);
+        // build rss
+        // @ts-ignore: node modules
+        const feedOutput = jsonfeedToAtom(indexFeed, {
+          language: "en",
+        });
+        const rssDistPath = path.join(
+          getPublicPath(),
+          isDay ? "feed.xml" : `week/feed.xml`,
+        );
+        await writeTextFile(rssDistPath, feedOutput);
+      }
+    }
+    // build week data
     // copy static files
     if (isBuildSite) {
       log.info("copy static files...");

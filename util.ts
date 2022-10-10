@@ -5,6 +5,7 @@ import {
   path,
   posixPath,
   Root,
+  titleCase,
   toMarkdown,
   u,
   YAML,
@@ -57,14 +58,23 @@ export const parseDayInfo = (day: number): DayInfo => {
   const year = Math.floor(day / 10000);
   const month = Math.floor(day / 100) % 100;
   const dayNumber = day % 100;
+  const date = new Date(Date.UTC(year, month - 1, dayNumber));
+  const localeDate = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    timeZone: "UTC",
+  }).format(date);
+
   return {
     year,
-    name: `${year}-${addZero(month)}-${addZero(dayNumber)}`,
+    id: `${year}-${addZero(month)}-${addZero(dayNumber)}`,
+    name: localeDate,
     month,
     day: dayNumber,
     path: `${year}/${addZero(month)}/${addZero(dayNumber)}`,
     number: day,
-    date: new Date(year, month - 1, dayNumber),
+    date: date,
   };
 };
 
@@ -93,17 +103,55 @@ export const parseWeekInfo = (week: number): WeekOfYear => {
   const year = Math.floor(week / 100);
   const weekOfYear = week % 100;
   // week to date
+  const date = weekNumberToDate(week);
 
   return {
     year,
     week: weekOfYear,
     number: week,
     path: `${year}/${addZero(weekOfYear)}`,
-    date: weekNumberToDate(week),
-    name: `${year}-${addZero(weekOfYear)}`,
+    id: `${year}-${addZero(weekOfYear)}`,
+    name: weekToRange(week),
+    date,
   };
 };
 
+export function weekToRange(weekNumber: number): string {
+  const year = Math.floor(weekNumber / 100);
+  const week = weekNumber % 100;
+  // Get first day of year
+  const yearStart = new Date(Date.UTC(year, 0, 1));
+
+  // year start monday date
+
+  const yearStartMondayDate = startDateOfWeek(yearStart);
+
+  const yearStartMondayFullYear = yearStartMondayDate.getUTCFullYear();
+
+  let yearFirstWeekMonday = yearStartMondayDate;
+  if (yearStartMondayFullYear !== year) {
+    // then year first week monday is next +7
+    yearFirstWeekMonday = new Date(yearStartMondayDate.getTime() + WEEK);
+  }
+
+  const weekMonday = yearFirstWeekMonday.getTime() + WEEK * (week - 1);
+  const weekSunday = weekMonday + WEEK - 1;
+
+  const weekStartYear = new Date(weekMonday).getUTCFullYear();
+  const start = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    timeZone: "UTC",
+  }).format(weekMonday);
+
+  const end = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    timeZone: "UTC",
+  }).format(weekSunday);
+
+  return `${start} - ${end}, ${weekStartYear}`;
+}
 export function weekNumberToDate(weekNumber: number): Date {
   const year = Math.floor(weekNumber / 100);
   const week = weekNumber % 100;
@@ -152,7 +200,8 @@ export function weekOfYear(date: Date): WeekOfYear {
     path: `${workingDate.getUTCFullYear()}/${week}`,
     number: Number(`${weekYear}${addZero(week)}`),
     date: weekNumberToDate(Number(`${weekYear}${addZero(week)}`)),
-    name: `${weekYear}-${addZero(week)}`,
+    id: `${weekYear}-${addZero(week)}`,
+    name: weekToRange(week),
   };
 }
 
@@ -232,12 +281,55 @@ export async function getConfig(): Promise<Config> {
   }
   return config;
 }
+// https://github.com/markedjs/marked/blob/master/src/Slugger.js
+export function slugy(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    // remove html tags
+    .replace(/<[!\/a-z].*?>/ig, "")
+    // remove unwanted chars
+    .replace(
+      /[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g,
+      "",
+    )
+    .replace(/\s/g, "-");
+}
+export function getIndexFileConfig(
+  filesConfig: Record<string, FileConfig>,
+): FileConfig {
+  const keys = Object.keys(filesConfig);
+  for (const key of keys) {
+    const fileConfig = filesConfig[key];
+    if (fileConfig.index) {
+      return fileConfig;
+    }
+  }
+  return filesConfig[keys[0]];
+}
+
+export function getAllSourceCategories(config: Config): string[] {
+  const sources = config.sources;
+  const sourcesKeys = Object.keys(sources);
+  const categories: string[] = [];
+  for (const sourceKey of sourcesKeys) {
+    const source = sources[sourceKey];
+    if (!categories.includes(source.category)) {
+      categories.push(source.category);
+    }
+  }
+  return categories;
+}
+
 export function getFormatedSource(
   key: string,
   value: null | RawSource | undefined,
 ): Source {
   let url = `https://github.com/${key}`;
-
+  const repo = key;
+  // split repo owner and repo name
+  let defaultName = titleCase(key.split("/")[1]);
+  let name = defaultName;
   let files: Record<string, FileConfig> = {};
   if (value) {
     if (value.url) {
@@ -257,6 +349,15 @@ export function getFormatedSource(
         if (keys.length === 1) {
           fileConfig.index = true;
         }
+        if (fileConfig.name) {
+          name = fileConfig.name;
+        } else {
+          if (fileConfig.index) {
+            name = defaultName;
+          } else {
+            name = `${defaultName} (${fileKey})`;
+          }
+        }
         files[fileKey] = {
           ...fileConfig,
           filepath: fileKey,
@@ -264,7 +365,7 @@ export function getFormatedSource(
             fileConfig.index ? "" : removeExtname(fileKey) +
               "/"
           }`,
-          name: fileKey,
+          name: name,
         };
       }
       // check is has index file
@@ -278,6 +379,18 @@ export function getFormatedSource(
       if (!isHasIndex) {
         throw new Error(`source ${key} has no index file`);
       }
+    } else {
+      files = {
+        [INDEX_MARKDOWN_PATH]: {
+          filepath: INDEX_MARKDOWN_PATH,
+          pathname: `/${key}/`,
+          name,
+          index: true,
+          options: {
+            type: defaultFileType,
+          },
+        },
+      };
     }
   } else {
     // todo
@@ -285,7 +398,7 @@ export function getFormatedSource(
       [INDEX_MARKDOWN_PATH]: {
         filepath: INDEX_MARKDOWN_PATH,
         pathname: `/${key}/`,
-        name: INDEX_MARKDOWN_PATH,
+        name,
         index: true,
         options: {
           type: defaultFileType,
@@ -294,10 +407,12 @@ export function getFormatedSource(
     };
   }
 
+  const defaultCategory = "Miscellaneous";
   const sourceConfig: Source = {
     identifier: key,
     url,
     files,
+    category: value?.category || defaultCategory,
   };
 
   if (value && value.default_branch) {

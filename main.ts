@@ -20,9 +20,14 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
     log.setLevel("debug");
   }
   const config = await getConfig();
-  const sourceIdentifiers: string[] = args.length > 0
+  let sourceIdentifiers: string[] = args.length > 0
     ? args
     : Object.keys(config.sources);
+  if (
+    cliOptions.limit && cliOptions.limit > 0
+  ) {
+    sourceIdentifiers = sourceIdentifiers.slice(0, cliOptions.limit);
+  }
   // check if source exists
   for (const sourceIdentifier of sourceIdentifiers) {
     if (config.sources[sourceIdentifier] === undefined) {
@@ -58,6 +63,7 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
       updated_week INT NOT NULL,
       file TEXT NOT NULL,
       source_identifier TEXT NOT NULL,
+      source_category TEXT NOT NULL,
       checked_at INT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_item

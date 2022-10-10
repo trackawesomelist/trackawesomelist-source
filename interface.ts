@@ -5,6 +5,7 @@ export interface WeekOfYear {
   number: number;
   path: string;
   date: Date;
+  id: string;
   name: string;
 }
 export interface BuiltMarkdownInfo {
@@ -27,6 +28,7 @@ export interface DayInfo {
   number: number;
   path: string;
   name: string;
+  id: string;
   date: Date;
 }
 export type LevelName = "debug" | "info" | "warn" | "error" | "fatal";
@@ -46,6 +48,7 @@ export interface ApiInfo {
   headers: Headers;
 }
 export interface RawSource {
+  category?: string;
   default_branch?: string;
   url?: string;
   files?: Record<string, RawSourceFile> | string;
@@ -57,6 +60,7 @@ export interface ParsedItemsFilePath {
 export interface Site {
   title: string;
   description: string;
+  url: string;
 }
 export interface RawConfig {
   sources: Record<string, RawSource | undefined>;
@@ -65,6 +69,7 @@ export interface RawConfig {
 }
 export interface RawSourceFile {
   index?: boolean;
+  name?: string;
   options?: ParseOptions;
 }
 
@@ -95,7 +100,16 @@ export interface Source {
   identifier: string;
   url: string;
   default_branch?: string;
+  category: string;
   files: Record<string, FileConfig>;
+}
+export interface ListItem {
+  name: string;
+  url: string;
+}
+export interface List {
+  category: string;
+  items: ListItem[];
 }
 export interface Config extends RawConfig {
   sources: Record<string, Source>;
@@ -115,6 +129,7 @@ export interface CliOptions {
   html?: boolean;
   serve: boolean;
   port: number;
+  limit?: number;
 }
 export interface Item {
   updated_at: string;
@@ -196,14 +211,14 @@ export interface FeedItem {
   id: string;
   image?: string;
   url: string;
-  _slug: string;
+  _slug?: string;
   date_published: string;
   date_modified: string;
   tags?: string[];
   external_url?: string;
+  _external_slug?: string;
   authors?: Author[];
   title: string;
-  _title_suffix: string;
   author?: Author;
   content_text: string;
   content_html: string;

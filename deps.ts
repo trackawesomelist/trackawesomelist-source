@@ -49,3 +49,4 @@ export type {
   TableCell,
   TableRow,
 } from "https://esm.sh/v92/@types/mdast@3.0.10/index.d.ts";
+export { default as jsonfeedToAtom } from "https://jspm.dev/jsonfeed-to-atom@1.2.2";
