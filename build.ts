@@ -24,6 +24,7 @@ import {
 import {
   exists,
   formatHumanTime,
+  formatPagination,
   getAllSourceCategories,
   getBaseFeed,
   getDataItemsPath,
@@ -34,6 +35,7 @@ import {
   getDistRepoPath,
   getIndexFileConfig,
   getItemsDetails,
+  getPaginationTextByNumber,
   getPublicPath,
   getRepoHTMLURL,
   getStaticPath,
@@ -188,6 +190,7 @@ export default async function buildMarkdown(options: RunOptions) {
         sourceMeta: dbSources[sourceConfig.identifier],
         filepath: file.file,
       };
+      const fileConfig = sourceConfig.files[file.file];
       promises.push(
         limit(
           () => {
@@ -210,13 +213,23 @@ export default async function buildMarkdown(options: RunOptions) {
 
     log.info("build single markdown done");
 
+    const allDays = getUpdatedDays(db, {
+      since_date: new Date(0),
+    });
+    const allWeeks = getUpdatedWeeks(db, {
+      since_date: new Date(0),
+    });
     // only updated when there is no specific source
     if (options.dayMarkdown) {
       // update day file
-      const updatedDays = getUpdatedDays(db, {
+      let updatedDays = getUpdatedDays(db, {
         since_date: new Date(lastCheckedAt),
         source_identifiers: specificSourceIdentifiers,
       });
+
+      if (options.limit && options.limit > 0) {
+        updatedDays = updatedDays.slice(0, options.limit);
+      }
 
       let updatedDayIndex = 0;
       log.info("start to build day markdown..., total: " + updatedDays.length);
@@ -227,7 +240,9 @@ export default async function buildMarkdown(options: RunOptions) {
             updatedDayIndex++;
             log.info(`[${updatedDayIndex}/${updatedDays.length}] ${day.path}`);
 
-            return buildByTime(db, day.number, options).then((builtInfo) => {
+            return buildByTime(db, day.number, options, {
+              paginationText: getPaginationTextByNumber(day.number, allDays),
+            }).then((builtInfo) => {
               commitMessage += builtInfo.commitMessage + "\n";
             });
           }),
@@ -236,10 +251,14 @@ export default async function buildMarkdown(options: RunOptions) {
       await Promise.all(promises);
       promises = [];
       // update week file
-      const updatedWeeks = getUpdatedWeeks(db, {
+      let updatedWeeks = getUpdatedWeeks(db, {
         since_date: new Date(lastCheckedAt),
         source_identifiers: specificSourceIdentifiers,
       });
+      if (options.limit && options.limit > 0) {
+        updatedWeeks = updatedWeeks.slice(0, options.limit);
+      }
+
       let updatedWeekIndex = 0;
       log.info(
         "start to build week markdown..., total: " + updatedWeeks.length,
@@ -252,7 +271,9 @@ export default async function buildMarkdown(options: RunOptions) {
               `[${updatedWeekIndex}/${updatedWeeks.length}] ${day.path}`,
             );
 
-            return buildByTime(db, day.number, options).then((builtInfo) => {
+            return buildByTime(db, day.number, options, {
+              paginationText: getPaginationTextByNumber(day.number, allWeeks),
+            }).then((builtInfo) => {
               commitMessage += builtInfo.commitMessage + "\n";
             });
           }),
@@ -343,12 +364,6 @@ export default async function buildMarkdown(options: RunOptions) {
         ),
       };
     });
-    const allDays = getUpdatedDays(db, {
-      since_date: new Date(0),
-    });
-    const allWeeks = getUpdatedWeeks(db, {
-      since_date: new Date(0),
-    });
     for (let i = 0; i < 2; i++) {
       const isDay = i === 0;
       let lastItems: Record<string, Item> = {};
@@ -372,15 +387,25 @@ export default async function buildMarkdown(options: RunOptions) {
         isDay ? INDEX_MARKDOWN_PATH : `week/${INDEX_MARKDOWN_PATH}`,
       );
       const baseFeed = getBaseFeed();
+      let indexNav = "";
+      if (isDay) {
+        indexNav = `[View by Weekly](/week/README.md)· [Feed](${
+          pathnameToFeedUrl("/", true)
+        }) · 📝 ${formatHumanTime(dbItemsLatestUpdatedAt)} · ✅ ${
+          formatHumanTime(new Date(dbMeta.checked_at))
+        }`;
+      } else {
+        indexNav = `[Home](/README.md)· [Feed](${
+          pathnameToFeedUrl("/week/", true)
+        }) · 📝 ${formatHumanTime(dbItemsLatestUpdatedAt)} · ✅ ${
+          formatHumanTime(new Date(dbMeta.checked_at))
+        }`;
+      }
       const indexFeed: Feed = {
         ...baseFeed,
         title: "Track Awesome List Updates Daily",
         description: config.site.description,
-        _nav_text: `[View by Weekly](/week/README.md)· [Feed](${
-          pathnameToFeedUrl("/", true)
-        }) · 📝 ${formatHumanTime(dbItemsLatestUpdatedAt)} · ✅ ${
-          formatHumanTime(new Date(dbMeta.checked_at))
-        }`,
+        _nav_text: indexNav,
         _seo_title:
           `${config.site.title} - Track your Favorite Github Awesome Repo Weekly`,
         home_page_url: config.site.url,
@@ -400,8 +425,10 @@ export default async function buildMarkdown(options: RunOptions) {
         const items = sourceIdentifiers.map((sourceIdentifier: string) => {
           const sourceConfig = sourcesConfig[sourceIdentifier];
           const indexFileConfig = getIndexFileConfig(sourceConfig.files);
+          const sourceMeta = dbSources[sourceIdentifier]?.meta;
           const item: ListItem = {
             name: indexFileConfig.name,
+            description: sourceMeta?.description || "",
             url: pathnameToFilePath(indexFileConfig.pathname),
           };
           return item;

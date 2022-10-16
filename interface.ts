@@ -106,6 +106,7 @@ export interface Source {
 export interface ListItem {
   name: string;
   url: string;
+  description: string;
 }
 export interface List {
   category: string;
@@ -156,6 +157,17 @@ export interface DocItem {
   line: number;
 }
 
+export interface Pagination {
+  title: string;
+  pathname: string;
+}
+export interface PaginationInfo {
+  prev: Pagination | undefined;
+  next: Pagination | undefined;
+}
+export interface BuildOptions {
+  paginationText: string;
+}
 export interface RepoMeta {
   name: string;
   description: string;

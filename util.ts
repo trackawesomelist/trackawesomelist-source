@@ -21,6 +21,8 @@ import {
   FileConfig,
   Item,
   ItemDetail,
+  Pagination,
+  PaginationInfo,
   ParsedFilename,
   ParsedItemsFilePath,
   RawConfig,
@@ -675,8 +677,10 @@ export function pathnameToFilePath(pathname: string): string {
       pathname.slice(1),
       INDEX_MARKDOWN_PATH,
     );
-  } else {
+  } else if (pathname.endsWith(".md")) {
     return posixPath.join("/", CONTENT_DIR, pathname.slice(1));
+  } else {
+    return pathname;
   }
 }
 export function pathnameToWeekFilePath(pathname: string): string {
@@ -877,3 +881,77 @@ export const slug = function (tag: string): string {
   // @ts-ignore: npm module
   return slugFn(kebabCase(tag));
 };
+
+export function formatPagination(
+  page: PaginationInfo,
+  currentPathname: string,
+): string {
+  let text = "";
+  let isWeek = currentPathname.endsWith("/week/");
+  let isOverview = currentPathname.endsWith("/readme/");
+  if (page.prev || page.next) {
+    text += "\n\n---";
+  }
+  if (isWeek) {
+    if (page.prev) {
+      text += `\n\n- Prev: [${page.prev.title}](${
+        pathnameToWeekFilePath(page.prev.pathname)
+      })`;
+    }
+    if (page.next) {
+      text += `${page.prev ? "\n" : "\n\n"}- Next: [${page.next.title}](${
+        pathnameToWeekFilePath(page.next.pathname)
+      })`;
+    }
+  } else if (isOverview) {
+    if (page.prev) {
+      text += `\n\n- Prev: [${page.prev.title}](${
+        pathnameToOverviewFilePath(page.prev.pathname)
+      })`;
+    }
+    if (page.next) {
+      text += `${page.prev ? "\n" : "\n\n"}- Next: [${page.next.title}](${
+        pathnameToOverviewFilePath(page.next.pathname)
+      })`;
+    }
+  } else {
+    if (page.prev) {
+      text += `\n\n- Prev: [${page.prev.title}](${
+        pathnameToFilePath(page.prev.pathname)
+      })`;
+    }
+    if (page.next) {
+      text += `${page.prev ? "\n" : "\n\n"}- Next: [${page.next.title}](${
+        pathnameToFilePath(page.next.pathname)
+      })`;
+    }
+  }
+  return text;
+}
+
+export function getPaginationTextByNumber(
+  currentNumber: number,
+  allDays: (DayInfo | WeekOfYear)[],
+): string {
+  const currentDay = allDays.find((day: DayInfo | WeekOfYear) =>
+    day.number === currentNumber
+  );
+  if (currentDay === undefined) {
+    return "";
+  }
+  const currentDayIndex = allDays.indexOf(currentDay);
+  const prevDay = allDays[currentDayIndex - 1];
+  const nextDay = allDays[currentDayIndex + 1];
+
+  const paginationText = formatPagination({
+    prev: prevDay === undefined ? undefined : {
+      title: prevDay.name,
+      pathname: "/" + prevDay.path + "/",
+    },
+    next: nextDay === undefined ? undefined : {
+      title: nextDay.name,
+      pathname: "/" + nextDay.path + "/",
+    },
+  }, "/" + currentDay.path + "/");
+  return paginationText;
+}

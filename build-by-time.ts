@@ -1,6 +1,7 @@
 import { CSS, groupBy, mustache } from "./deps.ts";
 import { DB, fs, path } from "./deps.ts";
 import {
+  BuildOptions,
   BuiltMarkdownInfo,
   Config,
   DbMetaSource,
@@ -12,6 +13,7 @@ import {
   Item,
   ItemDetail,
   ItemsJson,
+  PaginationInfo,
   RunOptions,
   Source,
 } from "./interface.ts";
@@ -37,6 +39,7 @@ import {
   parseDayInfo,
   parseItemsFilepath,
   parseWeekInfo,
+  pathnameToFeedUrl,
   pathnameToFilePath,
   readJSONFile,
   readTextFile,
@@ -57,12 +60,14 @@ export default async function main(
   db: DB,
   number: number,
   options: RunOptions,
+  buildOptions: BuildOptions,
 ): Promise<BuiltMarkdownInfo> {
   // test is day or week
   const domain = getDomain();
   const isDay = number.toString().length === 8;
   const isBuildMarkdown = options.markdown || false;
   const isBuildSite = options.html || false;
+  const { paginationText } = buildOptions;
 
   if (!isBuildMarkdown && !isBuildSite) {
     log.info("skip build timeline markdown and html");
@@ -102,9 +107,9 @@ export default async function main(
   feedDescription = `Awesome list updated on ${title}`;
 
   const feedItems = itemsToFeedItems(items, config);
-  const nav = `[Home](/) | [Week](/week/)
-
-<!-- toc -->`;
+  const nav = `[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](${
+    pathnameToFeedUrl("/", true)
+  }) `;
   const feed: Feed = {
     ...baseFeed,
     title: feedTitle,
@@ -120,18 +125,13 @@ export default async function main(
 
 ${feed.description}
 
-${feed._nav_text}
-
-${
-    feedItems.map((item) => {
-      return `## [${item.title}](/${item._slug}${INDEX_MARKDOWN_PATH})
-
-${item.content_text}
-`;
-    }).join("\n\n")
-  }
-
-`;
+${feed._nav_text}${
+    feedItems.map((item, index) => {
+      return `\n\n## [${index + 1}. ${item.title}](${
+        pathnameToFilePath("/" + item._slug)
+      })${item.content_text}`;
+    }).join("")
+  }${paginationText}`;
   if (isBuildMarkdown) {
     // build daily markdown
     // sort
@@ -211,9 +211,9 @@ export function itemsToFeedItems(
     let datePublished: Date = tomorrow;
     let dateModified: Date = new Date(0);
     categoryKeys.forEach((key) => {
-      groupMarkdown += `### ${key}\n\n`;
+      groupMarkdown += `\n\n### ${key}\n`;
       categoryGroup[key].forEach((item) => {
-        groupMarkdown += item.markdown + "\n";
+        groupMarkdown += "\n" + item.markdown;
         firstItem = item;
         const itemUpdated = new Date(item.updated_at);
         if (itemUpdated.getTime() < datePublished.getTime()) {
@@ -301,11 +301,11 @@ export function itemsToFeedItemsByDate(
     tomorrow.setDate(tomorrow.getDate() + 1);
     let datePublished: Date = tomorrow;
     let dateModified: Date = new Date(0);
-    categoryKeys.forEach((key) => {
+    categoryKeys.forEach((key, index) => {
       const firstSourceItem = categoryGroup[key][0];
       const sourceFileConfig = sourcesConfig[firstSourceItem.source_identifier]
         .files[firstSourceItem.file];
-      groupMarkdown += `#### [${sourceFileConfig.name}](${
+      groupMarkdown += `#### [${index + 1}. ${sourceFileConfig.name}](${
         pathnameToFilePath(sourceFileConfig.pathname)
       })\n\n`;
       // group by category

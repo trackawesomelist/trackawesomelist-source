@@ -38,7 +38,7 @@
 {{#list}}
 - {{category}}
 {{#items}}
-  - [{{{name}}}]({{{url}}})
+  - [{{{name}}}]({{{url}}}) - {{{description}}}
 {{/items}}
 {{/list}}
 

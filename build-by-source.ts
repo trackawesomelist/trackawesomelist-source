@@ -13,6 +13,7 @@ import {
 import { DB, fs, path } from "./deps.ts";
 import Github from "./adapters/github.ts";
 import {
+  BuildOptions,
   BuiltMarkdownInfo,
   DayInfo,
   DbMetaSource,
@@ -189,9 +190,9 @@ ${currentNavHeader}
       let datePublished: Date = tomorrow;
       let dateModified: Date = new Date(0);
       categoryKeys.forEach((key: string) => {
-        groupMarkdown += `### ${key}\n\n`;
+        groupMarkdown += `\n\n### ${key}`;
         categoryGroup[key].forEach((item) => {
-          groupMarkdown += `${item.markdown}\n`;
+          groupMarkdown += `\n${item.markdown}`;
           const itemUpdatedAt = new Date(item.updated_at);
           if (itemUpdatedAt.getTime() > dateModified.getTime()) {
             dateModified = itemUpdatedAt;
@@ -248,18 +249,11 @@ ${currentNavHeader}
 
 ${feed.description}
 
-${feed._nav_text}
-
-${
+${feed._nav_text}${
       feedItems.map((item) => {
-        return `## [${item.title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})
-
-${item.content_text}
-`;
-      }).join("\n\n")
-    }
-
-`;
+        return `\n\n## [${item.title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
+      }).join("")
+    }`;
     if (isBuildMarkdown) {
       const markdownDistPath = path.join(
         getDistRepoContentPath(),
