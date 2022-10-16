@@ -575,6 +575,10 @@ export default async function buildMarkdown(options: RunOptions) {
       const p2 = Deno.run({
         cmd: [
           "git",
+          "-c",
+          "user.name=github-actions[bot]",
+          "-c",
+          "user.email=github-actions[bot]@users.noreply.github.com",
           "--git-dir",
           path.join(distRepoPath, ".git"),
           "--work-tree",
