@@ -182,7 +182,7 @@ export default async function buildMarkdown(options: RunOptions) {
     );
     let updatedFileIndex = 0;
     let promises: Promise<void>[] = [];
-    let limit = pLimit(30);
+    let limit = pLimit(50);
     for (const file of allUpdatedFiles) {
       const sourceConfig = sourcesConfig[file.source_identifier];
       const fileInfo: FileInfo = {
