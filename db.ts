@@ -299,11 +299,12 @@ export function getUpdatedFiles(
     if (options.since_date) {
       sql += "and ";
     }
-    sql += "source_identifiers in (:source_identifiers) ";
-    params.source_identifiers = options.source_identifiers?.join(",");
+    sql += `source_identifier in (${
+      options.source_identifiers?.map((item) => `'${item}'`).join(",")
+    }) `;
   }
   sql += "group by file,source_identifier";
-  log.debug(`getUpdatedFiles sql: ${sql}`);
+  log.debug(`getUpdatedFiles sql: ${sql}`, params);
   const rows = db.query(
     sql,
     params,
@@ -332,12 +333,13 @@ export function getUpdatedDays(
     if (options.since_date) {
       sql += "and ";
     }
-    sql += "source_identifier in (:source_identifiers) ";
-    params.source_identifiers = options.source_identifiers?.join(",");
+    sql += `source_identifier in (${
+      options.source_identifiers?.map((item) => `'${item}'`).join(",")
+    }) `;
   }
   sql += "group by updated_day";
 
-  log.debug(`getUpdatedFiles sql: ${sql}`);
+  log.debug(`getUpdatedFiles sql: ${sql}`, params);
 
   const rows = db.query(
     sql,
@@ -365,11 +367,12 @@ export function getUpdatedWeeks(
     if (options.since_date) {
       sql += "and ";
     }
-    sql += "source_identifier in (:source_identifiers) ";
-    params.source_identifiers = options.source_identifiers?.join(",");
+    sql += `source_identifier in (${
+      options.source_identifiers?.map((item) => `'${item}'`).join(",")
+    }) `;
   }
   sql += "group by updated_week";
-  log.debug(`getUpdatedFiles sql: ${sql}`);
+  log.debug(`getUpdatedFiles sql: ${sql}`, params);
   const rows = db.query(
     sql,
     params,
