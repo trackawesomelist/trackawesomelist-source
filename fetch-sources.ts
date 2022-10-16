@@ -7,7 +7,13 @@ import {
 } from "./util.ts";
 import parser from "./parser/mod.ts";
 import log from "./log.ts";
-import { FileInfo, Item, ItemsJson, RunOptions } from "./interface.ts";
+import {
+  FileInfo,
+  Item,
+  ItemsJson,
+  RepoMetaOverride,
+  RunOptions,
+} from "./interface.ts";
 import initItems from "./init-items.ts";
 import Github from "./adapters/github.ts";
 import { getItems, updateItems } from "./db.ts";
@@ -24,12 +30,15 @@ export default async function (options: RunOptions) {
   let sourceIndex = 0;
   for (const sourceIdentifier of sourceIdentifiers) {
     sourceIndex++;
+    log.info(
+      `[${sourceIndex}/${sourceIdentifiers.length}] Fetching source: ${sourceIdentifier}`,
+    );
     const source = sourcesMap[sourceIdentifier];
     const files = source.files;
 
     if (!dbSources[sourceIdentifier]) {
       // need to init source
-      await initItems(db, source);
+      await initItems(db, source, options);
       continue;
     } else {
       // check is all files is init
@@ -41,7 +50,7 @@ export default async function (options: RunOptions) {
       });
       if (!isAllFilesInit) {
         // need to init source
-        await initItems(db, source);
+        await initItems(db, source, options);
         continue;
       }
     }
@@ -49,14 +58,16 @@ export default async function (options: RunOptions) {
     const dbSource = dbSources[sourceIdentifier];
     const dbFiles = dbSource.files;
     const api = new Github(source);
-
+    const fileKeys = Object.keys(files);
+    let fileIndex = 0;
     // get file content and save it to raw data path
-    for (const file of Object.keys(files)) {
+    for (const file of fileKeys) {
+      fileIndex++;
       const dbFileMeta = dbFiles[file];
       const fileConfig = files[file];
       if (!dbFileMeta) {
         // reinit items
-        await initItems(db, source);
+        await initItems(db, source, options);
 
         break;
       }
@@ -72,7 +83,7 @@ export default async function (options: RunOptions) {
         // add max number function
         // not updated
         log.info(
-          `${sourceIdentifier}/${file} updated less than ${file_min_updated_hours} hours, skip`,
+          `${fileIndex}/${fileKeys.length}${sourceIdentifier}/${file} updated less than ${file_min_updated_hours} hours, skip`,
         );
         continue;
       } else if (!force) {
@@ -154,6 +165,18 @@ export default async function (options: RunOptions) {
         log.info(
           `${sourceIndex}/${sourceIdentifiers.length} ${sourceIdentifier}/${file} updated, ${newCount} new items, ${totalCount} total items`,
         );
+        // also update repoMeta
+
+        const metaOverrides: RepoMetaOverride = {};
+        if (source.default_branch) {
+          metaOverrides.default_branch = source.default_branch;
+        }
+        const meta = await api.getRepoMeta(metaOverrides);
+        dbSource.meta = meta;
+        dbMeta.sources[sourceIdentifier].meta = {
+          ...dbSource.meta,
+          ...meta,
+        };
       }
     }
     dbMeta.sources[sourceIdentifier].files = dbFiles;

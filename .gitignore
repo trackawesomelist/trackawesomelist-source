@@ -1,4 +1,6 @@
 /prod-current/
+/bin/
+/book/
 /current/
 /temp/
 /cache/
@@ -7,6 +9,7 @@
 /public/
 /prod-public/
 /db/
+temp-*
 # Logs
 logs
 *.log

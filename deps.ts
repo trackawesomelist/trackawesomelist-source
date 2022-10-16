@@ -29,7 +29,7 @@ export { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";
 export { DB } from "https://deno.land/x/sqlite@v3.5.0/mod.ts";
 // npm modules
 export { default as mustache } from "https://esm.sh/mustache@4.2.0";
-
+export { default as pLimit } from "https://esm.sh/p-limit@4.0.0";
 export { gfm } from "https://esm.sh/micromark-extension-gfm@2.0.1";
 export {
   gfmFromMarkdown,
@@ -50,3 +50,8 @@ export type {
   TableRow,
 } from "https://esm.sh/v92/@types/mdast@3.0.10/index.d.ts";
 export { default as jsonfeedToAtom } from "https://jspm.dev/jsonfeed-to-atom@1.2.2";
+import transliteration from "https://jspm.dev/transliteration@2.3.5";
+// @ts-ignore: npm module
+const slug = transliteration.slugify;
+export { slug };
+export { default as kebabCase } from "https://jspm.dev/lodash@4.17.21/kebabCase";

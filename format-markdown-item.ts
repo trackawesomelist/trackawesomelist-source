@@ -230,7 +230,7 @@ export default async function formatItemMarkdown<T>(
       } catch (e) {
         log.debug("url parse error", url, e);
       }
-    } else if (node.type === "link") {
+    } else if (node.type === "link" && !node.url.startsWith("#")) {
       // transform relative link to absolute link
       const url = node.url;
       if (url.startsWith("/")) {

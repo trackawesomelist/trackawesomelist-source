@@ -1,6 +1,8 @@
-import { groupBy, mustache } from "./deps.ts";
-import { fs, path } from "./deps.ts";
+import { groupBy, jsonfeedToAtom, mustache } from "./deps.ts";
+import { fs, path, pLimit } from "./deps.ts";
 import {
+  BuiltMarkdownInfo,
+  DayInfo,
   Feed,
   FeedItem,
   File,
@@ -12,6 +14,7 @@ import {
   List,
   ListItem,
   RunOptions,
+  WeekOfYear,
 } from "./interface.ts";
 import {
   INDEX_MARKDOWN_PATH,
@@ -20,11 +23,13 @@ import {
 } from "./constant.ts";
 import {
   exists,
+  formatHumanTime,
   getAllSourceCategories,
   getBaseFeed,
   getDataItemsPath,
   getDataRawPath,
   getDbMeta,
+  getDistRepoContentPath,
   getDistRepoGitUrl,
   getDistRepoPath,
   getIndexFileConfig,
@@ -35,9 +40,12 @@ import {
   getUTCDay,
   isDev,
   parseItemsFilepath,
+  pathnameToFeedUrl,
+  pathnameToFilePath,
   readJSONFile,
   readTextFile,
   sha1,
+  slug,
   walkFile,
   writeDbMeta,
   writeJSONFile,
@@ -64,22 +72,50 @@ export default async function buildMarkdown(options: RunOptions) {
   const sourcesConfig = config.sources;
   const sourcesKeys = Object.keys(sourcesConfig);
   const isBuildSite = options.html;
+  const specificSourceIdentifiers = options.sourceIdentifiers;
   const isBuildMarkdown = options.markdown;
   if (!isBuildSite && !isBuildMarkdown) {
     log.info("skip build site or markdown");
     return;
   }
   const dbMeta = await getDbMeta();
+  const dbSources = dbMeta.sources;
+  let dbItemsLatestUpdatedAt = new Date(0);
+  for (const sourceIdentifier of Object.keys(dbSources)) {
+    const source = dbSources[sourceIdentifier];
+    if (
+      new Date(source.updated_at).getTime() > dbItemsLatestUpdatedAt.getTime()
+    ) {
+      dbItemsLatestUpdatedAt = new Date(source.updated_at);
+    }
+  }
   const db = options.db;
+  const startTime = new Date();
+  log.info("start build markdown at " + startTime);
   // get last update time
   let lastCheckedAt = dbMeta.checked_at;
   if (options.force) {
     lastCheckedAt = "1970-01-01T00:00:00.000Z";
   }
-  // is any updates
-  const allUpdatedFiles: File[] = await getUpdatedFiles(options.db, {
-    since_date: new Date(lastCheckedAt),
-  });
+  let allUpdatedFiles: File[] = [];
+  if (specificSourceIdentifiers.length > 0) {
+    // build specific source
+    for (const sourceIdentifier of specificSourceIdentifiers) {
+      const sourceConfig = sourcesConfig[sourceIdentifier];
+      for (const file of Object.keys(sourceConfig.files)) {
+        allUpdatedFiles.push({
+          source_identifier: sourceIdentifier,
+          file,
+        });
+      }
+    }
+  } else {
+    // is any updates
+    allUpdatedFiles = getUpdatedFiles(options.db, {
+      since_date: new Date(lastCheckedAt),
+      source_identifiers: specificSourceIdentifiers,
+    });
+  }
   log.debug(
     `allUpdatedFiles (${allUpdatedFiles.length}): ${
       JSON.stringify(allUpdatedFiles)
@@ -135,7 +171,12 @@ export default async function buildMarkdown(options: RunOptions) {
     const htmlTemplate = await readTextFile("./templates/index.html.mu");
     let commitMessage = "Automated update\n\n";
     // start to build
-    log.info("start to build markdown...");
+    log.info(
+      "start to build sources markdown... total: " + allUpdatedFiles.length,
+    );
+    let updatedFileIndex = 0;
+    let promises: Promise<void>[] = [];
+    let limit = pLimit(10);
     for (const file of allUpdatedFiles) {
       const sourceConfig = sourcesConfig[file.source_identifier];
       const fileInfo: FileInfo = {
@@ -143,32 +184,81 @@ export default async function buildMarkdown(options: RunOptions) {
         sourceMeta: dbSources[sourceConfig.identifier],
         filepath: file.file,
       };
-      const builtInfo = await buildBySource(
-        db,
-        fileInfo,
-        options,
+      promises.push(
+        limit(
+          () => {
+            updatedFileIndex++;
+            log.info(
+              `[${updatedFileIndex}/${allUpdatedFiles.length}] ${file.source_identifier}/${file.file}`,
+            );
+            return buildBySource(
+              db,
+              fileInfo,
+              options,
+            ).then((builtInfo) => {
+              commitMessage += builtInfo.commitMessage + "\n";
+            });
+          },
+        ),
       );
-      commitMessage += builtInfo.commitMessage + "\n";
     }
+    await Promise.all(promises);
 
-    // update day file
-    const updatedDays = getUpdatedDays(db, {
-      since_date: new Date(lastCheckedAt),
-    });
+    log.info("build single markdown done");
 
-    for (const day of updatedDays) {
-      const builtInfo = await buildByTime(db, day.number, options);
-      commitMessage += builtInfo.commitMessage + "\n";
+    // only updated when there is no specific source
+    if (options.dayMarkdown) {
+      // update day file
+      const updatedDays = getUpdatedDays(db, {
+        since_date: new Date(lastCheckedAt),
+        source_identifiers: specificSourceIdentifiers,
+      });
+
+      let updatedDayIndex = 0;
+      log.info("start to build day markdown..., total: " + updatedDays.length);
+      promises = [];
+      for (const day of updatedDays) {
+        promises.push(
+          limit(() => {
+            updatedDayIndex++;
+            log.info(`[${updatedDayIndex}/${updatedDays.length}] ${day.path}`);
+
+            return buildByTime(db, day.number, options).then((builtInfo) => {
+              commitMessage += builtInfo.commitMessage + "\n";
+            });
+          }),
+        );
+      }
+      await Promise.all(promises);
+      promises = [];
+      // update week file
+      const updatedWeeks = getUpdatedWeeks(db, {
+        since_date: new Date(lastCheckedAt),
+        source_identifiers: specificSourceIdentifiers,
+      });
+      let updatedWeekIndex = 0;
+      log.info(
+        "start to build week markdown..., total: " + updatedWeeks.length,
+      );
+      for (const day of updatedWeeks) {
+        promises.push(
+          limit(() => {
+            updatedWeekIndex++;
+            log.info(
+              `[${updatedWeekIndex}/${updatedWeeks.length}] ${day.path}`,
+            );
+
+            return buildByTime(db, day.number, options).then((builtInfo) => {
+              commitMessage += builtInfo.commitMessage + "\n";
+            });
+          }),
+        );
+      }
+
+      await Promise.all(promises);
+    } else {
+      log.info("skip build day markdown");
     }
-    // update week file
-    const updatedWeeks = getUpdatedWeeks(db, {
-      since_date: new Date(lastCheckedAt),
-    });
-    for (const day of updatedWeeks) {
-      const builtInfo = await buildByTime(db, day.number, options);
-      commitMessage += builtInfo.commitMessage + "\n";
-    }
-
     const dbSourcesKeys = Object.keys(dbSources);
     const allFilesMeta: FileMetaWithSource[] = [];
     for (const sourceIdentifier of dbSourcesKeys) {
@@ -195,7 +285,7 @@ export default async function buildMarkdown(options: RunOptions) {
 
       return {
         name: sourceFileConfig.name,
-        url: sourceFileConfig.pathname + INDEX_MARKDOWN_PATH,
+        url: pathnameToFilePath(sourceFileConfig.pathname),
         source_url: getRepoHTMLURL(
           sourceConfig.url,
           sourceMeta.default_branch,
@@ -241,7 +331,7 @@ export default async function buildMarkdown(options: RunOptions) {
 
       return {
         name: sourceFileConfig.name,
-        url: sourceFileConfig.pathname + INDEX_MARKDOWN_PATH,
+        url: pathnameToFilePath(sourceFileConfig.pathname),
         source_url: getRepoHTMLURL(
           sourceConfig.url,
           sourceMeta.default_branch,
@@ -261,7 +351,7 @@ export default async function buildMarkdown(options: RunOptions) {
       const feedItems = itemsToFeedItemsByDate(lastItems, config, isDay);
 
       const indexMarkdownDistPath = path.join(
-        getDistRepoPath(),
+        getDistRepoContentPath(),
         isDay ? INDEX_MARKDOWN_PATH : `week/${INDEX_MARKDOWN_PATH}`,
       );
       const baseFeed = getBaseFeed();
@@ -269,7 +359,11 @@ export default async function buildMarkdown(options: RunOptions) {
         ...baseFeed,
         title: "Track Awesome List Updates Daily",
         description: config.site.description,
-        _nav_text: "",
+        _nav_text: `[View by Weekly](/week/README.md)· [Feed](${
+          pathnameToFeedUrl("/", true)
+        }) · 📝 ${formatHumanTime(dbItemsLatestUpdatedAt)} · ✅ ${
+          formatHumanTime(new Date(dbMeta.checked_at))
+        }`,
         _seo_title:
           `${config.site.title} - Track your Favorite Github Awesome Repo Weekly`,
         home_page_url: config.site.url,
@@ -291,7 +385,7 @@ export default async function buildMarkdown(options: RunOptions) {
           const indexFileConfig = getIndexFileConfig(sourceConfig.files);
           const item: ListItem = {
             name: indexFileConfig.name,
-            url: indexFileConfig.pathname + INDEX_MARKDOWN_PATH,
+            url: pathnameToFilePath(indexFileConfig.pathname),
           };
           return item;
         });
@@ -310,6 +404,87 @@ export default async function buildMarkdown(options: RunOptions) {
           items: [],
         },
       };
+      // build summary.md
+      let summary = "# Track Awesome List\n\n [README](README.md)\n\n";
+      let allRepos = "\n- [All Tracked List](all-repos/README.md)";
+      const recentlyText = recentlyUpdated.reduce((acc, item) => {
+        return acc + `\n  - [${item.name}](${pathnameToFilePath(item.url)})`;
+      }, "\n- [Recently Updated](recently-updated/README.md)");
+      const topReposText = sortedRepos.reduce((acc, item) => {
+        return acc + `\n  - [${item.name}](${pathnameToFilePath(item.url)})`;
+      }, "\n- [Top Repos](top/README.md)");
+      Object.keys(listGroups).forEach((category) => {
+        const sourceIdentifiers = listGroups[category];
+        allRepos += `\n  - [${category}](${slug(category)}/README.md)`;
+        const items = sourceIdentifiers.map((sourceIdentifier: string) => {
+          const sourceConfig = sourcesConfig[sourceIdentifier];
+          const indexFileConfig = getIndexFileConfig(sourceConfig.files);
+          const filename = indexFileConfig.name;
+          allRepos += `\n    - [${filename}](${
+            pathnameToFilePath(indexFileConfig.pathname)
+          })
+      - [weekly](${pathnameToFilePath(indexFileConfig.pathname + "week/")})
+      - [overview](${
+            pathnameToFilePath(indexFileConfig.pathname + "readme/")
+          })`;
+        });
+      });
+      const allDays = getUpdatedDays(db, {
+        since_date: new Date(0),
+      });
+      const allWeeks = getUpdatedWeeks(db, {
+        since_date: new Date(0),
+      });
+
+      // add days and weeks to summary
+
+      // group days by utc year, month
+      const daysByYear = groupBy(allDays, "year");
+      let daysText = "\n- [Days](daily/README.md)";
+      Object.keys(daysByYear).sort((a, b) => Number(b) - Number(a))
+        .forEach(
+          (year) => {
+            daysText += `\n  - [${year}](${year}/month/README.md)`;
+            const daysByMonth = groupBy(daysByYear[year], "month");
+            Object.keys(daysByMonth).sort((a, b) => Number(b) - Number(a))
+              .forEach((month) => {
+                daysText +=
+                  `\n    - [${month}](${year}/${month}/day/README.md)`;
+                const days = daysByMonth[month] as DayInfo[];
+                days.sort((a: DayInfo, b: DayInfo) =>
+                  Number(b.day) - Number(a.day)
+                )
+                  .forEach(
+                    (day: DayInfo) => {
+                      daysText +=
+                        `\n      - [${day.name}](${day.path}/README.md)`;
+                    },
+                  );
+              });
+          },
+        );
+      // group weeks by utc year, month
+      // add weeks to summary
+      const weeksByYear = groupBy(allWeeks, "year");
+      let weeksText = "\n- [Weeks](week/README.md)";
+      Object.keys(weeksByYear).sort((a, b) => Number(b) - Number(a))
+        .forEach((year) => {
+          weeksText += `\n  - [${year}](${year}/week/README.md)`;
+          const weeks = weeksByYear[year] as WeekOfYear[];
+          weeks.sort((a, b) => Number(b.week) - Number(a.week)).forEach(
+            (week: WeekOfYear) => {
+              weeksText += `\n    - [${week.name}](${week.path}/README.md)`;
+            },
+          );
+        });
+
+      summary += recentlyText + topReposText + allRepos + daysText + weeksText;
+      const summaryMarkdownDistPath = path.join(
+        getDistRepoContentPath(),
+        "SUMMARY.md",
+      );
+      await Deno.writeTextFile(summaryMarkdownDistPath, summary);
+
       // write to index
       const itemMarkdownContentRendered = mustache.render(
         rootTemplateContent,
@@ -361,6 +536,21 @@ export default async function buildMarkdown(options: RunOptions) {
         });
       }
     }
+
+    // copy readme to dist
+    const contentReadmePath = path.join(
+      getDistRepoContentPath(),
+      "README.md",
+    );
+    const readmeDistPath = path.join(getDistRepoPath(), "README.md");
+    await Deno.copyFile(contentReadmePath, readmeDistPath);
+    const endTime = new Date();
+
+    log.info(
+      `build success, cost ${
+        ((endTime.getTime() - startTime.getTime()) / 1000 / 60).toFixed(2)
+      }ms`,
+    );
 
     if (options.push) {
       // try to push updates

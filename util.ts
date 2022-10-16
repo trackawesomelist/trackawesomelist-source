@@ -2,9 +2,11 @@ import {
   Content,
   DateTimeFormatter,
   fs,
+  kebabCase,
   path,
   posixPath,
   Root,
+  slug as slugFn,
   titleCase,
   toMarkdown,
   u,
@@ -28,7 +30,13 @@ import {
   Source,
   WeekOfYear,
 } from "./interface.ts";
-import { DEV_DOMAIN, INDEX_MARKDOWN_PATH, PROD_DOMAIN } from "./constant.ts";
+import {
+  CONTENT_DIR,
+  DEFAULT_CATEGORY,
+  DEV_DOMAIN,
+  INDEX_MARKDOWN_PATH,
+  PROD_DOMAIN,
+} from "./constant.ts";
 import { NotFound } from "./error.ts";
 export const SECOND = 1e3;
 export const MINUTE = SECOND * 60;
@@ -109,8 +117,8 @@ export const parseWeekInfo = (week: number): WeekOfYear => {
     year,
     week: weekOfYear,
     number: week,
-    path: `${year}/${addZero(weekOfYear)}`,
-    id: `${year}-${addZero(weekOfYear)}`,
+    path: `${year}/${weekOfYear}`,
+    id: `${year}-${weekOfYear}`,
     name: weekToRange(week),
     date,
   };
@@ -198,9 +206,9 @@ export function weekOfYear(date: Date): WeekOfYear {
     year: weekYear,
     week: week,
     path: `${workingDate.getUTCFullYear()}/${week}`,
-    number: Number(`${weekYear}${addZero(week)}`),
+    number: Number(`${weekYear}${week}`),
     date: weekNumberToDate(Number(`${weekYear}${addZero(week)}`)),
-    id: `${weekYear}-${addZero(week)}`,
+    id: `${weekYear}-${week}`,
     name: weekToRange(week),
   };
 }
@@ -407,7 +415,7 @@ export function getFormatedSource(
     };
   }
 
-  const defaultCategory = "Miscellaneous";
+  const defaultCategory = DEFAULT_CATEGORY;
   const sourceConfig: Source = {
     identifier: key,
     url,
@@ -462,7 +470,10 @@ export function getPublicPath() {
   }
 }
 export function getDistRepoPath() {
-  return path.join(getDistPath(), "repo");
+  return path.join(getDistPath());
+}
+export function getDistRepoContentPath() {
+  return path.join(getDistPath(), CONTENT_DIR);
 }
 export function getStaticPath() {
   return "static";
@@ -653,12 +664,42 @@ export function getUTCDay(date: Date): string {
 export function urlToFilePath(url: string): string {
   const urlObj = new URL(url);
   const pathname = urlObj.pathname;
+  return pathnameToFilePath(pathname);
+}
+export function pathnameToFilePath(pathname: string): string {
   // is ends with /
   if (pathname.endsWith("/")) {
-    return posixPath.join(pathname.slice(1), INDEX_MARKDOWN_PATH);
+    return posixPath.join(
+      "/",
+      CONTENT_DIR,
+      pathname.slice(1),
+      INDEX_MARKDOWN_PATH,
+    );
   } else {
-    return pathname.slice(1);
+    return posixPath.join("/", CONTENT_DIR, pathname.slice(1));
   }
+}
+export function pathnameToWeekFilePath(pathname: string): string {
+  return posixPath.join(
+    "/",
+    CONTENT_DIR,
+    pathname.slice(1),
+    "week",
+    INDEX_MARKDOWN_PATH,
+  );
+}
+export function pathnameToOverviewFilePath(pathname: string): string {
+  return posixPath.join(
+    "/",
+    CONTENT_DIR,
+    pathname.slice(1),
+    "readme",
+    INDEX_MARKDOWN_PATH,
+  );
+}
+export function pathnameToFeedUrl(pathname: string, isDay: boolean): string {
+  const domain = getDomain();
+  return domain + posixPath.join(pathname, isDay ? "" : "week", "feed.xml");
 }
 export async function got(
   url: string,
@@ -699,8 +740,12 @@ export async function writeCacheFile(
   url: string,
   method: string,
   body: string,
-  expired = 60 * 60 * 24 * 1000,
+  expired?: number,
 ) {
+  expired = expired || 1000 * 60 * 60 * 24 * 3;
+  if (isDev()) {
+    expired = expired || 1000 * 60 * 60 * 24 * 30;
+  }
   const [cacheFileFolder, cacheFilePath] = getCachedFileInfo(
     url,
     method,
@@ -828,3 +873,7 @@ export function getBaseFeed(): BaseFeed {
     language: "en",
   };
 }
+export const slug = function (tag: string): string {
+  // @ts-ignore: npm module
+  return slugFn(kebabCase(tag));
+};

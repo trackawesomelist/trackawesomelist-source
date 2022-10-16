@@ -1,0 +1,34 @@
+[book]
+title = "Track Awesome List"
+description = "Track Awesome List"
+src = "dist/content"
+language = "zh"
+authors = ["Owen Young"]
+
+[build]
+create-missing = true
+
+[preprocessor.morsels]
+command = "mdbook-morsels"
+
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+
+[output.html]
+git-repository-url = "https://github.com/theowenyoung/blog"
+edit-url-template = "https://github.com/theowenyoung/blog/edit/main/{path}"
+
+[output.html.fold]
+enable = true    # whether or not to enable section folding
+level = 1 
+[output.html.search]
+enable = false
+[output.html.print]
+enable = false
+
+# Plugin configuration options (optional)
+[output.morsels]
+# Relative path to a Morsels indexer configuration file from the project directory.
+# The config file will also automatically be created here if it dosen't exist.
+config = "morsels_config.json"

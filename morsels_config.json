@@ -1,0 +1,46 @@
+{
+  "indexing_config": {
+    "exclude": [
+      "index.html",
+      "print.html",
+      "404.html",
+      "morsels_config.json"
+    ],
+    "include": [
+      "**/readme/index.html"
+    ],
+    "loaders": {
+      "HtmlLoader": {
+        "exclude_selectors": [
+          "script,style,#sidebar,#menu-bar"
+        ],
+        "selectors": [
+          {
+            "attr_map": {},
+            "field_name": "title",
+            "selector": "title"
+          },
+          {
+            "attr_map": {},
+            "field_name": "h1",
+            "selector": "h1"
+          },
+          {
+            "attr_map": {},
+            "field_name": "body",
+            "selector": "body"
+          },
+          {
+            "attr_map": {
+              "id": "headingLink"
+            },
+            "field_name": "heading",
+            "selector": "h1,h2,h3,h4,h5,h6"
+          }
+        ],
+        "type": "HtmlLoader"
+      }
+    }
+  },
+  "preset": "small"
+}

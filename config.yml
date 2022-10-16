@@ -5,27 +5,230 @@ site:
   description:
     "Track daily updates of more than 500 awesome projects, including selfhosted, rust, javascript, swift, python, react, vue,  free for dev, flutter, go etc."
 sources:
-  ripienaar/free-for-dev:
-  public-apis/public-apis:
+  mjhea0/awesome-flask:
+    category: Back-End Development
+    default_branch: main
     files:
       README.md:
         index: true
-        options:
-          type: table
-          max_heading_level: 3
-  sindresorhus/awesome:
+  veggiemonk/awesome-docker:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  iJackUA/awesome-vagrant:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  uralbash/awesome-pyramid:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  PerfectCarl/awesome-play1:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  FriendsOfCake/awesome-cakephp:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sitepoint-editors/awesome-symfony:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  pehapkari/awesome-symfony-education:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  chiraggude/awesome-laravel:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fukuball/Awesome-Laravel-Education:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  livewire/awesome-tall-stack:
+    category: Back-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  gramantin/awesome-rails:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  hothero/awesome-rails-gem:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  phalcon/awesome-phalcon:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  phanan/htaccess:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fcambus/nginx-resources:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  stve/awesome-dropwizard:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  unicodeveloper/awesome-lumen:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  pmuens/awesome-serverless:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  PhantomYdn/awesome-wicket:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vert-x3/vertx-awesome:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  shuaibiyy/awesome-terraform:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vapor-community/awesome-vapor:
+    category: Back-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  ucg8j/awesome-dash:
+    category: Back-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mjhea0/awesome-fastapi:
+    category: Back-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kalaiser/awesome-cdk:
+    category: Back-End Development
+    default_branch: main
     files:
       readme.md:
         index: true
-        name: Awesome List
+  kdeldycke/awesome-iam:
+    category: Back-End Development
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  nekofar/awesome-slim:
+    category: Back-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  gofiber/awesome-fiber:
+    category: Back-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  newTendermint/awesome-bigdata:
+    category: Big Data
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  youngwookim/awesome-hadoop:
+    category: Big Data
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  igorbarinov/awesome-data-engineering:
+    category: Big Data
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  manuzhang/awesome-streaming:
+    category: Big Data
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  awesome-spark/awesome-spark:
+    category: Big Data
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  ambster-public/awesome-qlik:
+    category: Big Data
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sduff/awesome-splunk:
+    category: Big Data
+    default_branch: master
+    files:
+      README.md:
+        index: true
   EbookFoundation/free-programming-books:
     category: Books
     files:
       books/free-programming-books-langs.md:
         index: true
-        name: Free Programming Books (English, By Programming Language)
+        name: 'Free Programming Books (English, By Programming Language)'
       books/free-programming-books-subjects.md:
-        name: Free Programming Books (English, By Subjects)
+        name: 'Free Programming Books (English, By Subjects)'
         options:
           max_heading_level: 3
       books/free-programming-books-zh.md:
@@ -45,12 +248,974 @@ sources:
         options:
           max_heading_level: 3
           min_heading_level: 4
-          
-  vinta/awesome-python:
-    category: Programming Languages
-  awesome-selfhosted/awesome-selfhosted:
-  avelino/awesome-go:
-    category: Programming Languages
+  dariubs/GoBooks:
+    category: Books
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  RomanTsegelskyi/rbooks:
+    category: Books
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  TalAter/awesome-book-authoring:
+    category: Books
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sger/ElixirBooks:
+    category: Books
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  opencompany/awesome-open-company:
+    category: Business
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mmccaff/PlacesToPostYourStartup:
+    category: Business
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  domenicosolazzo/awesome-okr:
+    category: Business
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  LappleApple/awesome-leading-and-managing:
+    category: Business
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mezod/awesome-indie:
+    category: Business
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  nglgzz/awesome-clean-tech:
+    category: Business
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  wardley-maps-community/awesome-wardley-maps:
+    category: Business
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  RayBB/awesome-social-enterprise:
+    category: Business
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kdeldycke/awesome-engineering-team-management:
+    category: Business
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  agamm/awesome-developer-first:
+    category: Business
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kdeldycke/awesome-billing:
+    category: Business
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  prakhar1989/awesome-courses:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  academic/awesome-datascience:
+    category: Computer Science
+    default_branch: live
+    files:
+      README.md:
+        index: true
+  siboehm/awesome-learn-datascience:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  josephmisiti/awesome-machine-learning:
+    category: Computer Science
+  ujjwalkarn/Machine-Learning-Tutorials:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  arbox/machine-learning-with-ruby:
+    category: Computer Science
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  likedan/Awesome-CoreML-Models:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  h2oai/awesome-h2o:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  SE-ML/awesome-seml:
+    category: Computer Science
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  georgezouq/awesome-ai-in-finance:
+    category: Computer Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  n2cholas/awesome-jax:
+    category: Computer Science
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  altamiracorp/awesome-xai:
+    category: Computer Science
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  dav009/awesome-spanish-nlp:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  arbox/nlp-with-ruby:
+    category: Computer Science
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  seriousran/awesome-qa:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  accelerated-text/awesome-nlg:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  theimpossibleastronaut/awesome-linguistics:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sobolevn/awesome-cryptography:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  pFarb/awesome-crypto-papers:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jbhuang0604/awesome-computer-vision:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ChristosChristofidis/awesome-deep-learning:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jtoy/awesome-tensorflow:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  aaronhma/awesome-tensorflow-js:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  margaretmz/awesome-tensorflow-lite:
+    category: Computer Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  terryum/awesome-deep-learning-papers:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  guillaume-chevalier/Awesome-Deep-Learning-Resources:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  kjw0612/awesome-deep-vision:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ossu/computer-science:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  lucasviola/awesome-functional-programming:
+    category: Computer Science
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  dspinellis/awesome-msr:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  analysis-tools-dev/static-analysis:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  harpribot/awesome-information-retrieval:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  desireevl/awesome-quantum-computing:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mostafatouny/awesome-theoretical-computer-science:
+    category: Computer Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  jyguyomarch/awesome-conversational-ai:
+    category: Computer Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  umbraco-community/awesome-umbraco:
+    category: Content Management Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  refinerycms-contrib/awesome-refinerycms:
+    category: Content Management Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  springload/awesome-wagtail:
+    category: Content Management Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  nirgn975/awesome-drupal:
+    category: Content Management Systems
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  craftcms/awesome:
+    category: Content Management Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  MartinMiles/awesome-sitecore:
+    category: Content Management Systems
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  wernerkrauss/awesome-silverstripe-cms:
+    category: Content Management Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  directus-community/awesome-directus:
+    category: Content Management Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  collective/awesome-plone:
+    category: Content Management Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  numetriclabz/awesome-db:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  shlomi-noach/awesome-mysql:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mark-rushakoff/awesome-influxdb:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  neueda/awesome-neo4j:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ramnes/awesome-mongodb:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  d3viant0ne/awesome-rethinkdb:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mohataher/awesome-tinkerpop:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  dhamaniasad/awesome-postgres:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  quangv/awesome-couchdb:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  rayokota/awesome-hbase:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  erictleung/awesome-nosql-guides:
+    category: Databases
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mgramin/awesome-db-tools:
+    category: Databases
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vaticle/typedb-awesome:
+    category: Databases
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  Anant/awesome-cassandra:
+    category: Databases
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  taosdata/awesome-tdengine:
+    category: Databases
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  igorbarinov/awesome-bitcoin:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vhpoet/awesome-ripple:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  machinomy/awesome-non-financial-blockchain:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  tleb/awesome-mastodon:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ttumiel/Awesome-Ethereum:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  steven2358/awesome-blockchain-ai:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  DanailMinchev/awesome-eosio:
+    category: Decentralized Systems
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  chainstack/awesome-corda:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  msmolyakov/awesome-waves:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  substrate-developer-hub/awesome-substrate:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  golemfactory/awesome-golem:
+    category: Decentralized Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  friedger/awesome-stacks-chain:
+    category: Decentralized Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  aorumbayev/awesome-algorand:
+    category: Decentralized Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  croqaz/awesome-decentralized:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  redecentralize/alternative-internet:
+    category: Decentralized Systems
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sindresorhus/quick-look-plugins:
+    category: Development Environment
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  jondot/awesome-devenv:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  webpro/awesome-dotfiles:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  alebcay/awesome-shell:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jorgebucaran/awsm.fish:
+    category: Development Environment
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  agarrharr/awesome-cli-apps:
+    category: Development Environment
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  unixorn/awesome-zsh-plugins:
+    category: Development Environment
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  phillipadsmith/awesome-github:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  stefanbuck/awesome-browser-extensions-for-github:
+    category: Development Environment
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  tiimgreen/github-cheat-sheet:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  matchai/awesome-pinned-gists:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  arslanbilal/git-cheat-sheet:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  git-tips/tips:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  CompSciLauren/awesome-git-hooks:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  moul/awesome-ssh:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  tvvocold/FOSS-for-Dev:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  janikvonrotz/awesome-powershell:
+    category: Development Environment
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  alfred-workflows/awesome-alfred-workflows:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  k4m4/terminals-are-sexy:
+    category: Development Environment
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  sdras/awesome-actions:
+    category: Development Environment
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  rothgar/awesome-tmux:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  awesome-foss/awesome-sysadmin:
+    category: Development Environment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  dreikanter/sublime-bookmarks:
+    category: Editors
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mhinz/vim-galore:
+    category: Editors
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  rockerBOO/awesome-neovim:
+    category: Editors
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mehcode/awesome-atom:
+    category: Editors
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  viatsko/awesome-vscode:
+    category: Editors
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sindresorhus/awesome-scifi:
+    category: Entertainment
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  RichardLitt/awesome-fantasy:
+    category: Entertainment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ayr-ton/awesome-geek-podcasts:
+    category: Entertainment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  zudochkin/awesome-newsletters:
+    category: Entertainment
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  danvoyce/awesome-creative-tech-events:
+    category: Events
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ildoc/awesome-italy-events:
+    category: Events
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  awkward/awesome-netherlands-events:
+    category: Events
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  addyosmani/es6-tools:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  davidsonfellipe/awesome-wpo:
+    category: Front-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  lvwzhen/tools:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  awesome-css-group/awesome-css:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  addyosmani/critical-path-css-tools:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  davidtheclark/scalable-css-reading-list:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  AllThingsSmitty/must-watch-css:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  AllThingsSmitty/css-protips:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  troxler/awesome-css-frameworks:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  enaqx/awesome-react:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  expede/awesome-relay:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  glauberfc/awesome-react-hooks:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mateusortiz/webcomponents-the-right-way:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Granze/awesome-polymer:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  PatrickJS/awesome-angular:
+    category: Front-End Development
+    default_branch: gh-pages
+    files:
+      README.md:
+        index: true
+  sadcitizen/awesome-backbone:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  diegocard/awesome-html5:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  willianjusten/awesome-svg:
+    category: Front-End Development
+    default_branch: master
+    files:
+      Readme.md:
+        index: true
+  raphamorim/awesome-canvas:
+    category: Front-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  dnbard/awesome-knockout:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  petk/awesome-dojo:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  noahbuscher/inspire:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ember-community-russia/awesome-ember:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  cjwirth/awesome-ios-ui:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Urigo/awesome-meteor:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sturobson/BEM-resources:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  afonsopacifer/awesome-flexbox:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  deanhume/typography:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sachin1092/awesome-material:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  wbkd/awesome-d3:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jonathandion/awesome-emails:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  petk/awesome-jquery:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  AllThingsSmitty/jquery-tips-everyone-should-know:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  notthetup/awesome-webaudio:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  pazguille/offline-first:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  agarrharr/awesome-static-website-services:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  cyclejs-community/awesome-cyclejs:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  dok/awesome-text-editing:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fliptheweb/motion-ui-design:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
   vuejs/awesome-vue:
     category: Front-End Development
     files:
@@ -58,36 +1223,624 @@ sources:
         index: true
         options:
           min_heading_level: 3
-  rust-unofficial/awesome-rust:
-    category: Programming Languages
+  sadcitizen/awesome-marionette:
+    category: Front-End Development
+    default_branch: master
     files:
       README.md:
         index: true
-        options:
-          min_heading_level: 3
-  josephmisiti/awesome-machine-learning:
-    category: Computer Science
-  jaywcjlove/awesome-mac:
-    category: Platforms
-  MunGell/awesome-for-beginners:
-  paragonie/awesome-appsec:
+  aurelia-contrib/awesome-aurelia:
+    category: Front-End Development
+    default_branch: master
     files:
       README.md:
         index: true
-        options:
-          min_heading_level: 2
-          type: heading
-          heading_level: 3
-          max_heading_level: 2
-  stevemao/awesome-git-addons:
+  zingchart/awesome-charting:
+    category: Front-End Development
+    default_branch: master
     files:
       README.md:
         index: true
-        options:
-          min_heading_level: 2
-          type: heading
-          heading_level: 3
-          max_heading_level: 2
+  candelibas/awesome-ionic:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ChromeDevTools/awesome-chrome-devtools:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  jdrgomes/awesome-postcss:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  nikgraf/awesome-draft-js:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  TalAter/awesome-service-workers:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  TalAter/awesome-progressive-web-apps:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  choojs/awesome-choo:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  brillout/awesome-redux:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  browserify/awesome-browserify:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  Famolus/awesome-sass:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  websemantics/awesome-ant-design:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  LucasBassetti/awesome-less:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sjfricke/awesome-webgl:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  preactjs/awesome-preact:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  jbmoelker/progressive-enhancement-resources:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  unicodeveloper/awesome-nextjs:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  web-padawan/awesome-lit:
+    category: Front-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  automata/awesome-jamstack:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  henrikwirth/awesome-wordpress-gatsby:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  myshov/awesome-mobile-web-development:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  lauthieb/awesome-storybook:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  AdrienTorris/awesome-blazor:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  csabapalfi/awesome-pagespeed-metrics:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  aniftyco/awesome-tailwindcss:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  seed-rs/awesome-seed-rs:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  pajaydev/awesome-web-performance-budget:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sergey-pimenov/awesome-web-animation:
+    category: Front-End Development
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  jetli/awesome-yew:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  nadunindunil/awesome-material-ui:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  componently-com/awesome-building-blocks-for-web-apps:
+    category: Front-End Development
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  TheComputerM/awesome-svelte:
+    category: Front-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  klaufel/awesome-design-systems:
+    category: Front-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  innocenzi/awesome-inertiajs:
+    category: Front-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mdbootstrap/awesome-mdbootstrap:
+    category: Front-End Development
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  ellisonleao/magictools:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  hzoo/awesome-gametalks:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  godotengine/awesome-godot:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  michelpereira/awesome-open-source-games:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  RyanNielson/awesome-unity:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  hkirat/awesome-chess:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  love2d-community/awesome-love2d:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  pico-8/awesome-PICO-8:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  gbdev/awesome-gbdev:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ConstructCommunity/awesome-construct:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  stetso/awesome-gideros:
+    category: Gaming
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  bs-community/awesome-minecraft:
+    category: Gaming
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  leomaurodesenv/game-datasets:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Dvergar/awesome-haxe-gamedev:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  rafaskb/awesome-libgdx:
+    category: Gaming
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  playcanvas/awesome-playcanvas:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  radek-sprta/awesome-game-remakes:
+    category: Gaming
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  flame-engine/awesome-flame:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mhxion/awesome-discord-communities:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  tobiasvl/awesome-chip-8:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  michelpereira/awesome-games-of-coding:
+    category: Gaming
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  Strift/awesome-esports:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kiloreux/awesome-robotics:
+    category: Hardware
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  HQarroum/awesome-iot:
+    category: Hardware
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  kitspace/awesome-electronics:
+    category: Hardware
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  rabschi/awesome-beacon:
+    category: Hardware
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  gitfrage/guitarspecs:
+    category: Hardware
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  beardicus/awesome-plotters:
+    category: Hardware
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  protontypes/awesome-robotic-tooling:
+    category: Hardware
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  szenergy/awesome-lidar:
+    category: Hardware
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  delftopenhardware/awesome-open-hardware:
+    category: Hardware
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  caufieldjh/awesome-bioie:
+    category: Health and Social Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  eselkin/awesome-computational-neuroscience:
+    category: Health and Social Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  folkswhocode/awesome-diversity:
+    category: Health and Social Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  maehr/awesome-digital-history:
+    category: Health and Social Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  KimberlyMunoz/empathy-in-engineering:
+    category: Health and Social Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  kakoni/awesome-healthcare:
+    category: Health and Social Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  humanetech-community/awesome-humane-tech:
+    category: Health and Social Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  dreamingechoes/awesome-mental-health:
+    category: Health and Social Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  analyticalmonk/awesome-neuroscience:
+    category: Health and Social Science
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  karlhorky/learn-to-program:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  matteofigus/awesome-speaking:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  lucasviola/awesome-tech-videos:
+    category: Learn
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  dive-into-machine-learning/dive-into-machine-learning:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  watson/awesome-computer-history:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  HollyAdele/awesome-programming-for-kids:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  yrgo/awesome-educational-games:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  micromata/awesome-javascript-learning:
+    category: Learn
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  micromata/awesome-css-learning:
+    category: Learn
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  dend/awesome-product-management:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  liuchong/awesome-roadmaps:
+    category: Learn
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  JoseDeFreitas/awesome-youtubers:
+    category: Learn
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  shime/creative-commons-media:
+    category: Media
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  brabadu/awesome-fonts:
+    category: Media
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  chrissimpkins/codeface:
+    category: Media
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  neutraltone/awesome-stock-resources:
+    category: Media
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  davisonio/awesome-gif:
+    category: Media
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  ciconia/awesome-music:
+    category: Media
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  44bits/awesome-opensource-documents:
+    category: Media
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  willianjusten/awesome-audio-visualization:
+    category: Media
+    default_branch: master
+    files:
+      Readme.md:
+        index: true
+  ebu/awesome-broadcasting:
+    category: Media
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Siilwyn/awesome-pixel-art:
+    category: Media
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  transitive-bullshit/awesome-ffmpeg:
+    category: Media
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  notlmn/awesome-icons:
+    category: Media
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  stingalleman/awesome-audiovisual:
+    category: Media
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mfkl/awesome-vlc:
+    category: Media
+    default_branch: main
+    files:
+      README.md:
+        index: true
   agarrharr/awesome-macos-screensavers:
     files:
       readme.md:
@@ -101,6 +1854,725 @@ sources:
     files:
       source.md:
         index: true
+  ramitsurana/awesome-kubernetes:
+    files:
+      docs/README.md:
+        index: true
+  gaerae/awesome-algorithms-education:
+    files:
+      readme-en.md:
+        index: true
+  stevemao/awesome-git-addons:
+    files:
+      README.md:
+        index: true
+        options:
+          min_heading_level: 2
+          type: heading
+          heading_level: 3
+          max_heading_level: 2
+  paragonie/awesome-appsec:
+    files:
+      README.md:
+        index: true
+        options:
+          min_heading_level: 2
+          type: heading
+          heading_level: 3
+          max_heading_level: 2
+  writing-resources/awesome-scientific-writing:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  burningtree/awesome-json:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  tmcw/awesome-geojson:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jdorfman/awesome-json-datasets:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  secretGeek/AwesomeCSV:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  AchoArnold/discount-for-student-dev:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  kyleterry/awesome-radio:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sindresorhus/awesome:
+    files:
+      readme.md:
+        index: true
+        name: Awesome List
+  newTendermint/awesome-analytics:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  marmelab/awesome-rest:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  cicdops/awesome-ciandcd:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mmcgrana/services-engineering:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ripienaar/free-for-dev: null
+  cyberglot/awesome-answers:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  diessica/awesome-sketch:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  melvin0008/awesome-projects-boilerplates:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  matiassingers/awesome-readme:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  NARKOZ/guides:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  kilimchoi/engineering-blogs:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  awesome-selfhosted/awesome-selfhosted: null
+  DataDaoDe/awesome-foss-apps:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  alferov/awesome-gulp:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  sindresorhus/amas:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  ibaaj/awesome-OpenSourcePhotography:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  eug/awesome-opengl:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  chentsulin/awesome-graphql:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  APA-Technology-Division/urban-and-regional-planning-resources:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  CUTR-at-USF/awesome-transit:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  emptymalei/awesome-research:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  javierluraschi/awesome-dataviz:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mfornos/awesome-microservices:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jagracey/Awesome-Unicode:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Codepoints/awesome-codepoints:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  MunGell/awesome-for-beginners: null
+  gamontal/awesome-katas:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  drewrwilson/toolsforactivism:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  dylanrees/citizen-science:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  hobbyquaker/awesome-mqtt:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  cristianoliveira/awesome4girls:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vorpaljs/awesome-vorpal:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vinjn/awesome-vulkan:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  egeerardyn/awesome-LaTeX:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  antontarasenko/awesome-economics:
+    category: Miscellaneous
+    default_branch: default
+    files:
+      readme.md:
+        index: true
+  sublimino/awesome-funny-markov:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  danielecook/Awesome-Bioinformatics:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  hsiaoyi0504/awesome-cheminformatics:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Siddharth11/Colorful:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  scholtzm/awesome-steam:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  hackerkid/bots:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  dastergon/awesome-sre:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  xen0l/awesome-dtrace:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  bvolpato/awesome-userscripts:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  tobiasbueschel/awesome-pokemon:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  exAspArk/awesome-chatops:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  kdeldycke/awesome-falsehood:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  heynickc/awesome-ddd:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  woop/awesome-quantified-self:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.MD:
+        index: true
+  hbokh/awesome-saltstack:
+    category: Miscellaneous
+    default_branch: develop
+    files:
+      README.md:
+        index: true
+  nicolesaidy/awesome-web-design:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  terkelg/awesome-creative-coding:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  aviaryan/awesome-no-login-web-apps:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  johnjago/awesome-free-software:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  podo/awesome-framer:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  BubuAnabelas/awesome-markdown:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mislavcimpersak/awesome-dev-fun:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  run-as-root/awesome-magento2:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  xiaohanyu/awesome-tikz:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  johnjago/awesome-ad-free:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  angrykoala/awesome-esolangs:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  roaldnefs/awesome-prometheus:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  homematic-community/awesome-homematic:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sfischer13/awesome-ledger:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  thomasbnt/awesome-web-monetization:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  johnjago/awesome-uncopyright:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Zheaoli/awesome-coins:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  zachflower/awesome-open-source-supporters:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  robinstickel/awesome-design-principles:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  johnjago/awesome-theravada:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  inspectit-labs/awesome-inspectit:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  xxczaki/awesome-calculators:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  ZYSzys/awesome-captcha:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  markusschanta/awesome-jupyter:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  andrewda/awesome-frc:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  karlhorky/awesome-speakers:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  edm00se/awesome-board-games:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  uraimo/awesome-software-patreons:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ecohealthalliance/awesome-parasite:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jzarca01/awesome-food:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  nschloe/awesome-scientific-computing:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  ScaleLeap/awesome-amazon-seller:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  brycejohnston/awesome-agriculture:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ttt30ga/awesome-product-design:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  catalinmiron/awesome-prisma:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  simskij/awesome-software-architecture:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  stevesong/awesome-connectivity-info:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  stackshareio/awesome-stacks:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  cytodata/awesome-cytodata:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  davisonio/awesome-irc:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  cenoura/awesome-ads:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  philsturgeon/awesome-earth:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  gruhn/awesome-naming:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  iipc/awesome-web-archiving:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  schlessera/awesome-wp-cli:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  mourarthur/awesome-credit-modeling:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  ansible-community/awesome-ansible:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  keller-mark/awesome-biological-visualizations:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  make-github-pseudonymous-again/awesome-qr-code:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  sdassow/awesome-veganism:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mbiesiad/awesome-translations:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  dersvenhesse/awesome-scriptable:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  msub2/awesome-webxr:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  osmlab/awesome-openstreetmap:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  inoue0426/awesome-computational-biology:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  antdimot/awesome-lowcode:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  tortuvshin/open-source-flutter-apps:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  AboutRSS/ALL-about-RSS:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  soruly/awesome-acg:
+    category: Miscellaneous
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  public-apis/public-apis:
+    files:
+      README.md:
+        index: true
+        options:
+          type: table
+          max_heading_level: 3
   nayafia/awesome-maintainers:
     files:
       README.md:
@@ -160,11 +2632,1060 @@ sources:
         index: true
         options:
           type: table
-  ramitsurana/awesome-kubernetes:
+  sdnds-tw/awesome-sdn:
+    category: Networking
+    default_branch: master
     files:
-      docs/README.md:
+      README.md:
         index: true
-  gaerae/awesome-algorithms-education:
+  briatte/awesome-network-analysis:
+    category: Networking
+    default_branch: master
     files:
-      readme-en.md:
+      README.md:
+        index: true
+  caesar0301/awesome-pcaptools:
+    category: Networking
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  rtckit/awesome-rtc:
+    category: Networking
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  eozer/awesome-snmp:
+    category: Networking
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  sindresorhus/awesome-nodejs:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  bcoe/awesome-cross-platform-nodejs:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  dypsilon/frontend-dev-bookmarks:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vsouza/awesome-ios:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  JStumpp/awesome-android:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  weblancaster/awesome-IoT-hybrid:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sindresorhus/awesome-electron:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  busterc/awesome-cordova:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jondot/awesome-react-native:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  XamSome/awesome-xamarin:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  inputsh/awesome-linux:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Friz-zy/awesome-linux-containers:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  zoidbergwill/awesome-ebpf:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  PandaFoss/Awesome-Arch:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  AppImageCommunity/awesome-appimage:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  jaywcjlove/awesome-mac:
+    category: Platforms
+  serhii-londar/open-source-mac-os-apps:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  yenchenlin/awesome-watchos:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  deephacks/awesome-jvm:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  mailtoharshit/awesome-salesforce:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  donnemartin/awesome-aws:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Awesome-Windows/Awesome:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ipfs/awesome-ipfs:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fuse-compound/awesome-fuse:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ianstormtaylor/awesome-heroku:
+    category: Platforms
+    default_branch: master
+    files:
+      Readme.md:
+        index: true
+  thibmaek/awesome-raspberry-pi:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  JesseTG/awesome-qt:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fregante/Awesome-WebExtensions:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  vitalets/awesome-smart-tv:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Kazhnuz/awesome-gnome:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  francoism90/awesome-kde:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  quozd/awesome-dotnet:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  thangchung/awesome-dotnet-core:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ironcev/awesome-roslyn:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  miguelmota/awesome-amazon-alexa:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jonleibowitz/awesome-digitalocean:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  frenck/awesome-home-assistant:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  victorshinya/awesome-ibmcloud:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jthegedus/awesome-firebase:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  fkromer/awesome-ros2:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  adafruit/awesome-adafruitio:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  irazasyed/awesome-cloudflare:
+    category: Platforms
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  ravirupareliya/awesome-actions-on-google:
+    category: Platforms
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  agucova/awesome-esp:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  denolib/awesome-deno:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  balintkissdev/awesome-dos:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  nix-community/awesome-nix:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  stn1slv/awesome-integration:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  naimo84/awesome-nodered:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  zenitysec/awesome-low-code:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  riderx/awesome-capacitor:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  Esri/awesome-arcgis-developers:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  sorrycc/awesome-javascript:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  wbinnssmith/awesome-promises:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  standard/awesome-standard:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  bolshchikov/js-must-watch:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  loverajoel/jstips:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Kikobeats/awesome-network-js:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  parro-it/awesome-micro-npm-packages:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  feross/awesome-mad-science:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  maxogden/maintenance-modules:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  sindresorhus/awesome-npm:
+    category: Programming Languages
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  avajs/awesome-ava:
+    category: Programming Languages
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  dustinspecker/awesome-eslint:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  stoeffel/awesome-fp-js:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sindresorhus/awesome-observables:
+    category: Programming Languages
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  RyanZim/awesome-npm-scripts:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  Richienb/awesome-ponyfills:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  matteocrippa/awesome-swift:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  uraimo/Awesome-Swift-Playgrounds:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vinta/awesome-python:
+    category: Programming Languages
+  timofurrer/awesome-asyncio:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  faroit/awesome-python-scientific-audio:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  adafruit/awesome-circuitpython:
+    category: Programming Languages
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  krzjoa/awesome-python-data-science:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  typeddjango/awesome-python-typing:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mcauser/awesome-micropython:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  rust-unofficial/awesome-rust:
+    category: Programming Languages
+    files:
+      README.md:
+        index: true
+        options:
+          min_heading_level: 3
+  krispo/awesome-haskell:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  passy/awesome-purescript:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  avelino/awesome-go:
+    category: Programming Languages
+  lauris/awesome-scala:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  tindzk/awesome-scala-native:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  markets/awesome-ruby:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  razum2um/awesome-clojure:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  hantuzun/awesome-clojurescript:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  h4cc/awesome-elixir:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sporto/awesome-elm:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  drobakowski/awesome-erlang:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  svaksha/Julia.jl:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  LewisJEllis/awesome-lua:
+    category: Programming Languages
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  inputsh/awesome-c:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fffaraz/awesome-cpp:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  qinwf/awesome-R:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  iamericfletcher/awesome-r-learning-resources:
+    category: Programming Languages
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  dlang-community/awesome-d:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  CodyReichert/awesome-cl:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  GustavBertram/awesome-common-lisp-learning:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  hachiojipm/awesome-perl:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  kdabir/awesome-groovy:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  yissachar/awesome-dart:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  akullpp/awesome-java:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  eleventigers/awesome-rxjava:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ocaml-community/awesome-ocaml:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  seancoyne/awesome-coldfusion:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  rabbiabram/awesome-fortran:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ziadoz/awesome-php:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jakoch/awesome-composer:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Fr0sT-Brutal/awesome-pascal:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ahkscript/awesome-AutoHotkey:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  J2TEAM/awesome-AutoIt:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  veelenga/awesome-crystal:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sfischer13/awesome-frege:
+    category: Programming Languages
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  onqtam/awesome-cmake:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  robinrodricks/awesome-actionscript3:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sfischer13/awesome-eta:
+    category: Programming Languages
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  joaomilho/awesome-idris:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ohenley/awesome-ada:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  ebraminio/awesome-qsharp:
+    category: Programming Languages
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  koolamusic/awesome-imba:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  desiderantes/awesome-vala:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  coq-community/awesome-coq:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  vlang/awesome-v:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  catdevnull/awesome-zig:
+    category: Programming Languages
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  rust-embedded/awesome-embedded-rust:
+    category: Programming Languages
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sbilly/awesome-security:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  apsdehal/awesome-ctf:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  brootware/awesome-cyber-security-university:
+    category: Security
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  rshipp/awesome-malware-analysis:
+    category: Security
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  ashishb/android-security-awesome:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  carpedm20/awesome-hacking:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  daviddias/awesome-hacking-locations:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  paralax/awesome-honeypots:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  meirwah/awesome-incident-response:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jaredthecoder/awesome-vehicle-security:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  qazbnm456/awesome-web-security:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fabacab/awesome-lockpicking:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fabacab/awesome-cybersecurity-blueteam:
+    category: Security
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  cpuu/awesome-fuzzing:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  fkie-cad/awesome-embedded-and-iot-security:
+    category: Security
+    default_branch: master
+    files:
+      readme.md:
+        index: true
+  bakke92/awesome-gdpr:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  TaptuIT/awesome-devsecops:
+    category: Security
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  packing-box/awesome-executable-packing:
+    category: Security
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  Karneades/awesome-malware-persistence:
+    category: Security
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kareniel/awesome-evm-security:
+    category: Security
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  thomasdarimont/awesome-keycloak:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  TheJambo/awesome-testing:
+    category: Testing
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  mojoaxel/awesome-regression-testing:
+    category: Testing
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  christian-bromann/awesome-selenium:
+    category: Testing
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  SrinivasanTarget/awesome-appium:
+    category: Testing
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  sindresorhus/awesome-tap:
+    category: Testing
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  aliesbelik/awesome-jmeter:
+    category: Testing
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  grafana/awesome-k6:
+    category: Testing
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  mxschmitt/awesome-playwright:
+    category: Testing
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  aliesbelik/awesome-gatling:
+    category: Testing
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  papers-we-love/papers-we-love:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  JanVanRyswyck/awesome-talks:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  tayllan/awesome-algorithms:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  enjalot/algovis:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  owainlewis/awesome-artificial-intelligence:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  marcobiedermann/search-engine-optimization:
+    category: Theory
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  rossant/awesome-math:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  passy/awesome-recursion-schemes:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  erwanlemerrer/awesome-audit-algorithms:
+    category: Theory
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  YuzheSHI/awesome-agi-cocosci:
+    category: Theory
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  matiassingers/awesome-slack:
+    category: Work
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  filipelinhares/awesome-slack:
+    category: Work
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  lukasz-madon/awesome-remote-job:
+    category: Work
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  jyguyomarch/awesome-productivity:
+    category: Work
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  tramcar/awesome-job-boards:
+    category: Work
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  DopplerHQ/awesome-interview-questions:
+    category: Work
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  joho/awesome-code-review:
+    category: Work
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  lodthe/awesome-internships:
+    category: Work
+    default_branch: main
+    files:
+      README.md:
         index: true

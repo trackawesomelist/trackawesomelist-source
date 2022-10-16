@@ -30,6 +30,7 @@ import {
   WeekOfYear,
 } from "./interface.ts";
 import {
+  CONTENT_DIR,
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
   RECENTLY_UPDATED_COUNT,
@@ -43,8 +44,8 @@ import {
   getDataRawPath,
   getDayNumber,
   getDbMeta,
+  getDistRepoContentPath,
   getDistRepoGitUrl,
-  getDistRepoPath,
   getDomain,
   getItemsDetails,
   getPublicPath,
@@ -56,6 +57,10 @@ import {
   parseDayInfo,
   parseItemsFilepath,
   parseWeekInfo,
+  pathnameToFeedUrl,
+  pathnameToFilePath,
+  pathnameToOverviewFilePath,
+  pathnameToWeekFilePath,
   readJSONFile,
   readTextFile,
   sha1,
@@ -95,7 +100,6 @@ export default async function main(
   // get items
   const items = getItems(db, sourceIdentifier, originalFilepath);
   const dbFileMeta = dbSource.files[originalFilepath];
-  const distRepoPath = getDistRepoPath();
   const domain = getDomain();
   const isBuildMarkdown = runOptions.markdown;
   const isBuildHtml = runOptions.html;
@@ -120,15 +124,19 @@ export default async function main(
   for (let i = 0; i < 2; i++) {
     const baseFeed = getBaseFeed();
     const isDay = i === 0;
-    let currentNavHeader =
-      `[ Daily / [Weekly](/${sourceIdentifier}/week/${INDEX_MARKDOWN_PATH}) / [Overview](/${sourceIdentifier}/readme/${INDEX_MARKDOWN_PATH}) ]`;
+    let currentNavHeader = `[ Daily / [Weekly](${
+      pathnameToWeekFilePath(fileConfig.pathname)
+    }) / [Overview](${pathnameToOverviewFilePath(fileConfig.pathname)}) ]`;
     if (!isDay) {
-      currentNavHeader =
-        `[ [Daily](/${sourceIdentifier}/${INDEX_MARKDOWN_PATH}) / Weekly / [Overview](/${sourceIdentifier}/readme/${INDEX_MARKDOWN_PATH}) ]`;
+      currentNavHeader = `[ [Daily](${
+        pathnameToFilePath(fileConfig.pathname)
+      }) / Weekly / [Overview](${
+        pathnameToOverviewFilePath(fileConfig.pathname)
+      }) ]`;
     }
-    const nav = `[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](/${relativeFolder}/${
-      isDay ? "" : "week/"
-    }feed.json) · [Repo](${
+    const nav = `[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](${
+      pathnameToFeedUrl(fileConfig.pathname, isDay)
+    }) · [Repo](${
       getRepoHTMLURL(repoMeta.url, repoMeta.default_branch, originalFilepath)
     }) · ${sourceCategory} · ⭐ ${
       formatNumber(repoMeta.stargazers_count)
@@ -137,6 +145,7 @@ export default async function main(
     } 
 
 ${currentNavHeader}
+
 `;
     const feedTitle = `Track ${titleCase(repoMeta.name)}  ${
       isDay ? "Daily" : "Weekly"
@@ -198,7 +207,7 @@ ${currentNavHeader}
       } else {
         dayInfo = parseWeekInfo(Number(key));
       }
-      const slug = isDay ? dayInfo.path + "/" : dayInfo.path + "/week/";
+      const slug = dayInfo.path + "/";
       const itemUrl = `${domain}/${dayInfo.path}/#${slugy(fileConfig.name)}`;
       const url = `${domain}/${slug}`;
       const feedItem: FeedItem = {
@@ -242,7 +251,7 @@ ${feed._nav_text}
 
 ${
       feedItems.map((item) => {
-        return `## [${item.title}](/${item._external_slug}${INDEX_MARKDOWN_PATH})
+        return `## [${item.title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})
 
 ${item.content_text}
 `;
@@ -252,7 +261,7 @@ ${item.content_text}
 `;
     if (isBuildMarkdown) {
       const markdownDistPath = path.join(
-        getDistRepoPath(),
+        getDistRepoContentPath(),
         dailyRelativeFolder,
         INDEX_MARKDOWN_PATH,
       );
@@ -330,11 +339,14 @@ ${item.content_text}
   const api = new Github(sourceConfig);
   const readmeContent = await api.getConent(filepath);
 
-  const currentNavHeader =
-    `[ [Daily](/${relativeFolder}/${INDEX_MARKDOWN_PATH}) / [Weekly](/${relativeFolder}/week/${INDEX_MARKDOWN_PATH}) / Overview ]`;
+  const currentNavHeader = `[ [Daily](${
+    pathnameToFilePath(fileConfig.pathname)
+  }) / [Weekly](${pathnameToWeekFilePath(fileConfig.pathname)}) / Overview ]`;
 
   const nav = `
-[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](/${relativeFolder}/feed.json) · [Repo](${
+[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](${
+    pathnameToFeedUrl(fileConfig.pathname, true)
+  }) · [Repo](${
     getRepoHTMLURL(repoMeta.url, repoMeta.default_branch, filepath)
   }) · ⭐ ${formatNumber(repoMeta.stargazers_count)} ·  📝 ${
     formatHumanTime(new Date(dbFileMeta.updated_at))
@@ -345,7 +357,7 @@ ${currentNavHeader}
 ---
 `;
   const overviewMarkdownPath = path.join(
-    getDistRepoPath(),
+    getDistRepoContentPath(),
     relativeFolder,
     "readme",
     INDEX_MARKDOWN_PATH,

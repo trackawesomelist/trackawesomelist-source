@@ -2,6 +2,7 @@ import { CSS, mustache, path, serve, serveFile } from "./deps.ts";
 import {
   getDbMeta,
   getDistPath,
+  getDistRepoContentPath,
   getDistRepoPath,
   getPublicPath,
   readTextFile,
@@ -25,7 +26,7 @@ export default async function buildHtmlFile(
   const finalPath = path.join(
     sourceFilePath,
   );
-  const fileRelativePath = path.relative(getDistRepoPath(), finalPath);
+  const fileRelativePath = path.relative(getDistRepoContentPath(), finalPath);
   try {
     const fileContent = await readTextFile(finalPath);
     const body = render(fileContent);

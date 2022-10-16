@@ -124,8 +124,10 @@ export interface CliOptions {
   force?: boolean;
   push?: boolean;
   autoInit?: boolean;
+  fetchRepoUpdates: boolean;
   markdown: boolean;
   fetch: boolean;
+  dayMarkdown: boolean;
   html?: boolean;
   serve: boolean;
   port: number;

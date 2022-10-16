@@ -9,17 +9,24 @@ export default async function tal() {
     .env("FORCE=<enable:boolean>", "Enable force update.")
     .env("PUSH=<enable:boolean>", "Enable push to remote repo.")
     .env("LIMIT=<enable:number>", "Limit sources to build, for debug.")
+    .env("DAY_MARKDOWN=<disable:boolean>", "Disable day markdown output.")
+    .env(
+      "FETCH_REPO_UPDATES=<disable:boolean>",
+      "fetch repo updates when init there is a cache. for dev fast test",
+    )
     .option("-d, --debug", "Enable debug output.")
     .option("-f, --force", "Force update.")
     .option("-p, --push", "Push markdown to remote.")
     .option("--no-fetch", "Don't fetch remote sources.")
     .option("--no-markdown", "do not build markdown file.")
+    .option("--no-day-markdown", "do not build day markdown file.")
+    .option("--no-fetch-repo-updates", "do not fetch repo updates.")
     .option("--html", "Build html files.")
     .option("--no-serve", "Serve site.")
     .option("--limit <limit:number>", "Limit number of sources to process.")
     .option(
-      "--no-auto-init",
-      "do not auto init db meta, for avoid load remote db failed",
+      "--auto-init",
+      "auto init db meta, for avoid load remote db failed",
     ).option(
       "--port <port:number>",
       "Serve site port.",
@@ -29,7 +36,6 @@ export default async function tal() {
     )
     .arguments("[files...:string]")
     .action((options, ...args) => {
-      console.log(options, args);
       main(options, ...args);
     })
     .parse(Deno.args);

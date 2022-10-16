@@ -1,7 +1,6 @@
 import { CSS, mustache, path, serve, serveFile } from "./deps.ts";
 
 import {
-  getDistPath,
   getDistRepoPath,
   getStaticPath,
   readTextFile,
@@ -17,8 +16,9 @@ export default async function serveSite(runOptions: RunOptions) {
   const htmlTemplate = await readTextFile("./templates/index.html.mu");
   const handler = async (request: Request): Promise<Response> => {
     const filepath = urlToFilePath(request.url);
+
     log.debug(`Request for ${filepath}`);
-    let localPath = BASE_PATH + "/" + filepath;
+    let localPath = BASE_PATH + filepath;
     if (!filepath.endsWith(".md")) {
       // serve static fold
       localPath = path.join(staticpath, filepath);

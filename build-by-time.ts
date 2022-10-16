@@ -26,6 +26,7 @@ import {
   getDataItemsPath,
   getDataRawPath,
   getDbMeta,
+  getDistRepoContentPath,
   getDistRepoGitUrl,
   getDistRepoPath,
   getDomain,
@@ -36,6 +37,7 @@ import {
   parseDayInfo,
   parseItemsFilepath,
   parseWeekInfo,
+  pathnameToFilePath,
   readJSONFile,
   readTextFile,
   sha1,
@@ -100,7 +102,9 @@ export default async function main(
   feedDescription = `Awesome list updated on ${title}`;
 
   const feedItems = itemsToFeedItems(items, config);
-  const nav = `[Home](/) | [Week](/week/)`;
+  const nav = `[Home](/) | [Week](/week/)
+
+<!-- toc -->`;
   const feed: Feed = {
     ...baseFeed,
     title: feedTitle,
@@ -131,7 +135,7 @@ ${item.content_text}
   if (isBuildMarkdown) {
     // build daily markdown
     // sort
-    const distRepoPath = getDistRepoPath();
+    const distRepoPath = getDistRepoContentPath();
     const dailyMarkdownPath = path.join(
       distRepoPath,
       distMarkdownRelativePath,
@@ -302,8 +306,9 @@ export function itemsToFeedItemsByDate(
       const firstSourceItem = categoryGroup[key][0];
       const sourceFileConfig = sourcesConfig[firstSourceItem.source_identifier]
         .files[firstSourceItem.file];
-      groupMarkdown +=
-        `#### [${sourceFileConfig.name}](${sourceFileConfig.pathname}${INDEX_MARKDOWN_PATH})\n\n`;
+      groupMarkdown += `#### [${sourceFileConfig.name}](${
+        pathnameToFilePath(sourceFileConfig.pathname)
+      })\n\n`;
       // group by category
       const categoryItems = categoryGroup[key];
       const categoryGroupByCategory = groupBy(
@@ -347,8 +352,6 @@ export function itemsToFeedItemsByDate(
     const feedItem: FeedItem = {
       id: itemUrl,
       title: dayInfo.name,
-      _title_id: dayInfo.id,
-      _title_suffix: "",
       _slug: slug,
       url: itemUrl,
       content_text: groupMarkdown,

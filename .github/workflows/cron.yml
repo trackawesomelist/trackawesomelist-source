@@ -1,0 +1,104 @@
+name: cron tasks
+on:
+  repository_dispatch:
+    types: [schedule]
+  workflow_dispatch:
+    inputs:
+      force_all:
+        default: "0"
+        description: "Force all sources to build"
+        type: string
+        required: false
+      source:
+        default: ""
+        description: "source to build"
+        type: string
+        required: false
+      limit:
+        description: "limit count, for debug"
+        required: false
+        default: ""
+  push:
+    branches:
+      - main
+    # paths-ignore:
+    #   - "**.md"
+  # schedule:
+  #   - cron: "*/30 * * * *"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    concurrency: build
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+      - name: install wrangler
+        run: npm install -g wrangler
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.deno
+            ~/.cache/deno
+          key: ${{ runner.os }}-deno-${{ hashFiles('**/*deps.ts') }}
+      - run: make prod-load
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
+          AWS_ENDPOINT: ${{secrets.AWS_ENDPOINT}}
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       prod-cache
+      #     key: cache-${{ hashFiles('**/*deps.ts') }}
+      # - run: make install
+      - run: make prod-build
+        id: source
+        continue-on-error: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
+          AWS_ENDPOINT: ${{secrets.AWS_ENDPOINT}}
+          # TWITTER_BEARER_TOKEN: ${{secrets.TWITTER_BEARER_TOKEN}}
+          # TWITTER_ACCESS_TOKEN: ${{secrets.TWITTER_ACCESS_TOKEN}}
+          # TWITTER_ACCESS_TOKEN_SECRET: ${{secrets.TWITTER_ACCESS_TOKEN_SECRET}}
+          # TWITTER_CONSUMER_SECRET: ${{secrets.TWITTER_CONSUMER_SECRET}}
+          # PRODUCTHUNT_TOKEN: ${{secrets.PRODUCTHUNT_TOKEN}}
+          # TRANSLATE_COUNT: ${{ github.event.inputs.translate_count }}
+          # TRANSLATE_TIMEOUT: ${{ github.event.inputs.translate_timeout }}
+          FORCE: ${{ github.event.inputs.force_all }}
+          LIMIT: ${{ github.event.inputs.limit }}
+      - name: upload files
+        run: make prod-upload
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
+          AWS_ENDPOINT: ${{secrets.AWS_ENDPOINT}}
+          DUFS_URL: ${{secrets.DUFS_URL}}
+          DUFS_SECRETS: ${{secrets.DUFS_SECRETS}}
+      # - name: upload temp folder to github action for debug
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: temp
+      #     path: temp
+      #     if-no-files-found: ignore
+      - name: throw if source failed
+        if: steps.source.outcome == 'failure'
+        run: |
+          echo "::error::Source build failed"
+          exit 1
+      - name: Publish pages
+        if: true
+        run: make publish
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+          CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}

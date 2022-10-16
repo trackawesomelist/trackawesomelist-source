@@ -39,7 +39,7 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
   }
   const isBuildHtml = cliOptions.html || false;
   const autoInit = cliOptions.autoInit;
-  if (autoInit || (autoInit === undefined && isDev())) {
+  if (autoInit || (isDev())) {
     // check is db meta exists
     const dbMetaFilePath = getDbMetaFilePath();
     if (!await Deno.stat(dbMetaFilePath).catch(() => false)) {
@@ -76,6 +76,11 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
     db,
     ...cliOptions,
   };
+  log.info(
+    `run options: ${
+      JSON.stringify({ sourceIdentifiers, ...cliOptions }, null, 2)
+    }`,
+  );
   if (cliOptions.fetch) {
     await fetchSources(runOptions);
   } else {

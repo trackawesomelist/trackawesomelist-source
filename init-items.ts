@@ -3,8 +3,10 @@ import {
   Item,
   ItemsJson,
   RepoMetaOverride,
+  RunOptions,
   Source,
 } from "./interface.ts";
+
 import Github from "./adapters/github.ts";
 import {
   exists,
@@ -21,7 +23,11 @@ import { DB, fs, path } from "./deps.ts";
 import parser from "./parser/mod.ts";
 import getGitBlame from "./get-git-blame.ts";
 import { updateItems } from "./db.ts";
-export default async function initItems(db: DB, source: Source) {
+export default async function initItems(
+  db: DB,
+  source: Source,
+  options: RunOptions,
+) {
   // first get repo meta info from api
   const api = new Github(source);
   const metaOverrides: RepoMetaOverride = {};
@@ -40,17 +46,19 @@ export default async function initItems(db: DB, source: Source) {
   // then git clone the entire repo, and parse the files
   if (isExist) {
     // try to update
-    const args: string[] = [
-      "--work-tree",
-      repoPath,
-      "--git-dir",
-      path.join(repoPath, ".git"),
-    ];
+    if (options.fetchRepoUpdates) {
+      const args: string[] = [
+        "--work-tree",
+        repoPath,
+        "--git-dir",
+        path.join(repoPath, ".git"),
+      ];
 
-    const p = Deno.run({
-      cmd: ["git"].concat(args).concat(["pull"]),
-    });
-    await p.status();
+      const p = Deno.run({
+        cmd: ["git"].concat(args).concat(["pull"]),
+      });
+      await p.status();
+    }
   } else {
     // ensure parent folder exists
     await fs.ensureDir(path.dirname(repoPath));

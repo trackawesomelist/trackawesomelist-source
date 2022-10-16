@@ -9,6 +9,15 @@ start:
 .Phony: startall
 startall:
 	deno run -A tal.ts
+
+
+.Phony: build
+build:
+	deno run -A tal.ts --html --no-serve
+
+.Phony: prod-build
+prod-build:
+	PROD=1 deno run -A tal.ts --html --no-serve
 .Phony: startsource
 startsource:
 	deno run -A tal.ts ${source}
@@ -38,13 +47,13 @@ fetchsource:
 
 .Phony: buildmarkdown
 buildmarkdown:
-	FORCE=1 deno run -A tal.ts --no-fetch --source "ripienaar/free-for-dev"
+	FORCE=1 deno run -A tal.ts --no-fetch --no-serve "ripienaar/free-for-dev"
 .Phony: buildsource
 buildsource:
-	FORCE=1 deno run -A tal.ts --no-fetch --source ${source}
+	FORCE=1 deno run -A tal.ts --no-serve --no-fetch ${source}
 .Phony: buildmarkdownall
 buildmarkdownall:
-	deno run -A tal.ts --no-fetch
+	FORCE=1 deno run -A tal.ts --no-fetch --no-serve
 
 
 .Phony: serve
@@ -89,3 +98,33 @@ buildsiteall:
 .Phony: servepublic
 servepublic:
 	deno run -A https://deno.land/std@0.159.0/http/file_server.ts ./public -p 8000
+
+
+.Phony: install
+install:
+	./scripts/install-mdbook.sh
+
+.Phony: servebook
+servebook:
+	./bin/mdbook serve --port 8000
+
+.Phony: buildbook
+buildbook:
+	./bin/mdbook build 
+.Phony: publish
+publish:
+	wrangler pages publish public --project-name trackawesomelist
+
+
+.Phony: upload
+upload:
+	aws s3 cp ./db  s3://trackawesomelist/db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"
+.Phony: prod-upload
+prod-upload:
+	aws s3 cp ./prod-db  s3://trackawesomelist/prod-db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"
+.Phony: load
+load:
+	aws s3 cp s3://trackawesomelist/db ./db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"
+.Phony: prod-load
+prod-load:
+	aws s3 cp s3://trackawesomelist/prod-db ./prod-db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"

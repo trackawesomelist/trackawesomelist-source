@@ -59,6 +59,7 @@ export function updateItems(
 
 export interface UpdatedItemsParam {
   since_date: Date;
+  source_identifiers?: string[];
 }
 export interface ItemsResult {
   items: Record<string, Item>;
@@ -291,16 +292,23 @@ export function getUpdatedFiles(
   options: UpdatedItemsParam,
 ): File[] {
   let sql = "select file,source_identifier from items where ";
+  const params: Record<string, string | number> = {};
   if (options.since_date) {
     sql += "checked_at > :checked_at ";
+    params.checked_at = options.since_date?.getTime();
+  }
+  if (options.source_identifiers && options.source_identifiers.length > 0) {
+    if (options.since_date) {
+      sql += "and ";
+    }
+    sql += "source_identifiers in (:source_identifiers) ";
+    params.source_identifiers = options.source_identifiers?.join(",");
   }
   sql += "group by file,source_identifier";
   log.debug(`getUpdatedFiles sql: ${sql}`);
   const rows = db.query(
     sql,
-    {
-      checked_at: options.since_date?.getTime(),
-    },
+    params,
   );
 
   const files: File[] = [];
@@ -317,16 +325,25 @@ export function getUpdatedDays(
   options: UpdatedItemsParam,
 ): DayInfo[] {
   let sql = "select updated_day from items where ";
+  const params: Record<string, string | number> = {};
   if (options.since_date) {
     sql += "checked_at > :checked_at ";
+    params.checked_at = options.since_date?.getTime();
+  }
+  if (options.source_identifiers && options.source_identifiers.length > 0) {
+    if (options.since_date) {
+      sql += "and ";
+    }
+    sql += "source_identifier in (:source_identifiers) ";
+    params.source_identifiers = options.source_identifiers?.join(",");
   }
   sql += "group by updated_day";
+
   log.debug(`getUpdatedFiles sql: ${sql}`);
+
   const rows = db.query(
     sql,
-    {
-      checked_at: options.since_date?.getTime(),
-    },
+    params,
   );
 
   const files: DayInfo[] = [];
@@ -341,16 +358,23 @@ export function getUpdatedWeeks(
   options: UpdatedItemsParam,
 ): WeekOfYear[] {
   let sql = "select updated_week from items where ";
+  const params: Record<string, string | number> = {};
   if (options.since_date) {
     sql += "checked_at > :checked_at ";
+    params.checked_at = options.since_date?.getTime();
+  }
+  if (options.source_identifiers && options.source_identifiers.length > 0) {
+    if (options.since_date) {
+      sql += "and ";
+    }
+    sql += "source_identifier in (:source_identifiers) ";
+    params.source_identifiers = options.source_identifiers?.join(",");
   }
   sql += "group by updated_week";
   log.debug(`getUpdatedFiles sql: ${sql}`);
   const rows = db.query(
     sql,
-    {
-      checked_at: options.since_date?.getTime(),
-    },
+    params,
   );
 
   const files: WeekOfYear[] = [];
