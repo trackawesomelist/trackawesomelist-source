@@ -8,9 +8,9 @@ export default class github extends API {
   apiPrefix = `https://api.github.com`;
   constructor(source: Source) {
     super(source);
-    const githubToken = Deno.env.get("GITHUB_TOKEN");
+    const githubToken = Deno.env.get("PERSONAL_GITHUB_TOKEN");
     if (!githubToken) {
-      throw new Error("GITHUB_TOKEN is not set");
+      throw new Error("PERSONAL_GITHUB_TOKEN is not set");
     }
     const headerAuthorization = `token ${githubToken}`;
     this.headers = new Headers({
