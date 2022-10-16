@@ -66,8 +66,18 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
       source_category TEXT NOT NULL,
       checked_at INT NOT NULL
     );
-    CREATE INDEX IF NOT EXISTS idx_item
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_item
     ON items (sha1, file, source_identifier);
+    CREATE TABLE IF NOT EXISTS files (
+      id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      sha1 TEXT NOT NULL,
+      markdown TEXT NOT NULL,
+      file TEXT NOT NULL,
+      updated_at INT NOT NULL,
+      source_identifier TEXT NOT NULL
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_file
+    ON files (file, source_identifier);
   `);
 
   const runOptions: RunOptions = {

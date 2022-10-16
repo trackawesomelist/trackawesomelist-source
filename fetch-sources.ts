@@ -16,7 +16,7 @@ import {
 } from "./interface.ts";
 import initItems from "./init-items.ts";
 import Github from "./adapters/github.ts";
-import { getItems, updateItems } from "./db.ts";
+import { getItems, updateFile, updateItems } from "./db.ts";
 export default async function (options: RunOptions) {
   const sourceIdentifiers = options.sourceIdentifiers;
   const force = options.forceFetch;
@@ -154,6 +154,7 @@ export default async function (options: RunOptions) {
           }
         }
 
+        await updateFile(db, fileInfo, contentSha1, content);
         updateItems(db, fileInfo, newItems);
 
         dbFiles[file] = {

@@ -1,81 +1,51 @@
 import {
   CSS,
-  fromMarkdown,
-  gfm,
-  gfmFromMarkdown,
-  gfmToMarkdown,
+  DB,
   groupBy,
   jsonfeedToAtom,
   mustache,
+  path,
   titleCase,
-  toMarkdown,
 } from "./deps.ts";
-import { DB, fs, path } from "./deps.ts";
-import Github from "./adapters/github.ts";
 import {
-  BuildOptions,
   BuiltMarkdownInfo,
   DayInfo,
-  DbMetaSource,
   Feed,
   FeedItem,
-  File,
   FileInfo,
-  FileMeta,
-  FileMetaWithSource,
-  Item,
   ItemDetail,
-  ItemsJson,
   RunOptions,
-  Source,
   WeekOfYear,
 } from "./interface.ts";
 import {
   CONTENT_DIR,
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
-  RECENTLY_UPDATED_COUNT,
 } from "./constant.ts";
 import {
-  exists,
   formatHumanTime,
   formatNumber,
   getBaseFeed,
-  getDataItemsPath,
-  getDataRawPath,
-  getDayNumber,
   getDbMeta,
   getDistRepoContentPath,
-  getDistRepoGitUrl,
   getDomain,
   getItemsDetails,
   getPublicPath,
   getRepoHTMLURL,
-  getUTCDay,
-  getWeekNumber,
-  isDev,
-  isMock,
   parseDayInfo,
-  parseItemsFilepath,
   parseWeekInfo,
   pathnameToFeedUrl,
   pathnameToFilePath,
   pathnameToOverviewFilePath,
   pathnameToWeekFilePath,
-  readJSONFile,
   readTextFile,
-  sha1,
   slugy,
   startDateOfWeek,
-  walkFile,
-  writeDbMeta,
   writeJSONFile,
   writeTextFile,
 } from "./util.ts";
 import log from "./log.ts";
-import { getItems, getUpdatedFiles } from "./db.ts";
-import formatMarkdownItem from "./format-markdown-item.ts";
-import buildHtml from "./build-html.ts";
+import { getFile, getItems } from "./db.ts";
 import renderMarkdown from "./render-markdown.ts";
 let htmlIndexTemplateContent = "";
 export default async function main(
@@ -331,8 +301,7 @@ ${feed._nav_text}${
   // build overview markdown
   // first get readme content
 
-  const api = new Github(sourceConfig);
-  const readmeContent = await api.getConent(filepath);
+  const readmeContent = getFile(db, fileInfo);
 
   const currentNavHeader = `[ [Daily](${
     pathnameToFilePath(fileConfig.pathname)
@@ -363,27 +332,13 @@ ${currentNavHeader}
     "readme",
     INDEX_HTML_PATH,
   );
-  const tree = fromMarkdown(readmeContent, "utf8", {
-    extensions: [gfm()],
-    mdastExtensions: [gfmFromMarkdown()],
-  });
-
-  // format link etc.
-  const overviewMarkdownTree = await formatMarkdownItem(tree, fileInfo);
-  const overviewMarkdownContent = toMarkdown(
-    overviewMarkdownTree,
-    {
-      extensions: [gfmToMarkdown()],
-    },
-  );
-
   const readmeRendered = `# ${repoMeta.name}
 
 ${repoMeta.description}
 
 ${nav}
 
-${overviewMarkdownContent}
+${readmeContent}
 `;
   await writeTextFile(overviewMarkdownPath, readmeRendered);
   log.debug(`build ${overviewMarkdownPath} success`);

@@ -1,7 +1,6 @@
 import {
   FileInfo,
   Item,
-  ItemsJson,
   RepoMetaOverride,
   RunOptions,
   Source,
@@ -12,17 +11,15 @@ import {
   exists,
   getCachePath,
   getDbMeta,
-  getItemsFilePath,
   readTextFile,
   sha1,
   writeDbMeta,
-  writeJSONFile,
 } from "./util.ts";
 import log from "./log.ts";
 import { DB, fs, path } from "./deps.ts";
 import parser from "./parser/mod.ts";
 import getGitBlame from "./get-git-blame.ts";
-import { updateItems } from "./db.ts";
+import { updateFile, updateItems } from "./db.ts";
 export default async function initItems(
   db: DB,
   source: Source,
@@ -149,6 +146,7 @@ export default async function initItems(
     // await writeJSONFile(formatedPath, itemsJson);
     // write to db
 
+    updateFile(db, fileInfo, contentSha1, content);
     updateItems(db, fileInfo, items);
 
     log.info(

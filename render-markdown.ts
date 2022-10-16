@@ -14,7 +14,6 @@ import {
   writeTextFile,
 } from "./util.ts";
 import _log from "./log.ts";
-import formatMarkdownItem from "./format-markdown-item.ts";
 import { gfm, gfmFromMarkdown, gfmToMarkdown } from "./deps.ts";
 import { CONTENT_DIR, INDEX_MARKDOWN_PATH } from "./constant.ts";
 export default function renderMarkdown(content: string): string {

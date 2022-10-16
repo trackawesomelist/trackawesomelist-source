@@ -1,6 +1,14 @@
-import { DB } from "./deps.ts";
+import {
+  DB,
+  fromMarkdown,
+  gfm,
+  gfmFromMarkdown,
+  gfmToMarkdown,
+  toMarkdown,
+} from "./deps.ts";
 import { DayInfo, File, FileInfo, Item, WeekOfYear } from "./interface.ts";
 import log from "./log.ts";
+import formatMarkdownItem from "./format-markdown-item.ts";
 import {
   getDayNumber,
   getWeekNumber,
@@ -8,6 +16,63 @@ import {
   parseWeekInfo,
 } from "./util.ts";
 export type StringOrNumber = string | number;
+export function getFile(db: DB, fileInfo: FileInfo): string {
+  const sql =
+    `SELECT markdown FROM files WHERE source_identifier = ? AND file = ?`;
+  const result = db.query(sql, [
+    fileInfo.sourceConfig.identifier,
+    fileInfo.filepath,
+  ]);
+  if (result.length === 0) {
+    throw new Error(
+      "file not found: " + fileInfo.sourceConfig.identifier + " " +
+        fileInfo.filepath,
+    );
+  }
+  return result[0][0] as string;
+}
+export async function updateFile(
+  db: DB,
+  fileInfo: FileInfo,
+  sha1: string,
+  content: string,
+) {
+  const file = fileInfo.filepath;
+  const sourceConfig = fileInfo.sourceConfig;
+  const sourceIdentifier = sourceConfig.identifier;
+  // check items length
+  const tree = fromMarkdown(content, "utf8", {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
+
+  // format link etc.
+  const overviewMarkdownTree = await formatMarkdownItem(tree, fileInfo);
+  const overviewMarkdownContent = toMarkdown(
+    overviewMarkdownTree,
+    {
+      extensions: [gfmToMarkdown()],
+    },
+  );
+  // delete all old items then write new items;
+  db.query(
+    "delete from files where source_identifier = :source_identifier and file = :file",
+    {
+      source_identifier: sourceIdentifier,
+      file: file,
+    },
+  );
+  const insertQuery =
+    "insert into files (source_identifier, file,markdown, updated_at, sha1)  values (:source_identifier, :file, :markdown, :updated_at, :sha1)";
+  // tets write new items
+  db.query(insertQuery, {
+    source_identifier: sourceIdentifier,
+    file: file,
+    markdown: overviewMarkdownContent,
+    updated_at: Date.now(),
+    sha1: sha1,
+  });
+}
 export function updateItems(
   db: DB,
   fileInfo: FileInfo,
