@@ -72,13 +72,13 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
 
   const runOptions: RunOptions = {
     config: config,
-    sourceIdentifiers,
+    sourceIdentifiers: args,
     db,
     ...cliOptions,
   };
   log.info(
     `run options: ${
-      JSON.stringify({ sourceIdentifiers, ...cliOptions }, null, 2)
+      JSON.stringify({ sourceIdentifiers: args, ...cliOptions }, null, 2)
     }`,
   );
   if (cliOptions.fetch) {
