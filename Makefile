@@ -115,6 +115,10 @@ buildbook:
 publish:
 	wrangler pages publish public --project-name trackawesomelist
 
+.Phony: prod-publish
+prod-publish:
+	wrangler pages publish pord-public --project-name trackawesomelist
+
 
 .Phony: upload
 upload:
