@@ -15,7 +15,6 @@ export function updateItems(
 ) {
   const file = fileInfo.filepath;
   const sourceConfig = fileInfo.sourceConfig;
-  const sourceMeta = fileInfo.sourceMeta;
   const sourceIdentifier = sourceConfig.identifier;
   const sourceCategory = sourceConfig.category;
   const itemKeys = Object.keys(items);
@@ -177,7 +176,6 @@ export function getLatestItemsByDay(
 ): Record<string, Item> {
   const sql =
     "select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items order by updated_at desc limit :size";
-  const items: Record<string, Item> = {};
   const groups: Record<string, Item[]> = {};
   for (
     const [

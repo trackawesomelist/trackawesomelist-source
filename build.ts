@@ -567,7 +567,7 @@ export default async function buildMarkdown(options: RunOptions) {
           "--work-tree",
           distRepoPath,
           "add",
-          "**/*.md",
+          ":/*.md",
         ],
       });
       await p1.status();
@@ -580,6 +580,7 @@ export default async function buildMarkdown(options: RunOptions) {
           "--work-tree",
           distRepoPath,
           "commit",
+          "--author='github-actions[bot]  <github-actions[bot]@users.noreply.github.com>'",
           "-m",
           commitMessage,
         ],
