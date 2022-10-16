@@ -117,7 +117,7 @@ publish:
 
 .Phony: prod-publish
 prod-publish:
-	wrangler pages publish pord-public --project-name trackawesomelist
+	wrangler pages publish prod-public --project-name trackawesomelist
 
 
 .Phony: upload
