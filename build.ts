@@ -54,8 +54,8 @@ import {
 import log from "./log.ts";
 import {
   getItems,
-  getLatestItemsByDay,
-  getLatestItemsByWeek,
+  getItemsByDays,
+  getItemsByWeeks,
   getUpdatedDays,
   getUpdatedFiles,
   getUpdatedWeeks,
@@ -343,15 +343,28 @@ export default async function buildMarkdown(options: RunOptions) {
         ),
       };
     });
+    const allDays = getUpdatedDays(db, {
+      since_date: new Date(0),
+    });
+    const allWeeks = getUpdatedWeeks(db, {
+      since_date: new Date(0),
+    });
     for (let i = 0; i < 2; i++) {
       const isDay = i === 0;
       let lastItems: Record<string, Item> = {};
       if (isDay) {
-        lastItems = getLatestItemsByDay(db, 150);
+        lastItems = getItemsByDays(
+          db,
+          allDays.slice(0, 2).map((item) => item.number),
+        );
       } else {
-        lastItems = getLatestItemsByWeek(db, 300);
+        lastItems = getItemsByWeeks(
+          db,
+          allWeeks.slice(0, 2).map((item) => item.number),
+        );
       }
 
+      // console.log("lastItems", lastItems);
       const feedItems = itemsToFeedItemsByDate(lastItems, config, isDay);
 
       const indexMarkdownDistPath = path.join(
@@ -432,12 +445,6 @@ export default async function buildMarkdown(options: RunOptions) {
             pathnameToFilePath(indexFileConfig.pathname + "readme/")
           })`;
         });
-      });
-      const allDays = getUpdatedDays(db, {
-        since_date: new Date(0),
-      });
-      const allWeeks = getUpdatedWeeks(db, {
-        since_date: new Date(0),
       });
 
       // add days and weeks to summary

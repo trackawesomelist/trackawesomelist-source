@@ -125,12 +125,14 @@ export function getLatestItemsByTime(
   }
   return items;
 }
-export function getLatestItemsByWeek(
+export function getItemsByWeeks(
   db: DB,
-  size: number,
+  weeks: number[],
 ): Record<string, Item> {
   const sql =
-    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items order by updated_at desc limit :size";
+    `select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_week in (${
+      weeks.join(",")
+    })`;
   const items: Record<string, Item> = {};
   const groups: Record<string, Item[]> = {};
   for (
@@ -143,9 +145,7 @@ export function getLatestItemsByWeek(
       sourceIdentifier,
       file,
     ] of db
-      .query(sql, {
-        size,
-      })
+      .query(sql)
   ) {
     const updated_day = getWeekNumber(new Date(updated_at as number));
     if (!groups[updated_day]) {
@@ -170,13 +170,16 @@ export function getLatestItemsByWeek(
   }
   return finalItems;
 }
-export function getLatestItemsByDay(
+export function getItemsByDays(
   db: DB,
-  size: number,
+  days: number[],
 ): Record<string, Item> {
   const sql =
-    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items order by updated_at desc limit :size";
+    `select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_day in (${
+      days.join(",")
+    })`;
   const groups: Record<string, Item[]> = {};
+  log.debug(`getLatestItemsByDay: ${sql}`);
   for (
     const [
       markdown,
@@ -187,9 +190,7 @@ export function getLatestItemsByDay(
       sourceIdentifier,
       file,
     ] of db
-      .query(sql, {
-        size,
-      })
+      .query(sql)
   ) {
     const updated_day = getDayNumber(new Date(updated_at as number));
     if (!groups[updated_day]) {
@@ -350,6 +351,10 @@ export function getUpdatedDays(
   for (const [updated_day] of rows) {
     files.push(parseDayInfo(updated_day as number));
   }
+  // sort by number
+  files.sort((a, b) => {
+    return b.number - a.number;
+  });
   return files;
 }
 
@@ -382,5 +387,9 @@ export function getUpdatedWeeks(
   for (const [updated_day] of rows) {
     files.push(parseWeekInfo(updated_day as number));
   }
+  // sort by number
+  files.sort((a, b) => {
+    return b.number - a.number;
+  });
   return files;
 }

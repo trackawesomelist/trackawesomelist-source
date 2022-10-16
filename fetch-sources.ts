@@ -19,7 +19,7 @@ import Github from "./adapters/github.ts";
 import { getItems, updateItems } from "./db.ts";
 export default async function (options: RunOptions) {
   const sourceIdentifiers = options.sourceIdentifiers;
-  const force = options.force;
+  const force = options.forceFetch;
   const config = options.config;
   const file_min_updated_hours = config.file_min_updated_hours;
   const sourcesMap = config.sources;

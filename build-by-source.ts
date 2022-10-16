@@ -214,6 +214,7 @@ ${currentNavHeader}
         id: itemUrl,
         title: dayInfo.name,
         _slug: slug,
+        _filepath: pathnameToFilePath("/" + slug),
         url: itemUrl,
         external_url: url,
         _external_slug: slug,

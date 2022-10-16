@@ -122,6 +122,7 @@ export interface RunOptions extends CliOptions {
 export interface CliOptions {
   debug?: boolean;
   force?: boolean;
+  forceFetch?: boolean;
   push?: boolean;
   autoInit?: boolean;
   fetchRepoUpdates: boolean;
@@ -213,7 +214,8 @@ export interface FeedItem {
   id: string;
   image?: string;
   url: string;
-  _slug?: string;
+  _slug: string;
+  _filepath: string;
   date_published: string;
   date_modified: string;
   tags?: string[];

@@ -238,6 +238,7 @@ export function itemsToFeedItems(
       id: itemUrl,
       title: sourceFileConfig.name,
       _slug: slug,
+      _filepath: pathnameToFilePath("/" + slug),
       url: itemUrl,
       content_text: groupMarkdown,
       content_html: renderMarkdown(groupMarkdown),
@@ -280,8 +281,6 @@ export function itemsToFeedItemsByDate(
         parseWeekInfo(Number(a)).date.getTime();
     }
   });
-  // removve the last one
-  groupKeys = groupKeys.slice(0, groupKeys.length - 1);
   let feedItems: FeedItem[] = groupKeys.map((key) => {
     const items = groups[key];
 
@@ -353,6 +352,7 @@ export function itemsToFeedItemsByDate(
       id: itemUrl,
       title: dayInfo.name,
       _slug: slug,
+      _filepath: pathnameToFilePath("/" + slug),
       url: itemUrl,
       content_text: groupMarkdown,
       content_html: renderMarkdown(groupMarkdown),
