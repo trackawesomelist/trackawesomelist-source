@@ -74,8 +74,11 @@ jobs:
           # PRODUCTHUNT_TOKEN: ${{secrets.PRODUCTHUNT_TOKEN}}
           # TRANSLATE_COUNT: ${{ github.event.inputs.translate_count }}
           # TRANSLATE_TIMEOUT: ${{ github.event.inputs.translate_timeout }}
+          DIST_REPO: git@github.com:theowenyoung/testtrack.git
+
           FORCE: ${{ github.event.inputs.force_all }}
-          LIMIT: ${{ github.event.inputs.limit }}
+          # LIMIT: ${{ github.event.inputs.limit }}
+          LIMIT: 3
       - name: upload files
         run: make prod-upload
         env:
@@ -83,8 +86,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
           AWS_ENDPOINT: ${{secrets.AWS_ENDPOINT}}
-          DUFS_URL: ${{secrets.DUFS_URL}}
-          DUFS_SECRETS: ${{secrets.DUFS_SECRETS}}
       # - name: upload temp folder to github action for debug
       #   uses: actions/upload-artifact@v3
       #   with:
