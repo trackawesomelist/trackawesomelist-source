@@ -23,8 +23,8 @@ on:
       - main
     # paths-ignore:
     #   - "**.md"
-  # schedule:
-  #   - cron: "*/30 * * * *"
+  schedule:
+    - cron: "9 1 * * *"
 jobs:
   build:
     runs-on: ubuntu-latest
