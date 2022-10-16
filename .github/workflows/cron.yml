@@ -74,7 +74,7 @@ jobs:
           # PRODUCTHUNT_TOKEN: ${{secrets.PRODUCTHUNT_TOKEN}}
           # TRANSLATE_COUNT: ${{ github.event.inputs.translate_count }}
           # TRANSLATE_TIMEOUT: ${{ github.event.inputs.translate_timeout }}
-          DIST_REPO: git@github.com:theowenyoung/testtrack.git
+          DIST_REPO: ${{ secrets.DIST_REPO }}
           PERSONAL_GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
           FORCE: ${{ github.event.inputs.force_all }}
           # LIMIT: ${{ github.event.inputs.limit }}
