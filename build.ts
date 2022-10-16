@@ -83,10 +83,14 @@ export default async function buildMarkdown(options: RunOptions) {
   let dbItemsLatestUpdatedAt = new Date(0);
   for (const sourceIdentifier of Object.keys(dbSources)) {
     const source = dbSources[sourceIdentifier];
-    if (
-      new Date(source.updated_at).getTime() > dbItemsLatestUpdatedAt.getTime()
-    ) {
-      dbItemsLatestUpdatedAt = new Date(source.updated_at);
+    const files = source.files;
+    for (const fileKey of Object.keys(files)) {
+      const file = files[fileKey];
+      if (
+        new Date(file.updated_at).getTime() > dbItemsLatestUpdatedAt.getTime()
+      ) {
+        dbItemsLatestUpdatedAt = new Date(file.updated_at);
+      }
     }
   }
   const db = options.db;
