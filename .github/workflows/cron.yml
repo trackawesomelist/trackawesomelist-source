@@ -75,9 +75,10 @@ jobs:
           # TRANSLATE_COUNT: ${{ github.event.inputs.translate_count }}
           # TRANSLATE_TIMEOUT: ${{ github.event.inputs.translate_timeout }}
           PUSH: 1
+          FORCE: 1
           DIST_REPO: ${{ secrets.DIST_REPO }}
           PERSONAL_GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-          FORCE: ${{ github.event.inputs.force_all }}
+          # FORCE: ${{ github.event.inputs.force_all }}
           # LIMIT: ${{ github.event.inputs.limit }}
           # LIMIT: 3
       - name: upload files
