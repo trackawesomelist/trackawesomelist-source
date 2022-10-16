@@ -79,7 +79,7 @@ jobs:
           PERSONAL_GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
           FORCE: ${{ github.event.inputs.force_all }}
           # LIMIT: ${{ github.event.inputs.limit }}
-          LIMIT: 3
+          # LIMIT: 3
       - name: upload files
         run: make prod-upload
         env:
