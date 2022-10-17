@@ -68,11 +68,11 @@ run:
 
 .Phony: initdb
 initdb:
-	[[ ! -d /db/meta.json ]] && mkdir -p ./db && cat db-meta-init.json > ./db/meta.json
+	[[ ! -d /db/meta.json ]] && mkdir -p ./db && cat db-meta-init.json > ./db/meta.json && deno run -A init-db.ts
 
 .Phony: prod-initdb
 prod-initdb:
-	[[ ! -d /prod-db/meta.json ]] && mkdir -p ./prod-db && cat db-meta-init.json > ./prod-db/meta.json
+	[[ ! -d /prod-db/meta.json ]] && mkdir -p ./prod-db && cat db-meta-init.json > ./prod-db/meta.json && PROD=1 deno run -A init-db.ts
 
 .Phony: clean
 clean:

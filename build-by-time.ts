@@ -27,7 +27,6 @@ import {
   getDistRepoGitUrl,
   getDistRepoPath,
   getDomain,
-  getItemsDetails,
   getPublicPath,
   getUTCDay,
   isDev,
@@ -254,11 +253,11 @@ export function itemsToFeedItemsByDate(
   config: Config,
   isDay: boolean,
 ): FeedItem[] {
-  const allItems: ItemDetail[] = getItemsDetails(items);
+  // const allItems: ItemDetail[] = getItemsDetails(items);
   const domain = getDomain();
   const sourcesConfig = config.sources;
   const groups = groupBy(
-    allItems,
+    items,
     isDay ? "updated_day" : "updated_week",
   ) as Record<
     string,
@@ -313,10 +312,9 @@ export function itemsToFeedItemsByDate(
         categoryGroupByCategory,
       );
       categoryGroupByCategoryKeys.forEach((categoryKey) => {
-        const items = categoryGroupByCategory[categoryKey];
+        const categoryItems = categoryGroupByCategory[categoryKey];
         groupMarkdown += `##### ${categoryKey}\n\n`;
-
-        items.forEach((item: ItemDetail) => {
+        categoryItems.forEach((item: ItemDetail) => {
           groupMarkdown += item.markdown + "\n";
           firstItem = item;
           const itemUpdated = new Date(item.updated_at);

@@ -222,23 +222,6 @@ export const addZero = function (num: number): string {
     return "" + num;
   }
 };
-export function getItemsDetails(items: Record<string, Item>): ItemDetail[] {
-  const allItems: ItemDetail[] = [];
-  const allKeys = Object.keys(items);
-  for (const itemSha1 of allKeys) {
-    const item = items[itemSha1];
-    const updated_at = item.updated_at;
-
-    allItems.push({
-      ...item,
-      updated_day: getDayNumber(new Date(updated_at)),
-      updated_week: getWeekNumber(new Date(updated_at)),
-      updated_day_info: parseDayInfo(getDayNumber(new Date(updated_at))),
-      updated_week_info: parseWeekInfo(getWeekNumber(new Date(updated_at))),
-    });
-  }
-  return allItems;
-}
 // this function is used to get the config from the config file
 //
 // and parse it to the right format

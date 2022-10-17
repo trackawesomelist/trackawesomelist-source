@@ -31,7 +31,6 @@ import {
   getDbMeta,
   getDistRepoContentPath,
   getDomain,
-  getItemsDetails,
   getPublicPath,
   getRepoHTMLURL,
   parseDayInfo,

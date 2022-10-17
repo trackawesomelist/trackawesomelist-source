@@ -165,8 +165,6 @@ export default async function buildMarkdown(options: RunOptions) {
     );
     const startBuildSourceTime = new Date();
     let updatedFileIndex = 0;
-    let promises: Promise<void>[] = [];
-    const limit = pLimit(10);
     for (const file of allUpdatedFiles) {
       const sourceConfig = sourcesConfig[file.source_identifier];
       const fileInfo: FileInfo = {
