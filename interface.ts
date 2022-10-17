@@ -167,6 +167,7 @@ export interface PaginationInfo {
 }
 export interface BuildOptions {
   paginationText: string;
+  dbMeta: DBMeta;
 }
 export interface RepoMeta {
   name: string;

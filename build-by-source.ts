@@ -8,6 +8,7 @@ import {
   titleCase,
 } from "./deps.ts";
 import {
+  BuildOptions,
   BuiltMarkdownInfo,
   DayInfo,
   Feed,
@@ -52,10 +53,12 @@ export default async function main(
   db: DB,
   fileInfo: FileInfo,
   runOptions: RunOptions,
+  buildOptions: BuildOptions,
 ): Promise<BuiltMarkdownInfo> {
+  let startTime = Date.now();
   const config = runOptions.config;
   const siteConfig = config.site;
-  const dbMeta = await getDbMeta();
+  const dbMeta = buildOptions.dbMeta;
   const dbSources = dbMeta.sources;
   const sourceConfig = fileInfo.sourceConfig;
   const sourceCategory = sourceConfig.category;
@@ -69,7 +72,10 @@ export default async function main(
   const commitMessage = `Update ${sourceIdentifier}/${originalFilepath}`;
   const sourceFileConfig = fileConfig;
   // get items
+
   const items = getItems(db, sourceIdentifier, originalFilepath);
+  const getDbFinishTime = Date.now();
+  log.debug(`get db items cost ${getDbFinishTime - startTime}ms`);
   const dbFileMeta = dbSource.files[originalFilepath];
   const domain = getDomain();
   const isBuildMarkdown = runOptions.markdown;
@@ -93,6 +99,7 @@ export default async function main(
     relativeFolder = path.join(relativeFolder, originalFilepathWithoutExt);
   }
   for (let i = 0; i < 2; i++) {
+    let buildMarkdownStartTime = Date.now();
     const baseFeed = getBaseFeed();
     const isDay = i === 0;
     let currentNavHeader = `[ Daily / [Weekly](${
@@ -224,14 +231,20 @@ ${feed._nav_text}${
         return `\n\n## [${item.title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
       }).join("")
     }`;
+    const finishBuildMarkdownTime = Date.now();
     if (isBuildMarkdown) {
       const markdownDistPath = path.join(
         getDistRepoContentPath(),
         dailyRelativeFolder,
         INDEX_MARKDOWN_PATH,
       );
-      await writeTextFile(markdownDistPath, markdownDoc);
-      log.debug(`build ${markdownDistPath} success`);
+      // await writeTextFile(markdownDistPath, markdownDoc);
+      const writeMarkdownTime = Date.now();
+      log.debug(
+        `build ${markdownDistPath} success, cost ${
+          writeMarkdownTime - finishBuildMarkdownTime
+        }ms`,
+      );
     }
     // build html
     if (isBuildHtml) {

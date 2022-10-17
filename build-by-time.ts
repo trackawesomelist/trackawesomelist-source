@@ -1,10 +1,9 @@
 import { CSS, groupBy, mustache } from "./deps.ts";
-import { DB, fs, path } from "./deps.ts";
+import { DB, path } from "./deps.ts";
 import {
   BuildOptions,
   BuiltMarkdownInfo,
   Config,
-  DbMetaSource,
   Feed,
   FeedItem,
   File,
@@ -27,7 +26,6 @@ import {
   getBaseFeed,
   getDataItemsPath,
   getDataRawPath,
-  getDbMeta,
   getDistRepoContentPath,
   getDistRepoGitUrl,
   getDistRepoPath,
@@ -45,7 +43,6 @@ import {
   readTextFile,
   sha1,
   walkFile,
-  writeDbMeta,
   writeJSONFile,
   writeTextFile,
 } from "./util.ts";

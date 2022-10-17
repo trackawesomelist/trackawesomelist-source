@@ -1,16 +1,12 @@
 import { groupBy, jsonfeedToAtom, mustache } from "./deps.ts";
 import { fs, path, pLimit } from "./deps.ts";
 import {
-  BuiltMarkdownInfo,
   DayInfo,
   Feed,
-  FeedItem,
   File,
   FileInfo,
-  FileMeta,
   FileMetaWithSource,
   Item,
-  ItemsJson,
   List,
   ListItem,
   RunOptions,
@@ -24,38 +20,26 @@ import {
 import {
   exists,
   formatHumanTime,
-  formatPagination,
-  getAllSourceCategories,
   getBaseFeed,
-  getDataItemsPath,
-  getDataRawPath,
   getDbMeta,
   getDistRepoContentPath,
   getDistRepoGitUrl,
   getDistRepoPath,
   getIndexFileConfig,
-  getItemsDetails,
   getPaginationTextByNumber,
   getPublicPath,
   getRepoHTMLURL,
   getStaticPath,
-  getUTCDay,
-  isDev,
-  parseItemsFilepath,
   pathnameToFeedUrl,
   pathnameToFilePath,
-  readJSONFile,
   readTextFile,
-  sha1,
   slug,
   walkFile,
-  writeDbMeta,
   writeJSONFile,
   writeTextFile,
 } from "./util.ts";
 import log from "./log.ts";
 import {
-  getItems,
   getItemsByDays,
   getItemsByWeeks,
   getUpdatedDays,
@@ -63,10 +47,7 @@ import {
   getUpdatedWeeks,
 } from "./db.ts";
 import buildBySource from "./build-by-source.ts";
-import buildByTime, {
-  itemsToFeedItems,
-  itemsToFeedItemsByDate,
-} from "./build-by-time.ts";
+import buildByTime, { itemsToFeedItemsByDate } from "./build-by-time.ts";
 import buildHtmlFile from "./build-html.ts";
 
 export default async function buildMarkdown(options: RunOptions) {
@@ -182,7 +163,7 @@ export default async function buildMarkdown(options: RunOptions) {
     );
     let updatedFileIndex = 0;
     let promises: Promise<void>[] = [];
-    let limit = pLimit(10);
+    const limit = pLimit(10);
     for (const file of allUpdatedFiles) {
       const sourceConfig = sourcesConfig[file.source_identifier];
       const fileInfo: FileInfo = {
@@ -190,7 +171,6 @@ export default async function buildMarkdown(options: RunOptions) {
         sourceMeta: dbSources[sourceConfig.identifier],
         filepath: file.file,
       };
-      const fileConfig = sourceConfig.files[file.file];
       promises.push(
         limit(
           () => {
@@ -202,6 +182,10 @@ export default async function buildMarkdown(options: RunOptions) {
               db,
               fileInfo,
               options,
+              {
+                dbMeta,
+                paginationText: "",
+              },
             ).then((builtInfo) => {
               commitMessage += builtInfo.commitMessage + "\n";
             });
@@ -242,6 +226,7 @@ export default async function buildMarkdown(options: RunOptions) {
 
             return buildByTime(db, day.number, options, {
               paginationText: getPaginationTextByNumber(day.number, allDays),
+              dbMeta,
             }).then((builtInfo) => {
               commitMessage += builtInfo.commitMessage + "\n";
             });
@@ -273,6 +258,7 @@ export default async function buildMarkdown(options: RunOptions) {
 
             return buildByTime(db, day.number, options, {
               paginationText: getPaginationTextByNumber(day.number, allWeeks),
+              dbMeta,
             }).then((builtInfo) => {
               commitMessage += builtInfo.commitMessage + "\n";
             });
