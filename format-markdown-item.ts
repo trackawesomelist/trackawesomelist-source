@@ -1,6 +1,5 @@
 import { DocItem, FileInfo } from "./interface.ts";
-import { Content, Link, Root, toMarkdown, visit } from "./deps.ts";
-
+import { Content, Link, pLimit, Root, toMarkdown, visit } from "./deps.ts";
 import {
   childrenToMarkdown,
   childrenToRoot,
@@ -255,21 +254,24 @@ export default async function formatItemMarkdown<T>(
     }
   });
   if (!isMock()) {
+    const limit = pLimit(100);
     await Promise.all(matchedNodes.map((matched) => {
       const { owner, repo } = matched.meta;
       const node = matched.node;
-      return gotGithubStar(owner, repo).then((star: string) => {
-        if (star) {
-          const badge = ` (⭐${star})`;
-          node.children = [
-            ...node.children,
-            {
-              type: "text",
-              value: badge,
-            },
-          ];
-        }
-      });
+      return limit(() =>
+        gotGithubStar(owner, repo).then((star: string) => {
+          if (star) {
+            const badge = ` (⭐${star})`;
+            node.children = [
+              ...node.children,
+              {
+                type: "text",
+                value: badge,
+              },
+            ];
+          }
+        })
+      );
     }));
   }
   return item;
