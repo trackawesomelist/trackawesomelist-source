@@ -234,7 +234,6 @@ export default async function buildMarkdown(options: RunOptions) {
         (buildDayTime / 1000).toFixed(2),
         " seconds",
       );
-      promises = [];
 
       const startBuildWeekTime = new Date();
       // update week file
