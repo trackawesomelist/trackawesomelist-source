@@ -254,7 +254,7 @@ export default async function formatItemMarkdown<T>(
     }
   });
   if (!isMock()) {
-    const limit = pLimit(100);
+    const limit = pLimit(50);
     await Promise.all(matchedNodes.map((matched) => {
       const { owner, repo } = matched.meta;
       const node = matched.node;

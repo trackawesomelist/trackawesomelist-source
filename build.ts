@@ -219,7 +219,6 @@ export default async function buildMarkdown(options: RunOptions) {
       let updatedDayIndex = 0;
       log.info("start to build day markdown..., total: " + updatedDays.length);
       const startBuildDayTime = new Date();
-      promises = [];
       for (const day of updatedDays) {
         const builtInfo = await buildByTime(db, day.number, options, {
           paginationText: getPaginationTextByNumber(day.number, allDays),
