@@ -14,6 +14,7 @@ import {
   Feed,
   FeedItem,
   FileInfo,
+  Item,
   ItemDetail,
   RunOptions,
   WeekOfYear,
@@ -74,8 +75,8 @@ export default async function main(
   // get items
 
   const items = getItems(db, sourceIdentifier, originalFilepath);
-  const getDbFinishTime = Date.now();
-  log.debug(`get db items cost ${getDbFinishTime - startTime}ms`);
+  // const getDbFinishTime = Date.now();
+  // log.debug(`get db items cost ${getDbFinishTime - startTime}ms`);
   const dbFileMeta = dbSource.files[originalFilepath];
   const domain = getDomain();
   const isBuildMarkdown = runOptions.markdown;
@@ -99,7 +100,7 @@ export default async function main(
     relativeFolder = path.join(relativeFolder, originalFilepathWithoutExt);
   }
   for (let i = 0; i < 2; i++) {
-    let buildMarkdownStartTime = Date.now();
+    const buildMarkdownStartTime = Date.now();
     const baseFeed = getBaseFeed();
     const isDay = i === 0;
     let currentNavHeader = `[ Daily / [Weekly](${
@@ -130,13 +131,12 @@ ${currentNavHeader}
     }`;
     const feedDescription = repoMeta.description;
     const footer = ``;
-    const allItems: ItemDetail[] = getItemsDetails(items);
     const groups = groupBy(
-      allItems,
+      items,
       isDay ? "updated_day" : "updated_week",
     ) as Record<
       string,
-      ItemDetail[]
+      Item[]
     >;
     const groupKeys = Object.keys(groups);
     // sort
@@ -149,15 +149,16 @@ ${currentNavHeader}
           parseWeekInfo(Number(a)).date.getTime();
       }
     });
+
     const dailyRelativeFolder = isDay
       ? relativeFolder
       : path.join(relativeFolder, `week`);
 
     let feedItems: FeedItem[] = groupKeys.map((key) => {
-      const items = groups[key];
-      const categoryGroup = groupBy(items, "category") as Record<
+      const groupItems = groups[key];
+      const categoryGroup = groupBy(groupItems, "category") as Record<
         string,
-        ItemDetail[]
+        Item[]
       >;
       let groupMarkdown = "";
       const categoryKeys: string[] = Object.keys(categoryGroup);
@@ -205,7 +206,7 @@ ${currentNavHeader}
     });
 
     // sort feedItems by date published
-    feedItems = feedItems.sort((a, b) => {
+    feedItems.sort((a, b) => {
       const aDate = new Date(a.date_published);
       const bDate = new Date(b.date_published);
       return bDate.getTime() - aDate.getTime();
@@ -231,18 +232,17 @@ ${feed._nav_text}${
         return `\n\n## [${item.title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
       }).join("")
     }`;
-    const finishBuildMarkdownTime = Date.now();
     if (isBuildMarkdown) {
       const markdownDistPath = path.join(
         getDistRepoContentPath(),
         dailyRelativeFolder,
         INDEX_MARKDOWN_PATH,
       );
-      // await writeTextFile(markdownDistPath, markdownDoc);
+      await writeTextFile(markdownDistPath, markdownDoc);
       const writeMarkdownTime = Date.now();
       log.debug(
         `build ${markdownDistPath} success, cost ${
-          writeMarkdownTime - finishBuildMarkdownTime
+          writeMarkdownTime - buildMarkdownStartTime
         }ms`,
       );
     }
@@ -314,6 +314,7 @@ ${feed._nav_text}${
   // build overview markdown
   // first get readme content
 
+  const buildOverviewMarkdownStartTime = Date.now();
   const readmeContent = getFile(db, fileInfo);
 
   const currentNavHeader = `[ [Daily](${
@@ -354,7 +355,12 @@ ${nav}
 ${readmeContent}
 `;
   await writeTextFile(overviewMarkdownPath, readmeRendered);
-  log.debug(`build ${overviewMarkdownPath} success`);
+  const buildOverviewMarkdownEndTime = Date.now();
+  log.debug(
+    `build ${overviewMarkdownPath} success, cost ${
+      buildOverviewMarkdownEndTime - buildOverviewMarkdownStartTime
+    }ms`,
+  );
   if (isBuildHtml) {
     // add body, css to feed
     const body = renderMarkdown(readmeRendered);

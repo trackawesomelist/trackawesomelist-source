@@ -137,6 +137,8 @@ export interface CliOptions {
 }
 export interface Item {
   updated_at: string;
+  updated_day: number;
+  updated_week: number;
   category: string;
   markdown: string;
   sha1: string;

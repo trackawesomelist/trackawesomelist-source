@@ -224,7 +224,8 @@ export const addZero = function (num: number): string {
 };
 export function getItemsDetails(items: Record<string, Item>): ItemDetail[] {
   const allItems: ItemDetail[] = [];
-  for (const itemSha1 of Object.keys(items)) {
+  const allKeys = Object.keys(items);
+  for (const itemSha1 of allKeys) {
     const item = items[itemSha1];
     const updated_at = item.updated_at;
 

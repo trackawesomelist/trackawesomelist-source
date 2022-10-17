@@ -68,6 +68,12 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
     );
     CREATE UNIQUE INDEX IF NOT EXISTS idx_item
     ON items (sha1, file, source_identifier);
+    CREATE INDEX IF NOT EXISTS idx_items_file
+    ON items (source_identifier, file);
+    CREATE INDEX IF NOT EXISTS idx_items_days
+    ON items (updated_day);
+    CREATE INDEX IF NOT EXISTS idx_items_weeks
+    ON items (updated_week);
     CREATE TABLE IF NOT EXISTS files (
       id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
       sha1 TEXT NOT NULL,

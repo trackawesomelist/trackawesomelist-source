@@ -136,10 +136,18 @@ export function getItems(
   file: string,
 ): Record<string, Item> {
   const sql =
-    "select markdown,category,updated_at,sha1,checked_at from items where source_identifier=:sourceIdentifier and file=:file";
+    "select markdown,category,updated_at,sha1,checked_at,updated_day,updated_week from items where source_identifier=:sourceIdentifier and file=:file";
   const items: Record<string, Item> = {};
   for (
-    const [markdown, category, updated_at, sha1, checked_at] of db
+    const [
+      markdown,
+      category,
+      updated_at,
+      sha1,
+      checked_at,
+      updated_day,
+      updated_week,
+    ] of db
       .query(sql, {
         sourceIdentifier: sourceIdentifier as string,
         file: file as string,
@@ -153,6 +161,8 @@ export function getItems(
       updated_at: new Date(updated_at as number).toISOString(),
       sha1: sha1 as string,
       checked_at: new Date(checked_at as number).toISOString(),
+      updated_day: updated_day as number,
+      updated_week: updated_week as number,
     };
   }
   return items;
@@ -162,7 +172,7 @@ export function getLatestItemsByTime(
   since_time: number,
 ): Record<string, Item> {
   const sql =
-    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_at>:since_time";
+    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file,updated_day,updated_week from items where updated_at>:since_time";
   const items: Record<string, Item> = {};
   for (
     const [
@@ -173,6 +183,8 @@ export function getLatestItemsByTime(
       checked_at,
       sourceIdentifier,
       file,
+      updated_day,
+      updated_week,
     ] of db
       .query(sql, {
         since_time,
@@ -186,6 +198,8 @@ export function getLatestItemsByTime(
       updated_at: new Date(updated_at as number).toISOString(),
       sha1: sha1 as string,
       checked_at: new Date(checked_at as number).toISOString(),
+      updated_day: updated_day as number,
+      updated_week: updated_week as number,
     };
   }
   return items;
@@ -195,7 +209,7 @@ export function getItemsByWeeks(
   weeks: number[],
 ): Record<string, Item> {
   const sql =
-    `select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_week in (${
+    `select markdown,category,updated_at,sha1,checked_at,source_identifier,file,updated_day,updated_week from items where updated_week in (${
       weeks.join(",")
     })`;
   const items: Record<string, Item> = {};
@@ -224,6 +238,8 @@ export function getItemsByWeeks(
       updated_at: new Date(updated_at as number).toISOString(),
       sha1: sha1 as string,
       checked_at: new Date(checked_at as number).toISOString(),
+      updated_day: updated_day as number,
+      updated_week: updated_day as number,
     });
   }
   const finalItems: Record<string, Item> = {};
@@ -240,7 +256,7 @@ export function getItemsByDays(
   days: number[],
 ): Record<string, Item> {
   const sql =
-    `select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_day in (${
+    `select markdown,category,updated_at,sha1,checked_at,source_identifier,file,updated_day,updated_week from items where updated_day in (${
       days.join(",")
     })`;
   const groups: Record<string, Item[]> = {};
@@ -254,6 +270,8 @@ export function getItemsByDays(
       checked_at,
       sourceIdentifier,
       file,
+      updated_day,
+      updated_week,
     ] of db
       .query(sql)
   ) {
@@ -269,6 +287,8 @@ export function getItemsByDays(
       updated_at: new Date(updated_at as number).toISOString(),
       sha1: sha1 as string,
       checked_at: new Date(checked_at as number).toISOString(),
+      updated_day: updated_day as number,
+      updated_week: updated_week as number,
     });
   }
   // sort groups keys remove the last one
@@ -289,7 +309,7 @@ export function getDayItems(
   dayNumber: number,
 ): Record<string, Item> {
   const sql =
-    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_day=:dayNumber";
+    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file,updated_day,updated_week from items where updated_day=:dayNumber";
   const items: Record<string, Item> = {};
   for (
     const [
@@ -300,6 +320,8 @@ export function getDayItems(
       checked_at,
       sourceIdentifier,
       file,
+      updated_day,
+      updated_week,
     ] of db
       .query(sql, {
         dayNumber,
@@ -313,6 +335,8 @@ export function getDayItems(
       updated_at: new Date(updated_at as number).toISOString(),
       sha1: sha1 as string,
       checked_at: new Date(checked_at as number).toISOString(),
+      updated_day: updated_day as number,
+      updated_week: updated_week as number,
     };
   }
   return items;
@@ -322,7 +346,7 @@ export function getWeekItems(
   number: number,
 ): Record<string, Item> {
   const sql =
-    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file from items where updated_week=:number";
+    "select markdown,category,updated_at,sha1,checked_at,source_identifier,file,updated_day,updated_week from items where updated_week=:number";
   const items: Record<string, Item> = {};
   for (
     const [
@@ -333,6 +357,8 @@ export function getWeekItems(
       checked_at,
       sourceIdentifier,
       file,
+      updated_day,
+      updated_week,
     ] of db
       .query(sql, {
         number,
@@ -346,6 +372,8 @@ export function getWeekItems(
       updated_at: new Date(updated_at as number).toISOString(),
       sha1: sha1 as string,
       checked_at: new Date(checked_at as number).toISOString(),
+      updated_day: updated_day as number,
+      updated_week: updated_week as number,
     };
   }
   return items;
@@ -369,7 +397,7 @@ export function getUpdatedFiles(
       options.source_identifiers?.map((item) => `'${item}'`).join(",")
     }) `;
   }
-  sql += "group by file,source_identifier";
+  sql += "group by source_identifier,file";
   log.debug(`getUpdatedFiles sql: ${sql}`, params);
   const rows = db.query(
     sql,

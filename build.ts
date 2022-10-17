@@ -89,7 +89,8 @@ export default async function buildMarkdown(options: RunOptions) {
     // build specific source
     for (const sourceIdentifier of specificSourceIdentifiers) {
       const sourceConfig = sourcesConfig[sourceIdentifier];
-      for (const file of Object.keys(sourceConfig.files)) {
+      const sourceFilesKeys = Object.keys(sourceConfig.files);
+      for (const file of sourceFilesKeys) {
         allUpdatedFiles.push({
           source_identifier: sourceIdentifier,
           file,
@@ -103,10 +104,11 @@ export default async function buildMarkdown(options: RunOptions) {
       source_identifiers: specificSourceIdentifiers,
     });
   }
+  if (options.limit && options.limit > 0) {
+    allUpdatedFiles = allUpdatedFiles.slice(0, options.limit);
+  }
   log.debug(
-    `allUpdatedFiles (${allUpdatedFiles.length}): ${
-      JSON.stringify(allUpdatedFiles)
-    }`,
+    `allUpdatedFiles (${allUpdatedFiles.length}) `,
   );
   if (allUpdatedFiles.length > 0) {
     log.info(`found ${allUpdatedFiles.length} updated files`);
@@ -161,6 +163,7 @@ export default async function buildMarkdown(options: RunOptions) {
     log.info(
       "start to build sources markdown... total: " + allUpdatedFiles.length,
     );
+    const startBuildSourceTime = new Date();
     let updatedFileIndex = 0;
     let promises: Promise<void>[] = [];
     const limit = pLimit(10);
@@ -171,31 +174,31 @@ export default async function buildMarkdown(options: RunOptions) {
         sourceMeta: dbSources[sourceConfig.identifier],
         filepath: file.file,
       };
-      promises.push(
-        limit(
-          () => {
-            updatedFileIndex++;
-            log.info(
-              `[${updatedFileIndex}/${allUpdatedFiles.length}] ${file.source_identifier}/${file.file}`,
-            );
-            return buildBySource(
-              db,
-              fileInfo,
-              options,
-              {
-                dbMeta,
-                paginationText: "",
-              },
-            ).then((builtInfo) => {
-              commitMessage += builtInfo.commitMessage + "\n";
-            });
-          },
-        ),
+      updatedFileIndex++;
+      log.info(
+        `[${updatedFileIndex}/${allUpdatedFiles.length}] ${file.source_identifier}/${file.file}`,
       );
-    }
-    await Promise.all(promises);
+      const builtInfo = await buildBySource(
+        db,
+        fileInfo,
+        options,
+        {
+          dbMeta,
+          paginationText: "",
+        },
+      );
 
-    log.info("build single markdown done");
+      commitMessage += builtInfo.commitMessage + "\n";
+    }
+
+    const endBuildSourceTime = new Date();
+    const buildSourceTime = endBuildSourceTime.getTime() -
+      startBuildSourceTime.getTime();
+    log.info(
+      "build single markdown done, cost ",
+      (buildSourceTime / 1000).toFixed(2),
+      " seconds",
+    );
 
     const allDays = getUpdatedDays(db, {
       since_date: new Date(0),
@@ -217,24 +220,26 @@ export default async function buildMarkdown(options: RunOptions) {
 
       let updatedDayIndex = 0;
       log.info("start to build day markdown..., total: " + updatedDays.length);
+      const startBuildDayTime = new Date();
       promises = [];
       for (const day of updatedDays) {
-        promises.push(
-          limit(() => {
-            updatedDayIndex++;
-            log.info(`[${updatedDayIndex}/${updatedDays.length}] ${day.path}`);
-
-            return buildByTime(db, day.number, options, {
-              paginationText: getPaginationTextByNumber(day.number, allDays),
-              dbMeta,
-            }).then((builtInfo) => {
-              commitMessage += builtInfo.commitMessage + "\n";
-            });
-          }),
-        );
+        const builtInfo = await buildByTime(db, day.number, options, {
+          paginationText: getPaginationTextByNumber(day.number, allDays),
+          dbMeta,
+        });
+        commitMessage += builtInfo.commitMessage + "\n";
       }
-      await Promise.all(promises);
+      const endBuildDayTime = new Date();
+      const buildDayTime = endBuildDayTime.getTime() -
+        startBuildDayTime.getTime();
+      log.info(
+        "build day markdown done, cost ",
+        (buildDayTime / 1000).toFixed(2),
+        " seconds",
+      );
       promises = [];
+
+      const startBuildWeekTime = new Date();
       // update week file
       let updatedWeeks = getUpdatedWeeks(db, {
         since_date: new Date(lastCheckedAt),
@@ -249,24 +254,26 @@ export default async function buildMarkdown(options: RunOptions) {
         "start to build week markdown..., total: " + updatedWeeks.length,
       );
       for (const day of updatedWeeks) {
-        promises.push(
-          limit(() => {
-            updatedWeekIndex++;
-            log.info(
-              `[${updatedWeekIndex}/${updatedWeeks.length}] ${day.path}`,
-            );
-
-            return buildByTime(db, day.number, options, {
-              paginationText: getPaginationTextByNumber(day.number, allWeeks),
-              dbMeta,
-            }).then((builtInfo) => {
-              commitMessage += builtInfo.commitMessage + "\n";
-            });
-          }),
+        updatedWeekIndex++;
+        log.info(
+          `[${updatedWeekIndex}/${updatedWeeks.length}] ${day.path}`,
         );
-      }
 
-      await Promise.all(promises);
+        const builtInfo = await buildByTime(db, day.number, options, {
+          paginationText: getPaginationTextByNumber(day.number, allWeeks),
+          dbMeta,
+        });
+
+        commitMessage += builtInfo.commitMessage + "\n";
+      }
+      const endBuildWeekTime = new Date();
+      const buildWeekTime = endBuildWeekTime.getTime() -
+        startBuildWeekTime.getTime();
+      log.info(
+        "build week markdown done, cost ",
+        (buildWeekTime / 1000).toFixed(2),
+        " seconds",
+      );
     } else {
       log.info("skip build day markdown");
     }
