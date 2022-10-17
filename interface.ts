@@ -238,6 +238,7 @@ export interface FeedItem {
   _external_slug?: string;
   authors?: Author[];
   title: string;
+  _short_title?: string;
   author?: Author;
   content_text: string;
   content_html: string;
@@ -249,12 +250,14 @@ export interface BaseFeed {
   favicon: string;
   language: string;
 }
-export interface Feed extends BaseFeed {
+export interface FeedInfo extends BaseFeed {
   title: string;
   _seo_title: string;
   description: string;
   home_page_url: string;
   feed_url: string;
-  items: FeedItem[];
   _nav_text: string;
+}
+export interface Feed extends FeedInfo {
+  items: FeedItem[];
 }

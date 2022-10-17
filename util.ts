@@ -7,7 +7,7 @@ import {
   posixPath,
   Root,
   slug as slugFn,
-  titleCase,
+  titleCase as titleCaseFn,
   toMarkdown,
   u,
   YAML,
@@ -314,7 +314,10 @@ export function getAllSourceCategories(config: Config): string[] {
   }
   return categories;
 }
-
+export function titleCase(str: string): string {
+  // replace - to space
+  return titleCaseFn(str.replace(/-/g, " "));
+}
 export function getFormatedSource(
   key: string,
   value: null | RawSource | undefined,

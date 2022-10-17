@@ -17,6 +17,7 @@ import {
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
   RECENTLY_UPDATED_COUNT,
+  SUBSCRIPTION_URL,
 } from "./constant.ts";
 import {
   exists,
@@ -70,7 +71,7 @@ export default async function main(
   }
 
   const config = options.config;
-  const sourcesConfig = config.sources;
+  const siteConfig = config.site;
   let title = "";
   let commitMessage = "";
   let items: Record<string, Item> = {};
@@ -84,30 +85,32 @@ export default async function main(
   if (isDay) {
     const dayInfo = parseDayInfo(number);
     commitMessage = `Update day ${dayInfo.path}`;
-    title = dayInfo.name;
+    title = `Awesome List Updates on ${dayInfo.name}`;
     distMarkdownRelativePath = dayInfo.path;
     // get items
     items = getDayItems(db, number);
   } else {
     const weekInfo = parseWeekInfo(number);
     commitMessage = `Update week ${weekInfo.path}`;
-    title = weekInfo.name;
+    title = `Awesome List Updates on ${weekInfo.name}`;
     distMarkdownRelativePath = weekInfo.path;
     // get items
     items = getWeekItems(db, number);
   }
   feedTitle = `${title}`;
-  feedDescription = `Awesome list updated on ${title}`;
-
   const feedItems = itemsToFeedItems(items, config);
-  const nav = `[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](${
-    pathnameToFeedUrl("/", true)
-  }) `;
+  feedDescription = `${feedItems.length} awesome lists updated ${
+    isDay ? "today" : "this week"
+  }.`;
+
+  const nav = `[🏠 Home](/${INDEX_MARKDOWN_PATH}) · [🔥 Feed](${
+    pathnameToFeedUrl("/" + (isDay ? "" : "week/"), true)
+  }) · [📮 Subscribe](${SUBSCRIPTION_URL}) `;
   const feed: Feed = {
     ...baseFeed,
     title: feedTitle,
     description: feedDescription,
-    _seo_title: feedTitle,
+    _seo_title: `${feedTitle} - ${siteConfig.title}`,
     feed_url: `${domain}/feed.json`,
     home_page_url: domain,
     _nav_text: nav,
@@ -342,7 +345,8 @@ export function itemsToFeedItemsByDate(
     const itemUrl = `${domain}/${slug}`;
     const feedItem: FeedItem = {
       id: itemUrl,
-      title: dayInfo.name,
+      title: `Awesome List Updated on ${dayInfo.name}`,
+      _short_title: dayInfo.name,
       _slug: slug,
       _filepath: pathnameToFilePath("/" + slug),
       url: itemUrl,

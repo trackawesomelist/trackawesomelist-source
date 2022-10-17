@@ -1,4 +1,4 @@
-import { getDayNumber, readTextFile, sha1 } from "./util.ts";
+import { getDayNumber, readTextFile, sha1, titleCase } from "./util.ts";
 import { assertEquals } from "./test-deps.ts";
 
 Deno.test("sha1 #1", async () => {
@@ -11,4 +11,9 @@ Deno.test("getDayNumber", () => {
   const date = new Date("2020-01-01");
   const dayNumber = getDayNumber(date);
   assertEquals(dayNumber, 20200101);
+});
+
+Deno.test("title case", () => {
+  const title = titleCase("free-for-dev");
+  assertEquals(title, "Free for Dev");
 });

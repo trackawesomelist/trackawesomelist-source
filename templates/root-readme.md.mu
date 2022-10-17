@@ -20,7 +20,7 @@
 ## Recently Updated Items
 
 {{#items}}
-### [{{{title}}}]({{{_filepath}}})
+### [{{{_short_title}}}]({{{_filepath}}})
 
 {{{content_text}}}
 

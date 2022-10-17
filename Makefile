@@ -63,7 +63,7 @@ serve:
 
 .Phony: run
 run:
-	FORCE=1 deno run -A --watch=tal.ts,templates/ main.ts --no-fetch
+	LIMIT=3 FORCE=1 deno run -A --watch=tal.ts,templates/ tal.ts --no-fetch --html "ripienaar/free-for-dev"
 
 
 .Phony: initdb

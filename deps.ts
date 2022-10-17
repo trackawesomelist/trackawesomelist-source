@@ -22,7 +22,7 @@ export { config as dotenvConfig } from "https://deno.land/std@0.158.0/dotenv/mod
 export { readLines } from "https://deno.land/std@0.153.0/io/buffer.ts";
 export * as base64 from "https://deno.land/std@0.153.0/encoding/base64.ts";
 // third party
-export { titleCase } from "https://deno.land/x/case@2.1.1/mod.ts";
+export { titleCase } from "https://esm.sh/title-case@3.0.3";
 export { default as camelCase } from "https://deno.land/x/lodash@4.17.15-es/camelCase.js";
 export { default as groupBy } from "https://deno.land/x/lodash@4.17.15-es/groupBy.js";
 export { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";

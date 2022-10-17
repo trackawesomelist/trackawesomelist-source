@@ -1,17 +1,10 @@
-import {
-  CSS,
-  DB,
-  groupBy,
-  jsonfeedToAtom,
-  mustache,
-  path,
-  titleCase,
-} from "./deps.ts";
+import { CSS, DB, groupBy, jsonfeedToAtom, mustache, path } from "./deps.ts";
 import {
   BuildOptions,
   BuiltMarkdownInfo,
   DayInfo,
   Feed,
+  FeedInfo,
   FeedItem,
   FileInfo,
   Item,
@@ -23,6 +16,7 @@ import {
   CONTENT_DIR,
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
+  SUBSCRIPTION_URL,
 } from "./constant.ts";
 import {
   formatHumanTime,
@@ -42,6 +36,7 @@ import {
   readTextFile,
   slugy,
   startDateOfWeek,
+  titleCase,
   writeJSONFile,
   writeTextFile,
 } from "./util.ts";
@@ -98,9 +93,9 @@ export default async function main(
     );
     relativeFolder = path.join(relativeFolder, originalFilepathWithoutExt);
   }
+  const baseFeed = getBaseFeed();
   for (let i = 0; i < 2; i++) {
     const buildMarkdownStartTime = Date.now();
-    const baseFeed = getBaseFeed();
     const isDay = i === 0;
     let currentNavHeader = `[ Daily / [Weekly](${
       pathnameToWeekFilePath(fileConfig.pathname)
@@ -112,20 +107,16 @@ export default async function main(
         pathnameToOverviewFilePath(fileConfig.pathname)
       }) ]`;
     }
-    const nav = `[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](${
+    const nav = `[🏠 Home](/${INDEX_MARKDOWN_PATH}) · [🔥 Feed](${
       pathnameToFeedUrl(fileConfig.pathname, isDay)
-    }) · [Repo](${
+    }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [🔗 ${sourceIdentifier}](${
       getRepoHTMLURL(repoMeta.url, repoMeta.default_branch, originalFilepath)
-    }) · ${sourceCategory} · ⭐ ${
-      formatNumber(repoMeta.stargazers_count)
-    } ·  📝 ${formatHumanTime(new Date(dbFileMeta.updated_at))} · ✅ ${
-      formatHumanTime(new Date(dbFileMeta.checked_at))
-    } 
+    }) · ⭐ ${formatNumber(repoMeta.stargazers_count)} · 🏷️ ${sourceCategory}
 
 ${currentNavHeader}
 
 `;
-    const feedTitle = `Track ${titleCase(repoMeta.name)}  ${
+    const feedTitle = `Track ${fileConfig.name} Updates ${
       isDay ? "Daily" : "Weekly"
     }`;
     const feedDescription = repoMeta.description;
@@ -190,7 +181,8 @@ ${currentNavHeader}
       const url = `${domain}/${slug}`;
       const feedItem: FeedItem = {
         id: itemUrl,
-        title: dayInfo.name,
+        title: `${fileConfig.name} Updates on ${dayInfo.name}`,
+        _short_title: dayInfo.name,
         _slug: slug,
         _filepath: pathnameToFilePath("/" + slug),
         url: itemUrl,
@@ -211,16 +203,22 @@ ${currentNavHeader}
       return bDate.getTime() - aDate.getTime();
     });
 
-    const title = `Track ${repoMeta.name}  ${isDay ? "Daily" : "Weekly"}`;
-    const feed: Feed = {
+    const feedSeoTitle =
+      `Track ${fileConfig.name} (${sourceIdentifier}) Updates ${
+        isDay ? "Daily" : "Weekly"
+      }`;
+    const feedInfo: FeedInfo = {
       ...baseFeed,
-      title,
-      _seo_title: `${title} - ${siteConfig.title}`,
+      title: feedTitle,
+      _seo_title: `${feedSeoTitle} - ${siteConfig.title}`,
       description: repoMeta.description,
       home_page_url: `${domain}/${dailyRelativeFolder}/`,
       feed_url: `${domain}/${dailyRelativeFolder}/feed.json`,
-      items: feedItems,
       _nav_text: nav,
+    };
+    const feed: Feed = {
+      ...feedInfo,
+      items: feedItems,
     };
     const markdownDoc = `# ${feed.title}
 
@@ -228,7 +226,7 @@ ${feed.description}
 
 ${feed._nav_text}${
       feedItems.map((item) => {
-        return `\n\n## [${item.title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
+        return `\n\n## [${item._short_title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
       }).join("")
     }`;
     if (isBuildMarkdown) {
@@ -250,7 +248,7 @@ ${feed._nav_text}${
       // add body, css to feed
       const body = renderMarkdown(markdownDoc);
       const htmlDoc = mustache.render(htmlIndexTemplateContent, {
-        ...feed,
+        ...feedInfo,
         body,
         CSS,
       });
@@ -320,14 +318,15 @@ ${feed._nav_text}${
     pathnameToFilePath(fileConfig.pathname)
   }) / [Weekly](${pathnameToWeekFilePath(fileConfig.pathname)}) / Overview ]`;
 
-  const nav = `
-[Home](/${INDEX_MARKDOWN_PATH}) · [Feed](${
+  const nav = `[🏠 Home](/${INDEX_MARKDOWN_PATH}) · [🔥 Feed](${
     pathnameToFeedUrl(fileConfig.pathname, true)
-  }) · [Repo](${
-    getRepoHTMLURL(repoMeta.url, repoMeta.default_branch, filepath)
-  }) · ⭐ ${formatNumber(repoMeta.stargazers_count)} ·  📝 ${
+  }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [🔗 Repo](${
+    getRepoHTMLURL(repoMeta.url, repoMeta.default_branch, originalFilepath)
+  }) · ⭐ ${
+    formatNumber(repoMeta.stargazers_count)
+  } · 🏷️ ${sourceCategory} · 📝 ${
     formatHumanTime(new Date(dbFileMeta.updated_at))
-  } · ✅ ${formatHumanTime(new Date(dbFileMeta.checked_at))} 
+  }
 
 ${currentNavHeader}
 
@@ -339,13 +338,9 @@ ${currentNavHeader}
     "readme",
     INDEX_MARKDOWN_PATH,
   );
-  const overviewHtmlPath = path.join(
-    getPublicPath(),
-    relativeFolder,
-    "readme",
-    INDEX_HTML_PATH,
-  );
-  const readmeRendered = `# ${repoMeta.name}
+  const overviewTitle = `${fileConfig.name} Overview`;
+
+  const readmeRendered = `# ${overviewTitle}
 
 ${repoMeta.description}
 
@@ -363,8 +358,19 @@ ${readmeContent}
   if (isBuildHtml) {
     // add body, css to feed
     const body = renderMarkdown(readmeRendered);
+    const overviewSeoTitle =
+      `${fileConfig.name} (${sourceIdentifier}) Overview`;
+    const overviewFeedInfo: FeedInfo = {
+      ...baseFeed,
+      title: overviewTitle,
+      _seo_title: `${overviewSeoTitle} - ${siteConfig.title}`,
+      description: repoMeta.description,
+      home_page_url: `${domain}/${relativeFolder}/readme/`,
+      feed_url: `${domain}/${relativeFolder}/feed.json`,
+      _nav_text: "",
+    };
     const htmlDoc = mustache.render(htmlIndexTemplateContent, {
-      _seo_title: `${titleCase(repoMeta.name)}`,
+      ...overviewFeedInfo,
       body: body,
       CSS,
     });

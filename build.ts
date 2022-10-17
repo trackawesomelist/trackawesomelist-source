@@ -3,6 +3,7 @@ import { fs, path, pLimit } from "./deps.ts";
 import {
   DayInfo,
   Feed,
+  FeedInfo,
   File,
   FileInfo,
   FileMetaWithSource,
@@ -15,6 +16,7 @@ import {
 import {
   INDEX_MARKDOWN_PATH,
   RECENTLY_UPDATED_COUNT,
+  SUBSCRIPTION_URL,
   TOP_REPOS_COUNT,
 } from "./constant.ts";
 import {
@@ -356,21 +358,35 @@ export default async function buildMarkdown(options: RunOptions) {
     for (let i = 0; i < 2; i++) {
       const isDay = i === 0;
       let lastItems: Record<string, Item> = {};
+      let jsonFeedItems: Record<string, Item> = {};
       if (isDay) {
         lastItems = getItemsByDays(
           db,
-          allDays.slice(0, 2).map((item) => item.number),
+          allDays.slice(0, 3).map((item) => item.number),
+        );
+        jsonFeedItems = getItemsByDays(
+          db,
+          allDays.slice(1, 15).map((item) => item.number),
         );
       } else {
         lastItems = getItemsByWeeks(
           db,
-          allWeeks.slice(0, 2).map((item) => item.number),
+          allWeeks.slice(0, 1).map((item) => item.number),
+        );
+        jsonFeedItems = getItemsByDays(
+          db,
+          allWeeks.slice(1, 4).map((item) => item.number),
         );
       }
 
       // console.log("lastItems", lastItems);
       const feedItems = itemsToFeedItemsByDate(lastItems, config, isDay);
 
+      const jsonFeedItemsByDate = itemsToFeedItemsByDate(
+        jsonFeedItems,
+        config,
+        isDay,
+      );
       const indexMarkdownDistPath = path.join(
         getDistRepoContentPath(),
         isDay ? INDEX_MARKDOWN_PATH : `week/${INDEX_MARKDOWN_PATH}`,
@@ -378,30 +394,29 @@ export default async function buildMarkdown(options: RunOptions) {
       const baseFeed = getBaseFeed();
       let indexNav = "";
       if (isDay) {
-        indexNav = `[View by Weekly](/week/README.md)· [Feed](${
+        indexNav = `[📅 Weekly](/week/README.md) · [🔥 Feed](${
           pathnameToFeedUrl("/", true)
-        }) · 📝 ${formatHumanTime(dbItemsLatestUpdatedAt)} · ✅ ${
-          formatHumanTime(new Date(dbMeta.checked_at))
-        }`;
+        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · 📝 ${
+          formatHumanTime(dbItemsLatestUpdatedAt)
+        } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       } else {
-        indexNav = `[Home](/README.md)· [Feed](${
+        indexNav = `[🏠 Home](/README.md)· [🔥 Feed](${
           pathnameToFeedUrl("/week/", true)
-        }) · 📝 ${formatHumanTime(dbItemsLatestUpdatedAt)} · ✅ ${
-          formatHumanTime(new Date(dbMeta.checked_at))
-        }`;
+        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · 📝 ${
+          formatHumanTime(dbItemsLatestUpdatedAt)
+        } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       }
-      const indexFeed: Feed = {
+      const indexFeed: FeedInfo = {
         ...baseFeed,
-        title: "Track Awesome List Updates Daily",
+        title: "Track Awesome List Updates " + (isDay ? "Daily" : "Weekly"),
         description: config.site.description,
         _nav_text: indexNav,
         _seo_title:
-          `${config.site.title} - Track your Favorite Github Awesome Repo Weekly`,
-        home_page_url: config.site.url,
-        feed_url: config.site.url + "/feed.json",
-        items: [
-          ...feedItems.slice(1),
-        ],
+          `${config.site.title} - Track your Favorite Github Awesome List ${
+            isDay ? "Daily" : "Weekly"
+          }`,
+        home_page_url: config.site.url + (isDay ? "/" : "/week/"),
+        feed_url: config.site.url + (isDay ? "/" : "/week/") + "feed.json",
       };
       const groupByCategory = (sourceIdentifier: string) => {
         const sourceConfig = sourcesConfig[sourceIdentifier];
@@ -432,10 +447,7 @@ export default async function buildMarkdown(options: RunOptions) {
         sortedRepos,
         items: feedItems,
         list,
-        feed: {
-          ...indexFeed,
-          items: [],
-        },
+        feed: indexFeed,
       };
       // build summary.md
       let summary = "# Track Awesome List\n\n [README](README.md)\n\n";
@@ -533,10 +545,15 @@ export default async function buildMarkdown(options: RunOptions) {
           getPublicPath(),
           isDay ? "feed.json" : `week/feed.json`,
         );
-        await writeJSONFile(feedJsonDistPath, indexFeed);
+        const finalFeed = {
+          ...indexFeed,
+          items: jsonFeedItemsByDate,
+        };
+
+        await writeJSONFile(feedJsonDistPath, finalFeed);
         // build rss
         // @ts-ignore: node modules
-        const feedOutput = jsonfeedToAtom(indexFeed, {
+        const feedOutput = jsonfeedToAtom(finalFeed, {
           language: "en",
         });
         const rssDistPath = path.join(
