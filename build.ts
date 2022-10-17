@@ -1,4 +1,4 @@
-import { groupBy, jsonfeedToAtom, mustache } from "./deps.ts";
+import { CSS, groupBy, jsonfeedToAtom, mustache } from "./deps.ts";
 import { fs, path, pLimit } from "./deps.ts";
 import {
   DayInfo,
@@ -13,6 +13,7 @@ import {
   RunOptions,
   WeekOfYear,
 } from "./interface.ts";
+import renderMarkdown from "./render-markdown.ts";
 import {
   INDEX_MARKDOWN_PATH,
   RECENTLY_UPDATED_COUNT,
@@ -66,6 +67,9 @@ export default async function buildMarkdown(options: RunOptions) {
   const dbMeta = await getDbMeta();
   const dbSources = dbMeta.sources;
   let dbItemsLatestUpdatedAt = new Date(0);
+  const htmlIndexTemplateContent = await readTextFile(
+    "./templates/index.html.mu",
+  );
   for (const sourceIdentifier of Object.keys(dbSources)) {
     const source = dbSources[sourceIdentifier];
     const files = source.files;
@@ -373,7 +377,7 @@ export default async function buildMarkdown(options: RunOptions) {
           db,
           allWeeks.slice(0, 1).map((item) => item.number),
         );
-        jsonFeedItems = getItemsByDays(
+        jsonFeedItems = getItemsByWeeks(
           db,
           allWeeks.slice(1, 4).map((item) => item.number),
         );
@@ -535,11 +539,18 @@ export default async function buildMarkdown(options: RunOptions) {
         log.info(`build ${indexMarkdownDistPath} success`);
       }
       if (isBuildSite) {
-        await buildHtmlFile(
-          indexMarkdownDistPath,
-          htmlTemplate,
-        );
+        const body = renderMarkdown(itemMarkdownContentRendered);
+        const htmlDoc = mustache.render(htmlIndexTemplateContent, {
+          ...indexFeed,
+          body,
+          CSS,
+        });
 
+        const htmlPath = path.join(
+          getPublicPath(),
+          isDay ? "index.html" : "week/index.html",
+        );
+        await writeTextFile(htmlPath, htmlDoc);
         // build feed json
         const feedJsonDistPath = path.join(
           getPublicPath(),
