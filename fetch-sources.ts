@@ -26,7 +26,9 @@ export default async function (options: RunOptions) {
   const file_min_updated_hours = config.file_min_updated_hours;
   const sourcesMap = config.sources;
   let sourceIdentifiers = options.sourceIdentifiers;
+  let isSpecificSource = true;
   if (sourceIdentifiers.length === 0) {
+    isSpecificSource = false;
     sourceIdentifiers = Object.keys(sourcesMap);
   }
   const dbMeta = await getDbMeta();
@@ -42,7 +44,7 @@ export default async function (options: RunOptions) {
     const source = sourcesMap[sourceIdentifier];
     const files = source.files;
 
-    if (!dbSources[sourceIdentifier] || isRebuild) {
+    if (!dbSources[sourceIdentifier] || (isSpecificSource && isRebuild)) {
       // need to init source
       await initItems(db, source, options);
       continue;
