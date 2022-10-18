@@ -10,7 +10,9 @@ import Github from "./adapters/github.ts";
 import {
   exists,
   getCachePath,
+  getDayNumber,
   getDbMeta,
+  getWeekNumber,
   readTextFile,
   sha1,
   writeDbMeta,
@@ -113,6 +115,8 @@ export default async function initItems(
           markdown: docItem.formatedMarkdown,
           sha1: itemSha1,
           checked_at: now.toISOString(),
+          updated_day: getDayNumber(updatedAt),
+          updated_week: getWeekNumber(updatedAt),
         };
         if (commitDate.getTime() > latestUpdatedAt.getTime()) {
           latestUpdatedAt = commitDate;

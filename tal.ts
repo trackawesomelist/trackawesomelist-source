@@ -18,6 +18,7 @@ export default async function tal() {
     .option("-d, --debug", "Enable debug output.")
     .option("-f, --force", "Force update markdown.")
     .option("--force-fetch", "Force update sources.")
+    .option("--rebuild", "rebuild updates from git repo")
     .option("-p, --push", "Push markdown to remote.")
     .option("--no-fetch", "Don't fetch remote sources.")
     .option("--no-markdown", "do not build markdown file.")

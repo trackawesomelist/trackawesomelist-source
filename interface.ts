@@ -130,6 +130,7 @@ export interface CliOptions {
   markdown: boolean;
   fetch: boolean;
   dayMarkdown: boolean;
+  rebuild?: boolean;
   html?: boolean;
   serve: boolean;
   port: number;

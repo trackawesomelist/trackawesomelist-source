@@ -18,7 +18,7 @@ on:
         description: "limit count, for debug"
         required: false
         default: ""
-  push:
+  # push:
     # branches:
     #   - main
     # paths-ignore:

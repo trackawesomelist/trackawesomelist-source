@@ -21,6 +21,7 @@ import Github from "./adapters/github.ts";
 import { getItems, updateFile, updateItems } from "./db.ts";
 export default async function (options: RunOptions) {
   const force = options.forceFetch;
+  const isRebuild = options.rebuild;
   const config = options.config;
   const file_min_updated_hours = config.file_min_updated_hours;
   const sourcesMap = config.sources;
@@ -41,7 +42,7 @@ export default async function (options: RunOptions) {
     const source = sourcesMap[sourceIdentifier];
     const files = source.files;
 
-    if (!dbSources[sourceIdentifier]) {
+    if (!dbSources[sourceIdentifier] || isRebuild) {
       // need to init source
       await initItems(db, source, options);
       continue;
