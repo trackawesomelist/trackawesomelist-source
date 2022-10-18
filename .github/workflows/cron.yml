@@ -59,7 +59,7 @@ jobs:
       #       prod-cache
       #     key: cache-${{ hashFiles('**/*deps.ts') }}
       # - run: make install
-      - run: make prod-build ${{ github.event.inputs.args }}
+      - run: "make prod-build args='${{ github.event.inputs.args }}'"
         id: source
         continue-on-error: true
         env:
