@@ -9,9 +9,9 @@ on:
         description: "Force all sources to build"
         type: string
         required: false
-      source:
+      args:
         default: ""
-        description: "source to build"
+        description: "args to build"
         type: string
         required: false
       limit:
@@ -59,7 +59,7 @@ jobs:
       #       prod-cache
       #     key: cache-${{ hashFiles('**/*deps.ts') }}
       # - run: make install
-      - run: make prod-build ${{ github.event.inputs.source }}
+      - run: make prod-build ${{ github.event.inputs.args }}
         id: source
         continue-on-error: true
         env:
