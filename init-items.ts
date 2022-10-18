@@ -115,8 +115,8 @@ export default async function initItems(
           markdown: docItem.formatedMarkdown,
           sha1: itemSha1,
           checked_at: now.toISOString(),
-          updated_day: getDayNumber(updatedAt),
-          updated_week: getWeekNumber(updatedAt),
+          updated_day: getDayNumber(new Date(updatedAt)),
+          updated_week: getWeekNumber(new Date(updatedAt)),
         };
         if (commitDate.getTime() > latestUpdatedAt.getTime()) {
           latestUpdatedAt = commitDate;
