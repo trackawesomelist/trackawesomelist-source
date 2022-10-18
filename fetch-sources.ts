@@ -1,6 +1,8 @@
 import {
+  getDayNumber,
   getDbMeta,
   getItemsFilePath,
+  getWeekNumber,
   sha1,
   writeDbMeta,
   writeJSONFile,
@@ -123,7 +125,7 @@ export default async function (options: RunOptions) {
         const newItems: Record<string, Item> = {};
         let newCount = 0;
         let totalCount = 0;
-        let updatedAt = new Date(0);
+        let fileUpdatedAt = new Date(0);
 
         for (const docItem of docItems) {
           const itemSha1 = await sha1(docItem.rawMarkdown);
@@ -133,8 +135,8 @@ export default async function (options: RunOptions) {
             // it's a old item,
             // stay the same
             newItems[itemSha1] = items[itemSha1];
-            if (new Date(items[itemSha1].updated_at) > updatedAt) {
-              updatedAt = new Date(items[itemSha1].updated_at);
+            if (new Date(items[itemSha1].updated_at) > fileUpdatedAt) {
+              fileUpdatedAt = new Date(items[itemSha1].updated_at);
             }
           } else {
             newCount++;
@@ -150,9 +152,11 @@ export default async function (options: RunOptions) {
               category: docItem.category,
               updated_at: now.toISOString(),
               checked_at: now.toISOString(),
+              updated_day: getDayNumber(now),
+              updated_week: getWeekNumber(now),
             };
-            if (now > updatedAt) {
-              updatedAt = now;
+            if (now > fileUpdatedAt) {
+              fileUpdatedAt = now;
             }
           }
         }
@@ -162,7 +166,7 @@ export default async function (options: RunOptions) {
 
         dbFiles[file] = {
           ...dbFiles[file],
-          updated_at: updatedAt.toISOString(),
+          updated_at: fileUpdatedAt.toISOString(),
           checked_at: now.toISOString(),
           sha1: contentSha1,
         };

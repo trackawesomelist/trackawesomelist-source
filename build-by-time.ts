@@ -8,44 +8,29 @@ import {
   FeedItem,
   Item,
   ItemDetail,
-  ItemsJson,
-  PaginationInfo,
   RunOptions,
-  Source,
 } from "./interface.ts";
 import {
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
-  RECENTLY_UPDATED_COUNT,
   SUBSCRIPTION_URL,
 } from "./constant.ts";
 import {
-  exists,
   getBaseFeed,
-  getDataItemsPath,
-  getDataRawPath,
   getDistRepoContentPath,
-  getDistRepoGitUrl,
-  getDistRepoPath,
   getDomain,
   getPublicPath,
-  getUTCDay,
-  isDev,
   parseDayInfo,
-  parseItemsFilepath,
   parseWeekInfo,
   pathnameToFeedUrl,
   pathnameToFilePath,
-  readJSONFile,
   readTextFile,
-  sha1,
-  walkFile,
   writeJSONFile,
   writeTextFile,
 } from "./util.ts";
 import renderMarkdown from "./render-markdown.ts";
 import log from "./log.ts";
-import { getDayItems, getItems, getUpdatedFiles, getWeekItems } from "./db.ts";
+import { getDayItems, getWeekItems } from "./db.ts";
 let htmlIndexTemplateContent = "";
 function groupByFile(item: Item) {
   return item.source_identifier + "/" + item.file;

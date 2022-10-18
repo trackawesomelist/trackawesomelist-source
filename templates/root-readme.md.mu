@@ -6,18 +6,11 @@
 
 ## Table of Contents
 
-- [Recently Updated List](#recently-updated-list)
-- [Recently Updated Items](#recently-updated-items)
+- [Recently Updated](#recently-updated)
 - [Top 50 Awesome List](#top-50-awesome-list)
 - [All Tracked List](#all-tracked-list)
 
-## Recently Updated List
-
-{{#recentlyUpdated}}
-- [{{{name}}}]({{{url}}}) - ([Source]({{{source_url}}}))
-{{/recentlyUpdated}}
-
-## Recently Updated Items
+## Recently Updated 
 
 {{#items}}
 ### [{{{_short_title}}}]({{{_filepath}}})

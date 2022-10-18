@@ -16,7 +16,7 @@ export default async function tal() {
       "fetch repo updates when init there is a cache. for dev fast test",
     )
     .option("-d, --debug", "Enable debug output.")
-    .option("-f, --force", "Force update.")
+    .option("-f, --force", "Force update markdown.")
     .option("--force-fetch", "Force update sources.")
     .option("-p, --push", "Push markdown to remote.")
     .option("--no-fetch", "Don't fetch remote sources.")

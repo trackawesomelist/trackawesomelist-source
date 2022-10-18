@@ -17,7 +17,7 @@ build:
 
 .Phony: prod-build
 prod-build:
-	PROD=1 deno run -A tal.ts --html --no-serve
+	PROD=1 deno run -A tal.ts --html --no-serve ${source} 
 .Phony: startsource
 startsource:
 	deno run -A tal.ts ${source}

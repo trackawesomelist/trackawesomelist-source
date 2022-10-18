@@ -294,25 +294,6 @@ export default async function buildMarkdown(options: RunOptions) {
         });
       }
     }
-    const recentlyUpdated = allFilesMeta.sort((a, b) => {
-      return new Date(b.updated_at).getTime() -
-        new Date(a.updated_at).getTime();
-    }).slice(0, RECENTLY_UPDATED_COUNT).map((item) => {
-      const sourceConfig = sourcesConfig[item.sourceIdentifier];
-
-      const sourceFileConfig = sourceConfig.files[item.filepath];
-      const sourceMeta = dbSources[item.sourceIdentifier].meta;
-
-      return {
-        name: sourceFileConfig.name,
-        url: pathnameToFilePath(sourceFileConfig.pathname),
-        source_url: getRepoHTMLURL(
-          sourceConfig.url,
-          sourceMeta.default_branch,
-          item.filepath,
-        ),
-      };
-    });
     // top 50 repos
     const sortedRepos = dbSourcesKeys.sort(
       (aSourceIdentifier, bSourceIdentifier) => {
@@ -447,7 +428,6 @@ export default async function buildMarkdown(options: RunOptions) {
         };
       });
       const indexPageData = {
-        recentlyUpdated,
         sortedRepos,
         items: feedItems,
         list,
@@ -456,9 +436,6 @@ export default async function buildMarkdown(options: RunOptions) {
       // build summary.md
       let summary = "# Track Awesome List\n\n [README](README.md)\n\n";
       let allRepos = "\n- [All Tracked List](all-repos/README.md)";
-      const recentlyText = recentlyUpdated.reduce((acc, item) => {
-        return acc + `\n  - [${item.name}](${pathnameToFilePath(item.url)})`;
-      }, "\n- [Recently Updated](recently-updated/README.md)");
       const topReposText = sortedRepos.reduce((acc, item) => {
         return acc + `\n  - [${item.name}](${pathnameToFilePath(item.url)})`;
       }, "\n- [Top Repos](top/README.md)");
@@ -521,7 +498,7 @@ export default async function buildMarkdown(options: RunOptions) {
           );
         });
 
-      summary += recentlyText + topReposText + allRepos + daysText + weeksText;
+      summary += topReposText + allRepos + daysText + weeksText;
       const summaryMarkdownDistPath = path.join(
         getDistRepoContentPath(),
         "SUMMARY.md",

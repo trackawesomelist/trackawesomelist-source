@@ -19,8 +19,8 @@ on:
         required: false
         default: ""
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
     # paths-ignore:
     #   - "**.md"
   schedule:
@@ -59,7 +59,7 @@ jobs:
       #       prod-cache
       #     key: cache-${{ hashFiles('**/*deps.ts') }}
       # - run: make install
-      - run: make prod-build
+      - run: make prod-build ${{ github.event.inputs.source }}
         id: source
         continue-on-error: true
         env:
@@ -75,7 +75,8 @@ jobs:
           # TRANSLATE_COUNT: ${{ github.event.inputs.translate_count }}
           # TRANSLATE_TIMEOUT: ${{ github.event.inputs.translate_timeout }}
           PUSH: 1
-          FORCE: 1
+          # FORCE: 1
+          FORCE_FETCH: 1
           DIST_REPO: ${{ secrets.DIST_REPO }}
           PERSONAL_GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
           # FORCE: ${{ github.event.inputs.force_all }}
