@@ -1,7 +1,7 @@
 import API from "./api.ts";
 import { RepoMeta, RepoMetaOverride, Source } from "../interface.ts";
 import { base64 } from "../deps.ts";
-import { got, gotWithCache, isUseCache } from "../util.ts";
+import { got, gotWithCache, isUseCache, readTextFile } from "../util.ts";
 export default class github extends API {
   repo: string;
   headers: Headers;
@@ -30,7 +30,11 @@ export default class github extends API {
   }
   async getConent(filePath: string): Promise<string> {
     const url = `${this.apiPrefix}/repos/${this.repo}/contents/${filePath}`;
+
     let result;
+    // temp test content
+
+    return readTextFile("./example/data/1-raw/heading.md");
     if (isUseCache()) {
       result = await gotWithCache(
         url,

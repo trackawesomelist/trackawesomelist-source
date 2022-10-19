@@ -45,7 +45,6 @@ import { getFile, getItems } from "./db.ts";
 import renderMarkdown from "./render-markdown.ts";
 let htmlIndexTemplateContent = "";
 export default async function main(
-  db: DB,
   fileInfo: FileInfo,
   runOptions: RunOptions,
   buildOptions: BuildOptions,
@@ -54,6 +53,7 @@ export default async function main(
   const config = runOptions.config;
   const siteConfig = config.site;
   const dbMeta = buildOptions.dbMeta;
+  const dbIndex = buildOptions.dbIndex;
   const dbSources = dbMeta.sources;
   const sourceConfig = fileInfo.sourceConfig;
   const sourceCategory = sourceConfig.category;
@@ -68,7 +68,7 @@ export default async function main(
   const sourceFileConfig = fileConfig;
   // get items
 
-  const items = getItems(db, sourceIdentifier, originalFilepath);
+  const items = await getItems(sourceIdentifier, originalFilepath);
   // const getDbFinishTime = Date.now();
   // log.debug(`get db items cost ${getDbFinishTime - startTime}ms`);
   const dbFileMeta = dbSource.files[originalFilepath];
@@ -312,7 +312,7 @@ ${feed._nav_text}${
   // first get readme content
 
   const buildOverviewMarkdownStartTime = Date.now();
-  const readmeContent = getFile(db, fileInfo);
+  const readmeContent = await getFile(sourceIdentifier, filepath);
 
   const currentNavHeader = `[ [Daily](${
     pathnameToFilePath(fileConfig.pathname)

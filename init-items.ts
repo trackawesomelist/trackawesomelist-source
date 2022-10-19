@@ -1,4 +1,6 @@
 import {
+  DBIndex,
+  DBMeta,
   FileInfo,
   Item,
   RepoMetaOverride,
@@ -23,9 +25,10 @@ import parser from "./parser/mod.ts";
 import getGitBlame from "./get-git-blame.ts";
 import { updateFile, updateItems } from "./db.ts";
 export default async function initItems(
-  db: DB,
   source: Source,
   options: RunOptions,
+  dbMeta: DBMeta,
+  dbIndex: DBIndex,
 ) {
   // first get repo meta info from api
   const api = new Github(source);
@@ -34,7 +37,6 @@ export default async function initItems(
     metaOverrides.default_branch = source.default_branch;
   }
   const meta = await api.getRepoMeta(metaOverrides);
-  const dbMeta = await getDbMeta();
   const sources = dbMeta.sources;
   //check repo folder is empty
   const repoPath = path.join(getCachePath(), "repos", source.identifier);
@@ -98,6 +100,7 @@ export default async function initItems(
       filepath: file,
     };
     const docItems = await parser(content, fileInfo);
+    // console.log("docItems", docItems);
     let latestUpdatedAt = new Date(0);
     for (const docItem of docItems) {
       const now = new Date();
@@ -150,8 +153,8 @@ export default async function initItems(
     // await writeJSONFile(formatedPath, itemsJson);
     // write to db
 
-    updateFile(db, fileInfo, contentSha1, content);
-    updateItems(db, fileInfo, items);
+    await updateFile(fileInfo, content);
+    await updateItems(fileInfo, items, dbIndex);
 
     log.info(
       `init ${source.identifier}/${file} success, total ${
@@ -160,6 +163,4 @@ export default async function initItems(
     );
   }
   dbMeta.sources = sources;
-  dbMeta.checked_at = now.toISOString();
-  await writeDbMeta(dbMeta);
 }

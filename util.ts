@@ -17,8 +17,11 @@ import {
   BaseFeed,
   Config,
   DayInfo,
+  DBIndex,
   DBMeta,
   FileConfig,
+  FileConfigInfo,
+  FileInfo,
   Item,
   ItemDetail,
   Pagination,
@@ -604,17 +607,24 @@ export function getDbMetaFilePath() {
   );
   return dbMetaFilePath;
 }
+export function getDbIndexFilePath() {
+  const dbMetaFilePath = path.join(
+    getDbPath(),
+    "index.json",
+  );
+  return dbMetaFilePath;
+}
 export async function getDbMeta(): Promise<DBMeta> {
   // first check local
   const dbMetaFilePath = getDbMetaFilePath();
-  try {
-    const dbMeta = await readJSONFile(dbMetaFilePath) as DBMeta;
-    return dbMeta;
-  } catch (_e) {
-    // not found, read from remote
-    const dbMeta = await getRemoteData<DBMeta>(dbMetaFilePath);
-    return dbMeta;
-  }
+  const dbMeta = await readJSONFile(dbMetaFilePath) as DBMeta;
+  return dbMeta;
+}
+export async function getDbIndex(): Promise<DBIndex> {
+  // first check local
+  const dbMetaFilePath = getDbIndexFilePath();
+  const dbMeta = await readJSONFile(dbMetaFilePath) as DBIndex;
+  return dbMeta;
 }
 export async function writeDbMeta(dbMeta: DBMeta): Promise<void> {
   // first check local
@@ -622,7 +632,12 @@ export async function writeDbMeta(dbMeta: DBMeta): Promise<void> {
   await writeJSONFile(dbMetaFilePath, dbMeta);
 }
 
-export function getRemoteData<T>(file: string): T {
+export async function writeDbIndex(dbIndex: DBIndex): Promise<void> {
+  // first check local
+  const dbIndexFilePath = getDbIndexFilePath();
+  await writeJSONFile(dbIndexFilePath, dbIndex);
+}
+export function getRemoteData<T>(_file: string): T {
   throw new Error("not implemented");
   // return {
   //   sources: {},
@@ -657,7 +672,8 @@ export function urlToFilePath(url: string): string {
 }
 export function pathnameToFilePath(pathname: string): string {
   // is ends with /
-  if (pathname.endsWith("/")) {
+  const basename = posixPath.basename(pathname);
+  if (pathname.endsWith("/") || !basename.includes(".")) {
     return posixPath.join(
       "/",
       CONTENT_DIR,
@@ -941,4 +957,29 @@ export function getPaginationTextByNumber(
     },
   }, "/" + currentDay.path + "/");
   return paginationText;
+}
+
+export function getDbItemsPath(
+  sourceIdentifier: string,
+  filepath: string,
+): string {
+  return path.join(
+    getDbPath(),
+    "repos",
+    sourceIdentifier,
+    filepath,
+    "items.json",
+  );
+}
+export function getDbContentPath(
+  sourceIdentifier: string,
+  filepath: string,
+): string {
+  return path.join(
+    getDbPath(),
+    "repos",
+    sourceIdentifier,
+    filepath,
+    "README.md",
+  );
 }

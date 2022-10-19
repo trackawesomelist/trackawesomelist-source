@@ -18,7 +18,7 @@ export interface ParseOptions {
   min_heading_level?: number;
   max_heading_level?: number;
   heading_level?: number; // only need for heading type
-  type: "table" | "list";
+  type: "table" | "list" | "heading";
   is_parse_category?: boolean;
 }
 export interface DayInfo {
@@ -79,7 +79,6 @@ export interface FileConfigInfo {
 }
 export interface FileInfo extends FileConfigInfo {
   sourceMeta: DbMetaSource;
-  sourceConfig: Source;
   filepath: string;
 }
 export interface FormatMarkdownItemOptions {
@@ -118,7 +117,6 @@ export interface Config extends RawConfig {
 export interface RunOptions extends CliOptions {
   config: Config;
   sourceIdentifiers: string[];
-  db: DB;
 }
 export interface CliOptions {
   debug?: boolean;
@@ -171,6 +169,7 @@ export interface PaginationInfo {
 export interface BuildOptions {
   paginationText: string;
   dbMeta: DBMeta;
+  dbIndex: DBIndex;
 }
 export interface RepoMeta {
   name: string;
@@ -219,7 +218,12 @@ export interface DBMeta {
   sources: Record<string, DbMetaSource>;
   checked_at: string;
 }
-
+export interface IndexItem {
+  t: number;
+  d: number;
+  w: number;
+}
+export type DBIndex = Record<string, IndexItem>;
 export interface Author {
   url: string;
   name: string;

@@ -19,6 +19,8 @@
 
 {{/items}}
 
+{{p}}
+
 
 ## Top 50 Awesome List
 
@@ -29,9 +31,9 @@
 ## All Tracked List
 
 {{#list}}
-- {{category}}
+### {{category}}
 {{#items}}
-  - [{{{name}}}]({{{url}}}) - {{{description}}}
+- [{{{name}}}]({{{url}}}) - {{{description}}}
 {{/items}}
 {{/list}}
 

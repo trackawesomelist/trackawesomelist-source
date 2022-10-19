@@ -1,21 +1,12 @@
-import { Command, DB, flags } from "./deps.ts";
 import log from "./log.ts";
 import fetchSources from "./fetch-sources.ts";
 import build from "./build.ts";
 import serverMarkdown from "./serve-markdown.ts";
 import servePublic from "./serve-public.ts";
-import {
-  getConfig,
-  getDbMetaFilePath,
-  getFormatedSource,
-  getSqlitePath,
-  isDev,
-  writeJSONFile,
-} from "./util.ts";
+import { getConfig, getFormatedSource, getSqlitePath, isDev } from "./util.ts";
 import { CliOptions, RunOptions } from "./interface.ts";
 import initDb from "./init-db.ts";
 // import db init meta json
-import dbInitMeta from "./db-meta-init.json" assert { type: "json" };
 export default async function main(cliOptions: CliOptions, ...args: string[]) {
   if (cliOptions.debug) {
     log.setLevel("debug");
@@ -41,23 +32,14 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
   const isBuildHtml = cliOptions.html || false;
   const autoInit = cliOptions.autoInit;
   if (autoInit || (isDev())) {
-    // check is db meta exists
-    const dbMetaFilePath = getDbMetaFilePath();
-    if (!await Deno.stat(dbMetaFilePath).catch(() => false)) {
-      log.info("db meta not found, auto init");
-      // copy db-meta-init.json
-      await writeJSONFile(dbMetaFilePath, dbInitMeta);
-    }
+    await initDb();
   }
   // init sqlite db
   // te
   // Open a database
-  const db = new DB(getSqlitePath());
-  initDb(db);
   const runOptions: RunOptions = {
     config: config,
     sourceIdentifiers: args,
-    db,
     ...cliOptions,
   };
   log.info(
@@ -86,6 +68,4 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
   } else {
     log.info("skip serve site");
   }
-  // Close connection
-  db.close();
 }

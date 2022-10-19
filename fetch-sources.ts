@@ -1,9 +1,11 @@
 import {
   getDayNumber,
+  getDbIndex,
   getDbMeta,
   getItemsFilePath,
   getWeekNumber,
   sha1,
+  writeDbIndex,
   writeDbMeta,
   writeJSONFile,
 } from "./util.ts";
@@ -13,6 +15,7 @@ import {
   FileInfo,
   Item,
   ItemsJson,
+  ParsedItemsFilePath,
   RepoMetaOverride,
   RunOptions,
 } from "./interface.ts";
@@ -31,10 +34,16 @@ export default async function (options: RunOptions) {
     isSpecificSource = false;
     sourceIdentifiers = Object.keys(sourcesMap);
   }
+  // limit
+  const limit = options.limit;
+  if (limit && limit > 0) {
+    sourceIdentifiers = sourceIdentifiers.slice(0, limit);
+  }
   const dbMeta = await getDbMeta();
+  const dbIndex = await getDbIndex();
   const dbSources = dbMeta.sources;
-  const db = options.db;
 
+  const invalidFiles: ParsedItemsFilePath[] = [];
   let sourceIndex = 0;
   for (const sourceIdentifier of sourceIdentifiers) {
     sourceIndex++;
@@ -46,7 +55,7 @@ export default async function (options: RunOptions) {
 
     if (!dbSources[sourceIdentifier] || (isSpecificSource && isRebuild)) {
       // need to init source
-      await initItems(db, source, options);
+      await initItems(source, options, dbMeta, dbIndex);
       continue;
     } else {
       // check is all files is init
@@ -58,7 +67,7 @@ export default async function (options: RunOptions) {
       });
       if (!isAllFilesInit) {
         // need to init source
-        await initItems(db, source, options);
+        await initItems(source, options, dbMeta, dbIndex);
         continue;
       }
     }
@@ -72,10 +81,9 @@ export default async function (options: RunOptions) {
     for (const file of fileKeys) {
       fileIndex++;
       const dbFileMeta = dbFiles[file];
-      const fileConfig = files[file];
       if (!dbFileMeta) {
         // reinit items
-        await initItems(db, source, options);
+        await initItems(source, options, dbMeta, dbIndex);
 
         break;
       }
@@ -116,7 +124,15 @@ export default async function (options: RunOptions) {
         log.info(`${file} is up to date, cause sha1 is same`);
         continue;
       } else {
-        const items = await getItems(db, sourceIdentifier, file);
+        let items: Record<string, Item> = {};
+        try {
+          items = await getItems(sourceIdentifier, file);
+        } catch (e) {
+          log.warn(`get items error`, e);
+          // try to reinit
+          await initItems(source, options, dbMeta, dbIndex);
+          continue;
+        }
         const fileInfo: FileInfo = {
           sourceConfig: source,
           filepath: file,
@@ -137,7 +153,17 @@ export default async function (options: RunOptions) {
           if (items[itemSha1]) {
             // it's a old item,
             // stay the same
-            newItems[itemSha1] = items[itemSha1];
+            newItems[itemSha1] = {
+              source_identifier: sourceIdentifier,
+              file,
+              sha1: itemSha1,
+              markdown: docItem.formatedMarkdown,
+              category: docItem.category,
+              updated_at: items[itemSha1].updated_at,
+              checked_at: now.toISOString(),
+              updated_day: items[itemSha1].updated_day,
+              updated_week: items[itemSha1].updated_week,
+            };
             if (new Date(items[itemSha1].updated_at) > fileUpdatedAt) {
               fileUpdatedAt = new Date(items[itemSha1].updated_at);
             }
@@ -164,8 +190,8 @@ export default async function (options: RunOptions) {
           }
         }
 
-        await updateFile(db, fileInfo, contentSha1, content);
-        updateItems(db, fileInfo, newItems);
+        await updateFile(fileInfo, content);
+        await updateItems(fileInfo, newItems, dbIndex);
 
         dbFiles[file] = {
           ...dbFiles[file],
@@ -176,6 +202,13 @@ export default async function (options: RunOptions) {
         log.info(
           `${sourceIndex}/${sourceIdentifiers.length} ${sourceIdentifier}/${file} updated, ${newCount} new items, ${totalCount} total items`,
         );
+        if (totalCount < 10) {
+          invalidFiles.push({
+            sourceIdentifier,
+            originalFilepath: file,
+          });
+        }
+        // if total count is 0, print it``
         // also update repoMeta
 
         const metaOverrides: RepoMetaOverride = {};
@@ -192,8 +225,14 @@ export default async function (options: RunOptions) {
     }
     dbMeta.sources[sourceIdentifier].files = dbFiles;
     dbMeta.sources[sourceIdentifier].updated_at = new Date().toISOString();
-    dbMeta.checked_at = new Date().toISOString();
-    // write to dbMeta
-    await writeDbMeta(dbMeta);
+  }
+  // write to dbMeta
+  await writeDbMeta(dbMeta);
+  await writeDbIndex(dbIndex);
+
+  if (invalidFiles.length > 0) {
+    log.error(`Some files is invalid, please check it manually`);
+    log.error(invalidFiles);
+    await writeJSONFile("temp-invalid-files.json", invalidFiles);
   }
 }

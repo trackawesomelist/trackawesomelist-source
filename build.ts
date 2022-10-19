@@ -1,8 +1,7 @@
 import { CSS, groupBy, jsonfeedToAtom, mustache } from "./deps.ts";
-import { fs, path, pLimit } from "./deps.ts";
+import { fs, path } from "./deps.ts";
 import {
   DayInfo,
-  Feed,
   FeedInfo,
   File,
   FileInfo,
@@ -16,7 +15,6 @@ import {
 import renderMarkdown from "./render-markdown.ts";
 import {
   INDEX_MARKDOWN_PATH,
-  RECENTLY_UPDATED_COUNT,
   SUBSCRIPTION_URL,
   TOP_REPOS_COUNT,
 } from "./constant.ts";
@@ -24,6 +22,7 @@ import {
   exists,
   formatHumanTime,
   getBaseFeed,
+  getDbIndex,
   getDbMeta,
   getDistRepoContentPath,
   getDistRepoGitUrl,
@@ -38,6 +37,7 @@ import {
   readTextFile,
   slug,
   walkFile,
+  writeDbMeta,
   writeJSONFile,
   writeTextFile,
 } from "./util.ts";
@@ -47,11 +47,9 @@ import {
   getItemsByWeeks,
   getUpdatedDays,
   getUpdatedFiles,
-  getUpdatedWeeks,
 } from "./db.ts";
 import buildBySource from "./build-by-source.ts";
 import buildByTime, { itemsToFeedItemsByDate } from "./build-by-time.ts";
-import buildHtmlFile from "./build-html.ts";
 
 export default async function buildMarkdown(options: RunOptions) {
   const config = options.config;
@@ -65,6 +63,7 @@ export default async function buildMarkdown(options: RunOptions) {
     return;
   }
   const dbMeta = await getDbMeta();
+  const dbIndex = await getDbIndex();
   const dbSources = dbMeta.sources;
   let dbItemsLatestUpdatedAt = new Date(0);
   const htmlIndexTemplateContent = await readTextFile(
@@ -82,7 +81,6 @@ export default async function buildMarkdown(options: RunOptions) {
       }
     }
   }
-  const db = options.db;
   const startTime = new Date();
   log.info("start build markdown at " + startTime);
   // get last update time
@@ -105,10 +103,10 @@ export default async function buildMarkdown(options: RunOptions) {
     }
   } else {
     // is any updates
-    allUpdatedFiles = getUpdatedFiles(options.db, {
+    allUpdatedFiles = getUpdatedFiles({
       since_date: new Date(lastCheckedAt),
       source_identifiers: specificSourceIdentifiers,
-    });
+    }, dbIndex);
   }
   if (options.limit && options.limit > 0) {
     allUpdatedFiles = allUpdatedFiles.slice(0, options.limit);
@@ -183,12 +181,12 @@ export default async function buildMarkdown(options: RunOptions) {
         `[${updatedFileIndex}/${allUpdatedFiles.length}] ${file.source_identifier}/${file.file}`,
       );
       const builtInfo = await buildBySource(
-        db,
         fileInfo,
         options,
         {
           dbMeta,
           paginationText: "",
+          dbIndex,
         },
       );
 
@@ -204,19 +202,19 @@ export default async function buildMarkdown(options: RunOptions) {
       " seconds",
     );
 
-    const allDays = getUpdatedDays(db, {
+    const allDays = getUpdatedDays(dbIndex, {
       since_date: new Date(0),
-    });
-    const allWeeks = getUpdatedWeeks(db, {
+    }, true);
+    const allWeeks = getUpdatedDays(dbIndex, {
       since_date: new Date(0),
-    });
+    }, false);
     // only updated when there is no specific source
     if (options.dayMarkdown) {
       // update day file
-      let updatedDays = getUpdatedDays(db, {
+      let updatedDays = getUpdatedDays(dbIndex, {
         since_date: new Date(lastCheckedAt),
         source_identifiers: specificSourceIdentifiers,
-      });
+      }, true);
 
       if (options.limit && options.limit > 0) {
         updatedDays = updatedDays.slice(0, options.limit);
@@ -226,10 +224,15 @@ export default async function buildMarkdown(options: RunOptions) {
       log.info("start to build day markdown..., total: " + updatedDays.length);
       const startBuildDayTime = new Date();
       for (const day of updatedDays) {
-        const builtInfo = await buildByTime(db, day.number, options, {
+        const builtInfo = await buildByTime(day.number, options, {
           paginationText: getPaginationTextByNumber(day.number, allDays),
           dbMeta,
+          dbIndex,
         });
+        updatedDayIndex++;
+        log.debug(
+          `build day markdown [${updatedDayIndex}/${updatedDays.length}] ${day.path}`,
+        );
         commitMessage += builtInfo.commitMessage + "\n";
       }
       const endBuildDayTime = new Date();
@@ -243,10 +246,10 @@ export default async function buildMarkdown(options: RunOptions) {
 
       const startBuildWeekTime = new Date();
       // update week file
-      let updatedWeeks = getUpdatedWeeks(db, {
+      let updatedWeeks = getUpdatedDays(dbIndex, {
         since_date: new Date(lastCheckedAt),
         source_identifiers: specificSourceIdentifiers,
-      });
+      }, false);
       if (options.limit && options.limit > 0) {
         updatedWeeks = updatedWeeks.slice(0, options.limit);
       }
@@ -257,13 +260,14 @@ export default async function buildMarkdown(options: RunOptions) {
       );
       for (const day of updatedWeeks) {
         updatedWeekIndex++;
-        log.info(
-          `[${updatedWeekIndex}/${updatedWeeks.length}] ${day.path}`,
+        log.debug(
+          `build week markdown [${updatedWeekIndex}/${updatedWeeks.length}] ${day.path}`,
         );
 
-        const builtInfo = await buildByTime(db, day.number, options, {
+        const builtInfo = await buildByTime(day.number, options, {
           paginationText: getPaginationTextByNumber(day.number, allWeeks),
           dbMeta,
+          dbIndex,
         });
 
         commitMessage += builtInfo.commitMessage + "\n";
@@ -345,22 +349,26 @@ export default async function buildMarkdown(options: RunOptions) {
       let lastItems: Record<string, Item> = {};
       let jsonFeedItems: Record<string, Item> = {};
       if (isDay) {
-        lastItems = getItemsByDays(
-          db,
+        lastItems = await getItemsByDays(
           allDays.slice(0, 3).map((item) => item.number),
+          dbIndex,
+          isDay,
         );
-        jsonFeedItems = getItemsByDays(
-          db,
+        jsonFeedItems = await getItemsByDays(
           allDays.slice(1, 15).map((item) => item.number),
+          dbIndex,
+          isDay,
         );
       } else {
-        lastItems = getItemsByWeeks(
-          db,
+        lastItems = await getItemsByDays(
           allWeeks.slice(0, 1).map((item) => item.number),
+          dbIndex,
+          isDay,
         );
-        jsonFeedItems = getItemsByWeeks(
-          db,
+        jsonFeedItems = await getItemsByDays(
           allWeeks.slice(1, 4).map((item) => item.number),
+          dbIndex,
+          isDay,
         );
       }
 
@@ -635,4 +643,7 @@ export default async function buildMarkdown(options: RunOptions) {
   } else {
     log.info("no updated files, skip build markdown");
   }
+  // write dbMeta
+  dbMeta.checked_at = new Date().toISOString();
+  writeDbMeta(dbMeta);
 }

@@ -9,7 +9,8 @@
       "exclude": [
         "node_modules/",
         "public/",
-        "example",
+        "example/",
+        "example/**/*",
         "workers-site/",
         "current/",
         "dev-current/",
@@ -26,7 +27,7 @@
         "s3",
         "node_modules/",
         "public/",
-        "example",
+        "example/",
         "workers-site/",
         "current/",
         "dev-current/",

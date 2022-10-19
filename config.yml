@@ -35,6 +35,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
   FriendsOfCake/awesome-cakephp:
     category: Back-End Development
     default_branch: master
@@ -784,6 +786,11 @@ sources:
     files:
       readme.md:
         index: true
+        options:
+          type: heading
+          heading_level: 3
+          max_heading_level: 2
+          min_heading_level: 2
   jondot/awesome-devenv:
     category: Development Environment
     default_branch: master
@@ -832,6 +839,12 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 3
+          max_heading_level: 3
+          min_heading_level: 3
+          is_parse_category: false
   tiimgreen/github-cheat-sheet:
     category: Development Environment
     default_branch: master
@@ -850,12 +863,23 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 2
+          max_heading_level: 2
+          min_heading_level: 2
   git-tips/tips:
     category: Development Environment
     default_branch: master
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 2
+          max_heading_level: 2
+          min_heading_level: 2
+          is_parse_category: false
   CompSciLauren/awesome-git-hooks:
     category: Development Environment
     default_branch: master
@@ -946,6 +970,7 @@ sources:
     files:
       readme.md:
         index: true
+
   RichardLitt/awesome-fantasy:
     category: Entertainment
     default_branch: master
@@ -1084,12 +1109,6 @@ sources:
     files:
       README.md:
         index: true
-  willianjusten/awesome-svg:
-    category: Front-End Development
-    default_branch: master
-    files:
-      Readme.md:
-        index: true
   raphamorim/awesome-canvas:
     category: Front-End Development
     default_branch: main
@@ -1180,17 +1199,17 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          max_heading_level: 2
+          min_heading_level: 2
+          heading_level: 3
+          is_parse_category: false
   notthetup/awesome-webaudio:
     category: Front-End Development
     default_branch: master
     files:
       readme.md:
-        index: true
-  pazguille/offline-first:
-    category: Front-End Development
-    default_branch: master
-    files:
-      README.md:
         index: true
   agarrharr/awesome-static-website-services:
     category: Front-End Development
@@ -1252,12 +1271,6 @@ sources:
     default_branch: master
     files:
       readme.md:
-        index: true
-  jdrgomes/awesome-postcss:
-    category: Front-End Development
-    default_branch: master
-    files:
-      README.md:
         index: true
   nikgraf/awesome-draft-js:
     category: Front-End Development
@@ -3443,6 +3456,11 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 4
+          max_heading_level: 1
+          min_heading_level: 2
   paralax/awesome-honeypots:
     category: Security
     default_branch: master

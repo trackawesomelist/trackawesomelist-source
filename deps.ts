@@ -26,7 +26,6 @@ export { titleCase } from "https://esm.sh/title-case@3.0.3";
 export { default as camelCase } from "https://deno.land/x/lodash@4.17.15-es/camelCase.js";
 export { default as groupBy } from "https://deno.land/x/lodash@4.17.15-es/groupBy.js";
 export { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";
-export { DB } from "https://deno.land/x/sqlite@v3.5.0/mod.ts";
 // npm modules
 export { default as mustache } from "https://esm.sh/mustache@4.2.0";
 export { default as pLimit } from "https://esm.sh/p-limit@4.0.0";

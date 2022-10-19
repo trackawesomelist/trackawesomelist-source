@@ -1,5 +1,14 @@
 import { DocItem, FileInfo, ParseOptions } from "../../interface.ts";
-import { Content, fromMarkdown, Link, toMarkdown, visit } from "../../deps.ts";
+import {
+  Content,
+  fromMarkdown,
+  gfm,
+  gfmFromMarkdown,
+  gfmToMarkdown,
+  Link,
+  toMarkdown,
+  visit,
+} from "../../deps.ts";
 import { childrenToRoot, getRepoHTMLURL, promiseLimit } from "../../util.ts";
 import log from "../../log.ts";
 import formatMarkdownItem from "../../format-markdown-item.ts";
@@ -15,7 +24,10 @@ export default function (
     ? true
     : parseOptions.is_parse_category;
   const items: DocItem[] = [];
-  const tree = fromMarkdown(content, "utf8", {});
+  const tree = fromMarkdown(content, "utf8", {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
   let index = 0;
   let currentLevel = 0;
   let currentSubCategory = "";
@@ -106,20 +118,38 @@ export default function (
             }
             category += currentSubCategory.trim().replace(/\n/g, " ");
           }
-          funcs.push(() => {
-            return formatMarkdownItem(item, fileInfo).then((formatedItem) => {
-              return {
-                formatedMarkdown: toMarkdown(formatedItem).trim(),
-                rawMarkdown: toMarkdown(item).trim(),
-                category: isParseCategory ? category : "",
-                line: item.position!.end.line,
-              };
+          if (uglyIsValidCategory(fileInfo, category)) {
+            funcs.push(() => {
+              return formatMarkdownItem(item, fileInfo).then((formatedItem) => {
+                return {
+                  formatedMarkdown: toMarkdown(formatedItem, {
+                    extensions: [gfmToMarkdown()],
+                  }).trim(),
+                  rawMarkdown: toMarkdown(item, {
+                    extensions: [gfmToMarkdown()],
+                  }).trim(),
+                  category: isParseCategory ? category : "",
+                  line: item.position!.end.line,
+                };
+              });
             });
-          });
+          }
         }
       }
     }
   }
 
   return promiseLimit<DocItem>(funcs);
+}
+
+function uglyIsValidCategory(fileInfo: FileInfo, category: string): boolean {
+  const sourceConfig = fileInfo.sourceConfig;
+  const fileConfig = sourceConfig.files[fileInfo.filepath];
+  const sourceIdentifier = sourceConfig.identifier;
+  if (sourceIdentifier === "KotlinBy/awesome-kotlin") {
+    if (category.startsWith("Github Trending / ")) {
+      return false;
+    }
+  }
+  return true;
 }

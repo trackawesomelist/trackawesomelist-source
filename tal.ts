@@ -9,6 +9,7 @@ export default async function tal() {
     .env("FORCE=<enable:boolean>", "Enable force update.")
     .env("FORCE_FETCH=<enable:boolean>", "Enable force update fetch.")
     .env("PUSH=<enable:boolean>", "Enable push to remote repo.")
+    .env("REBUILD=<enable:boolean>", "Enable rebuild.")
     .env("LIMIT=<enable:number>", "Limit sources to build, for debug.")
     .env("DAY_MARKDOWN=<disable:boolean>", "Disable day markdown output.")
     .env(

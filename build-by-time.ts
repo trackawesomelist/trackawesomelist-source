@@ -30,19 +30,19 @@ import {
 } from "./util.ts";
 import renderMarkdown from "./render-markdown.ts";
 import log from "./log.ts";
-import { getDayItems, getWeekItems } from "./db.ts";
+import { getDayItems } from "./db.ts";
 let htmlIndexTemplateContent = "";
 function groupByFile(item: Item) {
   return item.source_identifier + "/" + item.file;
 }
 export default async function main(
-  db: DB,
   number: number,
   options: RunOptions,
   buildOptions: BuildOptions,
 ): Promise<BuiltMarkdownInfo> {
   // test is day or week
   const domain = getDomain();
+  const dbIndex = buildOptions.dbIndex;
   const isDay = number.toString().length === 8;
   const isBuildMarkdown = options.markdown || false;
   const isBuildSite = options.html || false;
@@ -73,14 +73,14 @@ export default async function main(
     title = `Awesome List Updates on ${dayInfo.name}`;
     distMarkdownRelativePath = dayInfo.path;
     // get items
-    items = getDayItems(db, number);
+    items = await getDayItems(number, dbIndex, isDay);
   } else {
     const weekInfo = parseWeekInfo(number);
     commitMessage = `Update week ${weekInfo.path}`;
     title = `Awesome List Updates on ${weekInfo.name}`;
     distMarkdownRelativePath = weekInfo.path;
     // get items
-    items = getWeekItems(db, number);
+    items = await getDayItems(number, dbIndex, isDay);
   }
   feedTitle = `${title}`;
   const feedItems = itemsToFeedItems(items, config);
