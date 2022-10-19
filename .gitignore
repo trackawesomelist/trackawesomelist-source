@@ -1,4 +1,5 @@
 /prod-current/
+*.zip
 /bin/
 /book/
 /current/

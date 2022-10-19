@@ -119,16 +119,22 @@ publish:
 prod-publish:
 	wrangler pages publish prod-public --project-name trackawesomelist
 
-
-.Phony: upload
-upload:
-	aws s3 cp ./db  s3://trackawesomelist/db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"
 .Phony: prod-upload
 prod-upload:
-	aws s3 cp ./prod-db  s3://trackawesomelist/prod-db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"
-.Phony: load
-load:
-	aws s3 cp s3://trackawesomelist/db ./db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"
+	make prod-zipdb && aws s3 cp ./prod-db.zip  s3://trackawesomelist/prod-db.zip --endpoint-url $(AWS_ENDPOINT) 
+
 .Phony: prod-load
 prod-load:
-	aws s3 cp s3://trackawesomelist/prod-db ./prod-db --endpoint-url $(AWS_ENDPOINT) --recursive --exclude ".*"
+	aws s3 cp s3://trackawesomelist/prod-db.zip ./prod-db.zip --endpoint-url $(AWS_ENDPOINT) && make prod-unzipdb
+
+.Phony: prod-zipdb
+prod-zipdb:
+	zip -r -q prod-db.zip ./prod-db -x "*/.*"
+
+.Phony: prod-unzipdb
+prod-unzipdb:
+	unzip -q prod-db.zip
+
+.Phony: prod-clean
+prod-clean:
+	aws s3 rm s3://trackawesomelist/ --recursive --endpoint-url $(AWS_ENDPOINT) 
