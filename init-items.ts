@@ -7,7 +7,7 @@ import {
   RunOptions,
   Source,
 } from "./interface.ts";
-
+import renderMarkdown from "./render-markdown.ts";
 import Github from "./adapters/github.ts";
 import {
   exists,
@@ -20,7 +20,7 @@ import {
   writeDbMeta,
 } from "./util.ts";
 import log from "./log.ts";
-import { DB, fs, path } from "./deps.ts";
+import { fs, path } from "./deps.ts";
 import parser from "./parser/mod.ts";
 import getGitBlame from "./get-git-blame.ts";
 import { updateFile, updateItems } from "./db.ts";
@@ -112,10 +112,12 @@ export default async function initItems(
         const updatedAt = commitDate.toISOString();
         items[itemSha1] = {
           category: docItem.category,
+          category_html: renderMarkdown(docItem.category),
           updated_at: updatedAt,
           source_identifier: source.identifier,
           file,
           markdown: docItem.formatedMarkdown,
+          html: renderMarkdown(docItem.formatedMarkdown),
           sha1: itemSha1,
           checked_at: now.toISOString(),
           updated_day: getDayNumber(new Date(updatedAt)),

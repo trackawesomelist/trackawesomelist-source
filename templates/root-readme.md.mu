@@ -2,7 +2,7 @@
 
 {{{feed.description}}}
 
-{{{feed._nav_text}}}
+{{{navText}}}
 
 ## Table of Contents
 
@@ -10,17 +10,11 @@
 - [Top 50 Awesome List](#top-50-awesome-list)
 - [All Tracked List](#all-tracked-list)
 
-## Recently Updated 
+## Recently Updated{{#items}}
 
-{{#items}}
 ### [{{{_short_title}}}]({{{_filepath}}})
 
-{{{content_text}}}
-
-{{/items}}
-
-{{p}}
-
+{{{content_text}}}{{/items}}{{paginationText}}
 
 ## Top 50 Awesome List
 
@@ -29,9 +23,10 @@
 {{/sortedRepos}}
 
 ## All Tracked List
-
 {{#list}}
+
 ### {{category}}
+
 {{#items}}
 - [{{{name}}}]({{{url}}}) - {{{description}}}
 {{/items}}

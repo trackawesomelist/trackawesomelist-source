@@ -22,6 +22,7 @@ import {
 import initItems from "./init-items.ts";
 import Github from "./adapters/github.ts";
 import { getItems, updateFile, updateItems } from "./db.ts";
+import renderMarkdown from "./render-markdown.ts";
 export default async function (options: RunOptions) {
   const force = options.forceFetch;
   const isRebuild = options.rebuild;
@@ -160,7 +161,9 @@ export default async function (options: RunOptions) {
                 file,
                 sha1: itemSha1,
                 markdown: docItem.formatedMarkdown,
+                html: renderMarkdown(docItem.formatedMarkdown),
                 category: docItem.category,
+                category_html: renderMarkdown(docItem.category),
                 updated_at: items[itemSha1].updated_at,
                 checked_at: now.toISOString(),
                 updated_day: items[itemSha1].updated_day,
@@ -180,7 +183,9 @@ export default async function (options: RunOptions) {
                 file,
                 sha1: itemSha1,
                 markdown: docItem.formatedMarkdown,
+                html: renderMarkdown(docItem.formatedMarkdown),
                 category: docItem.category,
+                category_html: renderMarkdown(docItem.category),
                 updated_at: now.toISOString(),
                 checked_at: now.toISOString(),
                 updated_day: getDayNumber(now),

@@ -22,16 +22,19 @@ import {
   exists,
   formatHumanTime,
   getBaseFeed,
+  getDayNumber,
   getDbIndex,
   getDbMeta,
   getDistRepoContentPath,
   getDistRepoGitUrl,
   getDistRepoPath,
   getIndexFileConfig,
+  getnextPaginationTextByNumber,
   getPaginationTextByNumber,
   getPublicPath,
   getRepoHTMLURL,
   getStaticPath,
+  getWeekNumber,
   pathnameToFeedUrl,
   pathnameToFilePath,
   readTextFile,
@@ -42,12 +45,7 @@ import {
   writeTextFile,
 } from "./util.ts";
 import log from "./log.ts";
-import {
-  getItemsByDays,
-  getItemsByWeeks,
-  getUpdatedDays,
-  getUpdatedFiles,
-} from "./db.ts";
+import { getItemsByDays, getUpdatedDays, getUpdatedFiles } from "./db.ts";
 import buildBySource from "./build-by-source.ts";
 import buildByTime, { itemsToFeedItemsByDate } from "./build-by-time.ts";
 
@@ -103,6 +101,7 @@ export default async function buildMarkdown(options: RunOptions) {
     }
   } else {
     // is any updates
+    log.info(`check updates since ${lastCheckedAt}`);
     allUpdatedFiles = getUpdatedFiles({
       since_date: new Date(lastCheckedAt),
       source_identifiers: specificSourceIdentifiers,
@@ -344,6 +343,8 @@ export default async function buildMarkdown(options: RunOptions) {
         ),
       };
     });
+    // write dbMeta
+    dbMeta.checked_at = new Date().toISOString();
     for (let i = 0; i < 2; i++) {
       const isDay = i === 0;
       let lastItems: Record<string, Item> = {};
@@ -403,7 +404,6 @@ export default async function buildMarkdown(options: RunOptions) {
         ...baseFeed,
         title: "Track Awesome List Updates " + (isDay ? "Daily" : "Weekly"),
         description: config.site.description,
-        _nav_text: indexNav,
         _seo_title:
           `${config.site.title} - Track your Favorite Github Awesome List ${
             isDay ? "Daily" : "Weekly"
@@ -435,11 +435,26 @@ export default async function buildMarkdown(options: RunOptions) {
           items,
         };
       });
+      const lastItem = feedItems[feedItems.length - 1];
+      const lastItemDate = lastItem.date_published;
+      const lastItemDateObj = new Date(lastItemDate);
+      let lastDayNumber = 0;
+      if (isDay) {
+        lastDayNumber = getDayNumber(lastItemDateObj);
+      } else {
+        lastDayNumber = getWeekNumber(lastItemDateObj);
+      }
+
       const indexPageData = {
         sortedRepos,
         items: feedItems,
         list,
         feed: indexFeed,
+        navText: indexNav,
+        paginationText: getnextPaginationTextByNumber(
+          lastDayNumber,
+          isDay ? allDays : allWeeks,
+        ),
       };
       // build summary.md
       let summary = "# Track Awesome List\n\n [README](README.md)\n\n";
@@ -642,8 +657,8 @@ export default async function buildMarkdown(options: RunOptions) {
     }
   } else {
     log.info("no updated files, skip build markdown");
+    // write dbMeta
+    dbMeta.checked_at = new Date().toISOString();
   }
-  // write dbMeta
-  dbMeta.checked_at = new Date().toISOString();
   writeDbMeta(dbMeta);
 }

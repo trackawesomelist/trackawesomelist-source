@@ -24,6 +24,7 @@ import {
   FileInfo,
   Item,
   ItemDetail,
+  Nav,
   Pagination,
   PaginationInfo,
   ParsedFilename,
@@ -43,6 +44,7 @@ import {
   PROD_DOMAIN,
 } from "./constant.ts";
 import { NotFound } from "./error.ts";
+import { underline } from "https://deno.land/std@0.158.0/fmt/colors.ts";
 export const SECOND = 1e3;
 export const MINUTE = SECOND * 60;
 export const HOUR = MINUTE * 60;
@@ -959,6 +961,28 @@ export function getPaginationTextByNumber(
   return paginationText;
 }
 
+export function getnextPaginationTextByNumber(
+  currentNumber: number,
+  allDays: (DayInfo | WeekOfYear)[],
+): string {
+  const currentDay = allDays.find((day: DayInfo | WeekOfYear) =>
+    day.number === currentNumber
+  );
+  if (currentDay === undefined) {
+    return "";
+  }
+  const currentDayIndex = allDays.indexOf(currentDay);
+  const nextDay = allDays[currentDayIndex + 1];
+
+  const paginationText = formatPagination({
+    prev: undefined,
+    next: nextDay === undefined ? undefined : {
+      title: nextDay.name,
+      pathname: "/" + nextDay.path + "/",
+    },
+  }, "/" + currentDay.path + "/");
+  return paginationText;
+}
 export function getDbItemsPath(
   sourceIdentifier: string,
   filepath: string,
@@ -982,4 +1006,53 @@ export function getDbContentPath(
     filepath,
     "README.md",
   );
+}
+
+export function getDbContentHtmlPath(
+  sourceIdentifier: string,
+  filepath: string,
+): string {
+  return path.join(
+    getDbPath(),
+    "repos",
+    sourceIdentifier,
+    filepath,
+    "README.html",
+  );
+}
+export function nav1ToMarkdown(nav1: Nav[]) {
+  return nav1.map((item) => {
+    if (item.url) {
+      return `[${item.name}](${item.markdown_url || item.url})`;
+    } else {
+      return item.name;
+    }
+  }).join(" · ");
+}
+export function nav2ToMarkdown(nav1: Nav[]) {
+  return "[ " + nav1.map((item) => {
+    if (item.url && !item.active) {
+      return `[${item.name}](${item.markdown_url || item.url})`;
+    } else {
+      return item.name;
+    }
+  }).join(" / ") + " ]";
+}
+export function nav1ToHtml(nav1: Nav[]) {
+  return nav1.map((item) => {
+    if (item.url) {
+      return `<a href="${item.url}">${item.name}</a>`;
+    } else {
+      return `<span>${item.name}</span>`;
+    }
+  }).join("<span> · </span>");
+}
+export function nav2ToHtml(nav1: Nav[]) {
+  return "<span>[ </span>" + nav1.map((item) => {
+    if (item.url && !item.active) {
+      return `<a href="${item.url}">${item.name}</a>`;
+    } else {
+      return `<span>${item.name}</span>`;
+    }
+  }).join("<span> / </span>") + "<span> ]</span>";
 }

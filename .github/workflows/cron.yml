@@ -18,11 +18,11 @@ on:
         description: "limit count, for debug"
         required: false
         default: ""
-  # push:
-    # branches:
-    #   - main
-    # paths-ignore:
-    #   - "**.md"
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
   schedule:
     - cron: "9 1 * * *"
 jobs:

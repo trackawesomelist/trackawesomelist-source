@@ -8,3 +8,7 @@ export const DEFAULT_CATEGORY = "Miscellaneous";
 export const CONTENT_DIR = "content";
 export const SUBSCRIPTION_URL =
   "https://trackawesomelist.us17.list-manage.com/subscribe?u=d2f0117aa829c83a63ec63c2f&id=36a103854c";
+
+export const HOME_NAV = "🏠 Home";
+export const FEED_NAV = "🔥 Feed";
+export const SUBSCRIBE_NAV = "📮 Subscribe";

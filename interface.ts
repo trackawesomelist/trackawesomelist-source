@@ -89,6 +89,16 @@ export interface FormatMarkdownItemOptions {
 export interface RawSourceFileWithType extends RawSourceFile {
   options: ParseOptions;
 }
+export interface Nav {
+  name: string;
+  active?: boolean;
+  markdown_url?: string;
+  url?: string;
+}
+export interface FeedConfig {
+  nav1: Nav[];
+  nav2?: Nav[];
+}
 export interface FileConfig extends RawSourceFile {
   filepath: string;
   pathname: string;
@@ -139,7 +149,9 @@ export interface Item {
   updated_day: number;
   updated_week: number;
   category: string;
+  category_html: string;
   markdown: string;
+  html: string;
   sha1: string;
   source_identifier: string;
   file: string;
@@ -261,7 +273,6 @@ export interface FeedInfo extends BaseFeed {
   description: string;
   home_page_url: string;
   feed_url: string;
-  _nav_text: string;
 }
 export interface Feed extends FeedInfo {
   items: FeedItem[];

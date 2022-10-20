@@ -6,6 +6,7 @@ import servePublic from "./serve-public.ts";
 import { getConfig, getFormatedSource, getSqlitePath, isDev } from "./util.ts";
 import { CliOptions, RunOptions } from "./interface.ts";
 import initDb from "./init-db.ts";
+import buildHtml from "./build-html.ts";
 // import db init meta json
 export default async function main(cliOptions: CliOptions, ...args: string[]) {
   if (cliOptions.debug) {
@@ -54,6 +55,12 @@ export default async function main(cliOptions: CliOptions, ...args: string[]) {
   }
   // 2. build markdowns, and htmls
   await build(runOptions);
+
+  // 3. build html
+  //
+  // if (isBuildHtml) {
+  //   await buildHtml(runOptions);
+  // }
 
   // 3. serve site
   if (runOptions.serve) {

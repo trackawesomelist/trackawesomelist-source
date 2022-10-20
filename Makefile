@@ -37,7 +37,7 @@ fetch:
 	deno run -A tal.ts --no-markdown --no-serve "ripienaar/free-for-dev" --force
 .Phony: fetchall
 fetchall:
-	make clean && make initdb && deno run -A tal.ts --no-markdown --no-serve
+	deno run -A tal.ts --no-markdown --no-serve
 .Phony: fetchsource
 fetchsource:
 	deno run -A tal.ts --no-markdown --no-serve ${source}
@@ -63,9 +63,12 @@ serve:
 
 .Phony: run
 run:
-	LIMIT=50 FORCE=1 deno run -A --watch=tal.ts,templates/ tal.ts --no-fetch --html
+	LIMIT=50 FORCE=1 deno run -A tal.ts --no-fetch --html
 
 
+.Phony: siteall
+siteall:
+	FORCE=1 deno run -A tal.ts --no-fetch --html
 .Phony: initdb
 initdb:
 	[[ ! -d /db/meta.json ]] && mkdir -p ./db && cat db-meta-init.json > ./db/meta.json && deno run -A init-db.ts
@@ -76,7 +79,7 @@ prod-initdb:
 
 .Phony: clean
 clean:
-	rm -rf ./db rm -rf ./public && make initdb
+	rm -rf ./db rm -rf ./public && rm -rf ./dist && make initdb
 
 .Phony: push
 push:
@@ -94,6 +97,10 @@ buildsitesource:
 .Phony: buildsiteall
 buildsiteall:
 	deno run -A tal.ts --no-fetch --html
+
+.Phony: buildhtmlall
+buildhtmlall:
+	deno run -A tal.ts --no-fetch --no-markdown --html --no-serve
 
 .Phony: servepublic
 servepublic:
@@ -133,7 +140,7 @@ prod-zipdb:
 
 .Phony: prod-unzipdb
 prod-unzipdb:
-	unzip -q prod-db.zip
+	unzip -q -o prod-db.zip
 
 .Phony: prod-clean
 prod-clean:

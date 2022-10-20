@@ -1,5 +1,5 @@
 import { CSS, groupBy, mustache } from "./deps.ts";
-import { DB, path } from "./deps.ts";
+import { path } from "./deps.ts";
 import {
   BuildOptions,
   BuiltMarkdownInfo,
@@ -8,11 +8,15 @@ import {
   FeedItem,
   Item,
   ItemDetail,
+  Nav,
   RunOptions,
 } from "./interface.ts";
 import {
+  FEED_NAV,
+  HOME_NAV,
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
+  SUBSCRIBE_NAV,
   SUBSCRIPTION_URL,
 } from "./constant.ts";
 import {
@@ -20,6 +24,8 @@ import {
   getDistRepoContentPath,
   getDomain,
   getPublicPath,
+  nav1ToHtml,
+  nav1ToMarkdown,
   parseDayInfo,
   parseWeekInfo,
   pathnameToFeedUrl,
@@ -83,14 +89,26 @@ export default async function main(
     items = await getDayItems(number, dbIndex, isDay);
   }
   feedTitle = `${title}`;
-  const feedItems = itemsToFeedItems(items, config);
+  const feedItems = itemsToFeedItems(items, config, isDay);
   feedDescription = `${feedItems.length} awesome lists updated ${
     isDay ? "today" : "this week"
   }.`;
 
-  const nav = `[🏠 Home](/${INDEX_MARKDOWN_PATH}) · [🔥 Feed](${
-    pathnameToFeedUrl("/" + (isDay ? "" : "week/"), true)
-  }) · [📮 Subscribe](${SUBSCRIPTION_URL}) `;
+  const nav1: Nav[] = [
+    {
+      name: HOME_NAV,
+      markdown_url: "/" + INDEX_MARKDOWN_PATH,
+      url: "/",
+    },
+    {
+      name: FEED_NAV,
+      url: pathnameToFeedUrl("/", isDay),
+    },
+    {
+      name: SUBSCRIBE_NAV,
+      url: SUBSCRIPTION_URL,
+    },
+  ];
   const feed: Feed = {
     ...baseFeed,
     title: feedTitle,
@@ -98,7 +116,6 @@ export default async function main(
     _seo_title: `${feedTitle} - ${siteConfig.title}`,
     feed_url: `${domain}/feed.json`,
     home_page_url: domain,
-    _nav_text: nav,
     items: feedItems,
   };
 
@@ -106,7 +123,9 @@ export default async function main(
 
 ${feed.description}
 
-${feed._nav_text}${
+${nav1ToMarkdown(nav1)}
+
+${
     feedItems.map((item, index) => {
       return `\n\n## [${index + 1}. ${item.title}](${
         pathnameToFilePath("/" + item._slug)
@@ -128,7 +147,17 @@ ${feed._nav_text}${
   }
   if (isBuildSite) {
     // add body, css to feed
-    const body = renderMarkdown(markdownDoc);
+
+    const body = `<h1>${feed.title}</h1>
+<p>${feed.description}</p>
+<p>${nav1ToHtml(nav1)}</p>
+${
+      feedItems.map((item, index) => {
+        return `<h2><a href="${item.url}">${
+          index + 1
+        }. ${item.title}</a></h2>${item.content_html}`;
+      }).join("")
+    }`;
     const htmlDoc = mustache.render(htmlIndexTemplateContent, {
       ...feed,
       body,
@@ -158,6 +187,7 @@ ${feed._nav_text}${
 export function itemsToFeedItems(
   items: Record<string, Item>,
   config: Config,
+  isDay: boolean,
 ): FeedItem[] {
   const allItems: Item[] = [];
   for (const itemSha1 of Object.keys(items)) {
@@ -175,6 +205,8 @@ export function itemsToFeedItems(
     const items = groups[key];
 
     let groupMarkdown = "";
+    let groupHtml = "";
+
     const categoryGroup = groupBy(items, "category") as Record<
       string,
       Item[]
@@ -192,9 +224,14 @@ export function itemsToFeedItems(
     let datePublished: Date = tomorrow;
     let dateModified: Date = new Date(0);
     categoryKeys.forEach((key) => {
-      groupMarkdown += `\n\n### ${key}\n`;
+      const categoryItem = categoryGroup[key][0];
+      if (key) {
+        groupMarkdown += `\n\n### ${key}\n`;
+        groupHtml += `<h3>${categoryItem.category_html}</h3>`;
+      }
       categoryGroup[key].forEach((item) => {
         groupMarkdown += "\n" + item.markdown;
+        groupHtml += item.html;
         firstItem = item;
         const itemUpdated = new Date(item.updated_at);
         if (itemUpdated.getTime() < datePublished.getTime()) {
@@ -212,7 +249,9 @@ export function itemsToFeedItems(
     const sourceFileConfig =
       sourcesConfig[firstItem.source_identifier].files[firstItem.file];
 
-    const slug = sourceFileConfig.pathname.slice(1);
+    const slug = isDay
+      ? sourceFileConfig.pathname.slice(1)
+      : sourceFileConfig.pathname.slice(1) + "week/";
 
     const itemUrl = `${domain}/${slug}`;
     const feedItem: FeedItem = {
@@ -222,7 +261,7 @@ export function itemsToFeedItems(
       _filepath: pathnameToFilePath("/" + slug),
       url: itemUrl,
       content_text: groupMarkdown,
-      content_html: renderMarkdown(groupMarkdown),
+      content_html: groupHtml,
       date_published: datePublished.toISOString(),
       date_modified: dateModified.toISOString(),
     };
@@ -266,6 +305,7 @@ export function itemsToFeedItemsByDate(
     const items = groups[key];
 
     let groupMarkdown = "";
+    let groupHtml = "";
     const categoryGroup = groupBy(items, groupByFile) as Record<
       string,
       ItemDetail[]
@@ -288,7 +328,10 @@ export function itemsToFeedItemsByDate(
         .files[firstSourceItem.file];
       groupMarkdown += `#### [${index + 1}. ${sourceFileConfig.name}](${
         pathnameToFilePath(sourceFileConfig.pathname)
-      })\n\n`;
+      })`;
+      groupHtml += `<h4><a href="${sourceFileConfig.pathname}">${
+        index + 1
+      }. ${sourceFileConfig.name}</a></h4>`;
       // group by category
       const categoryItems = categoryGroup[key];
       const categoryGroupByCategory = groupBy(
@@ -301,9 +344,13 @@ export function itemsToFeedItemsByDate(
       );
       categoryGroupByCategoryKeys.forEach((categoryKey) => {
         const categoryItems = categoryGroupByCategory[categoryKey];
-        groupMarkdown += `##### ${categoryKey}\n\n`;
+        const categoryItem = categoryItems[0];
+        if (key) {
+          groupMarkdown += `\n\n##### ${key}\n`;
+          groupHtml += `<h5>${categoryItem.category_html}</h5>`;
+        }
         categoryItems.forEach((item: ItemDetail) => {
-          groupMarkdown += item.markdown + "\n";
+          groupMarkdown += "\n" + item.markdown;
           firstItem = item;
           const itemUpdated = new Date(item.updated_at);
           if (itemUpdated.getTime() < datePublished.getTime()) {
@@ -313,7 +360,6 @@ export function itemsToFeedItemsByDate(
             dateModified = itemUpdated;
           }
         });
-        groupMarkdown += "\n\n";
       });
     });
     if (!firstItem) {
@@ -336,7 +382,7 @@ export function itemsToFeedItemsByDate(
       _filepath: pathnameToFilePath("/" + slug),
       url: itemUrl,
       content_text: groupMarkdown,
-      content_html: renderMarkdown(groupMarkdown),
+      content_html: groupHtml,
       date_published: datePublished.toISOString(),
       date_modified: dateModified.toISOString(),
     };

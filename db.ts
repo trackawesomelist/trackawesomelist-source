@@ -3,6 +3,7 @@ import {
   gfm,
   gfmFromMarkdown,
   gfmToMarkdown,
+  render,
   toMarkdown,
 } from "./deps.ts";
 import {
@@ -18,6 +19,7 @@ import log from "./log.ts";
 import formatMarkdownItem from "./format-markdown-item.ts";
 import {
   getDayNumber,
+  getDbContentHtmlPath,
   getDbContentPath,
   getDbItemsPath,
   getWeekNumber,
@@ -34,6 +36,13 @@ export function getFile(
   filepath: string,
 ): Promise<string> {
   const fileDbPath = getDbContentPath(sourceIdentifier, filepath);
+  return readTextFile(fileDbPath);
+}
+export function getHtmlFile(
+  sourceIdentifier: string,
+  filepath: string,
+): Promise<string> {
+  const fileDbPath = getDbContentHtmlPath(sourceIdentifier, filepath);
   return readTextFile(fileDbPath);
 }
 export async function updateFile(
@@ -59,6 +68,12 @@ export async function updateFile(
   );
   const dbContentPath = getDbContentPath(sourceIdentifier, file);
   await writeTextFile(dbContentPath, overviewMarkdownContent);
+  // also write html
+  const dbContentHtmlPath = getDbContentHtmlPath(sourceIdentifier, file);
+  const htmlContent = render(overviewMarkdownContent, {
+    allowIframes: true,
+  });
+  await writeTextFile(dbContentHtmlPath, htmlContent);
 }
 export async function updateItems(
   fileInfo: FileInfo,

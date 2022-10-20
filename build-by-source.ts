@@ -1,4 +1,11 @@
-import { CSS, DB, groupBy, jsonfeedToAtom, mustache, path } from "./deps.ts";
+import {
+  CSS,
+  groupBy,
+  jsonfeedToAtom,
+  mustache,
+  path,
+  render,
+} from "./deps.ts";
 import {
   BuildOptions,
   BuiltMarkdownInfo,
@@ -8,25 +15,31 @@ import {
   FeedItem,
   FileInfo,
   Item,
-  ItemDetail,
+  Nav,
   RunOptions,
   WeekOfYear,
 } from "./interface.ts";
 import {
   CONTENT_DIR,
+  FEED_NAV,
+  HOME_NAV,
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
+  SUBSCRIBE_NAV,
   SUBSCRIPTION_URL,
 } from "./constant.ts";
 import {
   formatHumanTime,
   formatNumber,
   getBaseFeed,
-  getDbMeta,
   getDistRepoContentPath,
   getDomain,
   getPublicPath,
   getRepoHTMLURL,
+  nav1ToHtml,
+  nav1ToMarkdown,
+  nav2ToHtml,
+  nav2ToMarkdown,
   parseDayInfo,
   parseWeekInfo,
   pathnameToFeedUrl,
@@ -36,12 +49,11 @@ import {
   readTextFile,
   slugy,
   startDateOfWeek,
-  titleCase,
   writeJSONFile,
   writeTextFile,
 } from "./util.ts";
 import log from "./log.ts";
-import { getFile, getItems } from "./db.ts";
+import { getFile, getHtmlFile, getItems } from "./db.ts";
 import renderMarkdown from "./render-markdown.ts";
 let htmlIndexTemplateContent = "";
 export default async function main(
@@ -49,11 +61,9 @@ export default async function main(
   runOptions: RunOptions,
   buildOptions: BuildOptions,
 ): Promise<BuiltMarkdownInfo> {
-  let startTime = Date.now();
   const config = runOptions.config;
   const siteConfig = config.site;
   const dbMeta = buildOptions.dbMeta;
-  const dbIndex = buildOptions.dbIndex;
   const dbSources = dbMeta.sources;
   const sourceConfig = fileInfo.sourceConfig;
   const sourceCategory = sourceConfig.category;
@@ -97,30 +107,62 @@ export default async function main(
   for (let i = 0; i < 2; i++) {
     const buildMarkdownStartTime = Date.now();
     const isDay = i === 0;
-    let currentNavHeader = `[ Daily / [Weekly](${
-      pathnameToWeekFilePath(fileConfig.pathname)
-    }) / [Overview](${pathnameToOverviewFilePath(fileConfig.pathname)}) ]`;
-    if (!isDay) {
-      currentNavHeader = `[ [Daily](${
-        pathnameToFilePath(fileConfig.pathname)
-      }) / Weekly / [Overview](${
-        pathnameToOverviewFilePath(fileConfig.pathname)
-      }) ]`;
-    }
-    const nav = `[🏠 Home](/${INDEX_MARKDOWN_PATH}) · [🔥 Feed](${
-      pathnameToFeedUrl(fileConfig.pathname, isDay)
-    }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [🔗 ${sourceIdentifier}](${
-      getRepoHTMLURL(repoMeta.url, repoMeta.default_branch, originalFilepath)
-    }) · ⭐ ${formatNumber(repoMeta.stargazers_count)} · 🏷️ ${sourceCategory}
+    const nav1: Nav[] = [
+      {
+        name: HOME_NAV,
+        markdown_url: "/" + INDEX_MARKDOWN_PATH,
+        url: "/",
+      },
+      {
+        name: FEED_NAV,
+        url: pathnameToFeedUrl(fileConfig.pathname, isDay),
+      },
+      {
+        name: SUBSCRIBE_NAV,
+        url: SUBSCRIPTION_URL,
+      },
+      {
+        name: `🔗 ${sourceIdentifier}`,
+        url: getRepoHTMLURL(
+          repoMeta.url,
+          repoMeta.default_branch,
+          originalFilepath,
+        ),
+      },
+      {
+        name: `⭐ ${formatNumber(repoMeta.stargazers_count)}`,
+      },
+      {
+        name: `🏷️ ${sourceCategory}`,
+      },
+    ];
 
-${currentNavHeader}
+    const nav2: Nav[] = [
+      {
+        name: "Daily",
+        markdown_url: pathnameToFilePath(fileConfig.pathname),
+        url: fileConfig.pathname,
+        active: i === 0,
+      },
+      {
+        name: "Weekly",
 
-`;
+        markdown_url: pathnameToWeekFilePath(fileConfig.pathname),
+        url: fileConfig.pathname + "week/",
+        active: i === 1,
+      },
+      {
+        name: "Overview",
+        markdown_url: pathnameToOverviewFilePath(fileConfig.pathname),
+        url: fileConfig.pathname + "readme/",
+        active: i === 2,
+      },
+    ];
+
     const feedTitle = `Track ${fileConfig.name} Updates ${
       isDay ? "Daily" : "Weekly"
     }`;
     const feedDescription = repoMeta.description;
-    const footer = ``;
     const groups = groupBy(
       items,
       isDay ? "updated_day" : "updated_week",
@@ -151,6 +193,7 @@ ${currentNavHeader}
         Item[]
       >;
       let groupMarkdown = "";
+      let groupHtml = "";
       const categoryKeys: string[] = Object.keys(categoryGroup);
       const today = new Date();
       const tomorrow = new Date(today);
@@ -158,9 +201,14 @@ ${currentNavHeader}
       let datePublished: Date = tomorrow;
       let dateModified: Date = new Date(0);
       categoryKeys.forEach((key: string) => {
-        groupMarkdown += `\n\n### ${key}`;
+        const categoryItem = categoryGroup[key][0];
+        if (key) {
+          groupMarkdown += `\n\n### ${key}\n`;
+          groupHtml += `<h3>${categoryItem.category_html}</h3>`;
+        }
         categoryGroup[key].forEach((item) => {
           groupMarkdown += `\n${item.markdown}`;
+          groupHtml += `\n${item.html}`;
           const itemUpdatedAt = new Date(item.updated_at);
           if (itemUpdatedAt.getTime() > dateModified.getTime()) {
             dateModified = itemUpdatedAt;
@@ -191,7 +239,7 @@ ${currentNavHeader}
         date_published: datePublished.toISOString(),
         date_modified: dateModified.toISOString(),
         content_text: groupMarkdown,
-        content_html: renderMarkdown(groupMarkdown),
+        content_html: groupHtml,
       };
       return feedItem;
     });
@@ -211,20 +259,23 @@ ${currentNavHeader}
       ...baseFeed,
       title: feedTitle,
       _seo_title: `${feedSeoTitle} - ${siteConfig.title}`,
-      description: repoMeta.description,
+      description: repoMeta.description || "",
       home_page_url: `${domain}/${dailyRelativeFolder}/`,
       feed_url: `${domain}/${dailyRelativeFolder}/feed.json`,
-      _nav_text: nav,
     };
     const feed: Feed = {
       ...feedInfo,
       items: feedItems,
     };
-    const markdownDoc = `# ${feed.title}
+    const markdownDoc = `# ${feed.title}${
+      feed.description ? `\n\n${feed.description}` : ""
+    }
 
-${feed.description}
+${nav1ToMarkdown(nav1)}
 
-${feed._nav_text}${
+${nav2ToMarkdown(nav2)}
+
+${
       feedItems.map((item) => {
         return `\n\n## [${item._short_title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
       }).join("")
@@ -246,7 +297,17 @@ ${feed._nav_text}${
     // build html
     if (isBuildHtml) {
       // add body, css to feed
-      const body = renderMarkdown(markdownDoc);
+      // const body = renderMarkdown(markdownDoc);
+
+      const body = `<h1>${feed.title}</h1>
+${feed.description ? "<p>" + feed.description + "</p>" : ""}
+<p>${nav1ToHtml(nav1)}</p>
+<p>${nav2ToHtml(nav2)}</p>
+${
+        feedItems.map((item) => {
+          return `<h2><a href="${item.url}">${item._short_title}</a></h2>${item.content_html}`;
+        }).join("")
+      }`;
       const htmlDoc = mustache.render(htmlIndexTemplateContent, {
         ...feedInfo,
         body,
@@ -314,24 +375,6 @@ ${feed._nav_text}${
   const buildOverviewMarkdownStartTime = Date.now();
   const readmeContent = await getFile(sourceIdentifier, filepath);
 
-  const currentNavHeader = `[ [Daily](${
-    pathnameToFilePath(fileConfig.pathname)
-  }) / [Weekly](${pathnameToWeekFilePath(fileConfig.pathname)}) / Overview ]`;
-
-  const nav = `[🏠 Home](/${INDEX_MARKDOWN_PATH}) · [🔥 Feed](${
-    pathnameToFeedUrl(fileConfig.pathname, true)
-  }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [🔗 Repo](${
-    getRepoHTMLURL(repoMeta.url, repoMeta.default_branch, originalFilepath)
-  }) · ⭐ ${
-    formatNumber(repoMeta.stargazers_count)
-  } · 🏷️ ${sourceCategory} · 📝 ${
-    formatHumanTime(new Date(dbFileMeta.updated_at))
-  }
-
-${currentNavHeader}
-
----
-`;
   const overviewMarkdownPath = path.join(
     getDistRepoContentPath(),
     relativeFolder,
@@ -339,12 +382,65 @@ ${currentNavHeader}
     INDEX_MARKDOWN_PATH,
   );
   const overviewTitle = `${fileConfig.name} Overview`;
+  const nav1: Nav[] = [
+    {
+      name: HOME_NAV,
+      markdown_url: "/" + INDEX_MARKDOWN_PATH,
+      url: "/",
+    },
+    {
+      name: FEED_NAV,
+      url: pathnameToFeedUrl(fileConfig.pathname, true),
+    },
+    {
+      name: SUBSCRIBE_NAV,
+      url: SUBSCRIPTION_URL,
+    },
+    {
+      name: `🔗 ${sourceIdentifier}`,
+      url: getRepoHTMLURL(
+        repoMeta.url,
+        repoMeta.default_branch,
+        originalFilepath,
+      ),
+    },
+    {
+      name: `⭐ ${formatNumber(repoMeta.stargazers_count)}`,
+    },
+    {
+      name: `🏷️ ${sourceCategory}`,
+    },
+  ];
+
+  const nav2: Nav[] = [
+    {
+      name: "Daily",
+      markdown_url: pathnameToFilePath(fileConfig.pathname),
+      url: fileConfig.pathname,
+    },
+    {
+      name: "Weekly",
+
+      markdown_url: pathnameToWeekFilePath(fileConfig.pathname),
+      url: fileConfig.pathname + "week/",
+    },
+    {
+      name: "Overview",
+      markdown_url: pathnameToOverviewFilePath(fileConfig.pathname),
+      url: fileConfig.pathname + "readme/",
+      active: true,
+    },
+  ];
 
   const readmeRendered = `# ${overviewTitle}
 
 ${repoMeta.description}
 
-${nav}
+${nav1ToMarkdown(nav1)}
+
+${nav2ToMarkdown(nav2)}
+
+---
 
 ${readmeContent}
 `;
@@ -356,8 +452,15 @@ ${readmeContent}
     }ms`,
   );
   if (isBuildHtml) {
+    const readmeHtmlContent = await getHtmlFile(sourceIdentifier, filepath);
     // add body, css to feed
-    const body = renderMarkdown(readmeRendered);
+    // const body = renderMarkdown(readmeRendered);
+    const body = `<h1>${overviewTitle}</h1>
+<p>${repoMeta.description}</p>
+<p>${nav1ToHtml(nav1)}</p>
+<p>${nav2ToHtml(nav2)}</p>
+${readmeHtmlContent}
+`;
     const overviewSeoTitle =
       `${fileConfig.name} (${sourceIdentifier}) Overview`;
     const overviewFeedInfo: FeedInfo = {
@@ -367,7 +470,6 @@ ${readmeContent}
       description: repoMeta.description,
       home_page_url: `${domain}/${relativeFolder}/readme/`,
       feed_url: `${domain}/${relativeFolder}/feed.json`,
-      _nav_text: "",
     };
     const htmlDoc = mustache.render(htmlIndexTemplateContent, {
       ...overviewFeedInfo,
