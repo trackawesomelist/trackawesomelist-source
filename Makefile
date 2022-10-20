@@ -136,7 +136,7 @@ prod-load:
 
 .Phony: prod-zipdb
 prod-zipdb:
-	zip -r -q prod-db.zip ./prod-db -x "*/.*"
+	zip -r -q -FS prod-db.zip ./prod-db -x "*/.*"
 
 .Phony: prod-unzipdb
 prod-unzipdb:
