@@ -460,11 +460,7 @@ export function getDistPath() {
   }
 }
 export function getPublicPath() {
-  if (isDev()) {
-    return "public";
-  } else {
-    return "prod-public";
-  }
+  return path.join(getDbPath(), "public");
 }
 export function getDistRepoPath() {
   return path.join(getDistPath());
