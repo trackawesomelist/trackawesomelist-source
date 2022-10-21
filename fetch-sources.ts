@@ -2,7 +2,6 @@ import {
   getDayNumber,
   getDbIndex,
   getDbMeta,
-  getItemsFilePath,
   getWeekNumber,
   sha1,
   writeDbIndex,
@@ -14,7 +13,6 @@ import log from "./log.ts";
 import {
   FileInfo,
   Item,
-  ItemsJson,
   ParsedItemsFilePath,
   RepoMetaOverride,
   RunOptions,

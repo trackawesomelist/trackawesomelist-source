@@ -13,11 +13,9 @@ import {
   exists,
   getCachePath,
   getDayNumber,
-  getDbMeta,
   getWeekNumber,
   readTextFile,
   sha1,
-  writeDbMeta,
 } from "./util.ts";
 import log from "./log.ts";
 import { fs, path } from "./deps.ts";
