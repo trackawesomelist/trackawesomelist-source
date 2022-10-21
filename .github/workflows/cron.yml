@@ -75,7 +75,7 @@ jobs:
           # TRANSLATE_COUNT: ${{ github.event.inputs.translate_count }}
           # TRANSLATE_TIMEOUT: ${{ github.event.inputs.translate_timeout }}
           PUSH: 1
-          # FORCE: 1
+          FORCE: 1
           #FORCE_FETCH: 1
           DIST_REPO: ${{ secrets.DIST_REPO }}
           PERSONAL_GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
