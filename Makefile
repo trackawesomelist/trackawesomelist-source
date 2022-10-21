@@ -123,11 +123,11 @@ buildbook:
 	./bin/mdbook build 
 .Phony: publish
 publish:
-	wrangler pages publish public --project-name trackawesomelist
+	wrangler pages publish db/public --project-name trackawesomelist
 
 .Phony: prod-publish
 prod-publish:
-	wrangler pages publish prod-public --project-name trackawesomelist
+	wrangler pages publish prod-db/public --project-name trackawesomelist
 
 .Phony: prod-upload
 prod-upload:

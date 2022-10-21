@@ -709,13 +709,14 @@ export async function got(
 ): Promise<string> {
   const c = new AbortController();
   const id = setTimeout(() => c.abort(), 30000);
+  const headers = new Headers(init.headers);
+  headers.set(
+    "User-Agent",
+    "Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0",
+  );
   const params: RequestInit = {
     ...init,
-    headers: {
-      ...init.headers,
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0",
-    },
+    headers,
     signal: c.signal,
   };
   const r = await fetch(url, params);
