@@ -1,7 +1,14 @@
 import API from "./api.ts";
 import { RepoMeta, RepoMetaOverride, Source } from "../interface.ts";
 import { base64 } from "../deps.ts";
-import { got, gotWithCache, isUseCache, readTextFile } from "../util.ts";
+import {
+  got,
+  gotWithCache,
+  gotWithDbCache,
+  isUseCache,
+  readTextFile,
+} from "../util.ts";
+
 export default class github extends API {
   repo: string;
   headers: Headers;
@@ -58,7 +65,7 @@ export default class github extends API {
   }
   async getRepoMeta(overrieds?: RepoMetaOverride): Promise<RepoMeta> {
     const url = `${this.apiPrefix}/repos/${this.repo}`;
-    const json = await gotWithCache(
+    const json = await gotWithDbCache(
       url,
       {
         headers: this.headers,
