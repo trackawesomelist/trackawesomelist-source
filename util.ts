@@ -713,15 +713,15 @@ export async function got(
 ): Promise<string> {
   const c = new AbortController();
   const id = setTimeout(() => c.abort(), 30000);
-  let params: RequestInit = {
+  const params: RequestInit = {
     ...init,
     headers: {
       ...init.headers,
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0",
     },
+    signal: c.signal,
   };
-  console.log("params", params);
   const r = await fetch(url, params);
   clearTimeout(id);
 

@@ -22,7 +22,6 @@ export default async function serveSite(runOptions: RunOptions) {
     if (!filepath.endsWith(".md")) {
       // serve static fold
       localPath = path.join(staticpath, filepath);
-      console.log("localPath", localPath);
       return await serveFile(request, localPath);
     }
     // check if file exists

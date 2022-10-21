@@ -225,7 +225,6 @@ export function getUpdatedFiles(
 ): File[] {
   const filesSet: Set<string> = new Set();
   const keys = Object.keys(dbIndex);
-  console.log("options", options);
   for (const key of keys) {
     const item = dbIndex[key];
     const arr = key.split(":");

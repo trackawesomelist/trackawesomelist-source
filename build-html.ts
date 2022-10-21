@@ -78,7 +78,6 @@ export default async function buildHtml(options: RunOptions) {
         //   body: html,
         //   CSS,
         // });
-        console.log("htmlPath", htmlPath);
         await writeTextFile(htmlPath, html);
       }
     }
