@@ -1,20 +1,10 @@
-import { DocItem, FileInfo } from "./interface.ts";
-import { Content, Link, remove, Root, toMarkdown, visit } from "./deps.ts";
+import { Content, remove, Root, toMarkdown } from "./deps.ts";
 
-import {
-  childrenToMarkdown,
-  childrenToRoot,
-  gotGithubStar,
-  isMock,
-  promiseLimit,
-} from "./util.ts";
-import log from "./log.ts";
-export default function formatItemMarkdown<T>(
+export default function formatItemMarkdown(
   item: Content | Root,
-  fileInfo: FileInfo,
 ): string {
   // visit and remove sup item
-  remove(item, (node, n) => {
+  remove(item, (node, _n) => {
     // remove hash link
     // remote html
     if (node.type === "html") {

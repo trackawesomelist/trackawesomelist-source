@@ -877,7 +877,7 @@ export async function gotGithubStar(
 
 export async function promiseLimit<T>(
   funcs: (() => Promise<T>)[],
-  limit = 1000,
+  limit = 100,
 ): Promise<T[]> {
   let results: T[] = [];
   while (funcs.length) {

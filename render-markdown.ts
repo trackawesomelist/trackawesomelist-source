@@ -7,12 +7,7 @@ import {
   toMarkdown,
   visit,
 } from "./deps.ts";
-import {
-  childrenToRoot,
-  getDomain,
-  promiseLimit,
-  writeTextFile,
-} from "./util.ts";
+import { childrenToRoot, getDomain } from "./util.ts";
 import _log from "./log.ts";
 import { gfm, gfmFromMarkdown, gfmToMarkdown } from "./deps.ts";
 import { CONTENT_DIR, INDEX_MARKDOWN_PATH } from "./constant.ts";
