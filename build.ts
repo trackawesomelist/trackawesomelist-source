@@ -417,7 +417,7 @@ export default async function buildMarkdown(options: RunOptions) {
       };
       const listGroups = groupBy(sourcesKeys, groupByCategory);
 
-      const list: List[] = Object.keys(listGroups).map((category) => {
+      const list: List[] = Object.keys(listGroups).sort().map((category) => {
         const sourceIdentifiers = listGroups[category];
         const items = sourceIdentifiers.map((sourceIdentifier: string) => {
           const sourceConfig = sourcesConfig[sourceIdentifier];
@@ -429,7 +429,7 @@ export default async function buildMarkdown(options: RunOptions) {
             url: pathnameToFilePath(indexFileConfig.pathname),
           };
           return item;
-        });
+        }).sort((a: ListItem, b: ListItem) => a.name.localeCompare(b.name));
         return {
           category,
           items,

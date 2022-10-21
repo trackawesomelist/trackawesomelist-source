@@ -326,7 +326,7 @@ export function itemsToFeedItemsByDate(
       const firstSourceItem = categoryGroup[key][0];
       const sourceFileConfig = sourcesConfig[firstSourceItem.source_identifier]
         .files[firstSourceItem.file];
-      groupMarkdown += `#### [${index + 1}. ${sourceFileConfig.name}](${
+      groupMarkdown += `\n\n#### [${index + 1}. ${sourceFileConfig.name}](${
         pathnameToFilePath(sourceFileConfig.pathname)
       })`;
       groupHtml += `<h4><a href="${sourceFileConfig.pathname}">${
@@ -345,8 +345,8 @@ export function itemsToFeedItemsByDate(
       categoryGroupByCategoryKeys.forEach((categoryKey) => {
         const categoryItems = categoryGroupByCategory[categoryKey];
         const categoryItem = categoryItems[0];
-        if (key) {
-          groupMarkdown += `\n\n##### ${key}\n`;
+        if (categoryKey) {
+          groupMarkdown += `\n\n##### ${categoryKey}\n`;
           groupHtml += `<h5>${categoryItem.category_html}</h5>`;
         }
         categoryItems.forEach((item: ItemDetail) => {

@@ -15,6 +15,10 @@ startall:
 build:
 	deno run -A tal.ts --html --no-serve
 
+.Phony: prod-start
+prod-start:
+	FORCE=1 PROD=1 deno run -A tal.ts ${args} 
+
 .Phony: prod-build
 prod-build:
 	PROD=1 deno run -A tal.ts --html --no-serve ${args} 

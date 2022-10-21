@@ -121,11 +121,12 @@ export default function (
           if (uglyIsValidCategory(fileInfo, category)) {
             funcs.push(() => {
               return formatMarkdownItem(item, fileInfo).then((formatedItem) => {
+                const rawMarkdown = uglyFormatItemIdentifier(fileInfo, item);
                 return {
                   formatedMarkdown: toMarkdown(formatedItem, {
                     extensions: [gfmToMarkdown()],
                   }).trim(),
-                  rawMarkdown: toMarkdown(item, {
+                  rawMarkdown: rawMarkdown ? rawMarkdown : toMarkdown(item, {
                     extensions: [gfmToMarkdown()],
                   }).trim(),
                   category: isParseCategory ? category : "",
@@ -142,7 +143,10 @@ export default function (
   return promiseLimit<DocItem>(funcs);
 }
 
-function uglyIsValidCategory(fileInfo: FileInfo, category: string): boolean {
+function uglyIsValidCategory(
+  fileInfo: FileInfo,
+  category: string,
+): boolean {
   const sourceConfig = fileInfo.sourceConfig;
   const fileConfig = sourceConfig.files[fileInfo.filepath];
   const sourceIdentifier = sourceConfig.identifier;
@@ -152,4 +156,26 @@ function uglyIsValidCategory(fileInfo: FileInfo, category: string): boolean {
     }
   }
   return true;
+}
+
+function uglyFormatItemIdentifier(
+  fileInfo: FileInfo,
+  item: Content,
+): string | undefined {
+  const sourceConfig = fileInfo.sourceConfig;
+  const sourceIdentifier = sourceConfig.identifier;
+  if (sourceIdentifier === "analysis-tools-dev/static-analysis") {
+    // use link name as identifier
+    let linkItem;
+    visit(item, "link", (node) => {
+      linkItem = node;
+      return null;
+    });
+    if (linkItem) {
+      return toMarkdown(linkItem).trim();
+    } else {
+      return undefined;
+    }
+  }
+  return undefined;
 }

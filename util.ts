@@ -249,7 +249,7 @@ export function isMock() {
   if (isDev()) {
     return (Deno.env.get("MOCK") !== "0");
   } else {
-    return false;
+    return (Deno.env.get("MOCK") === "1");
   }
 }
 
@@ -260,7 +260,10 @@ export function getRepoHTMLURL(
 ): string {
   return `${url}/blob/${defaultBranch}/${file}`;
 }
-export function getCachePath() {
+export function getCachePath(isDb: boolean) {
+  if (isDb) {
+    return path.join(getDbPath(), "cache");
+  }
   return path.join(Deno.cwd(), "cache");
 }
 export async function getConfig(): Promise<Config> {
@@ -498,12 +501,6 @@ export function getSqlitePath() {
 export function getDataItemsPath() {
   return posixPath.join(getDbPath(), "items");
 }
-export function getMarkdownDistPath() {
-  return posixPath.join(
-    getCachePath(),
-    isDev() ? "dev-trackawesomelist" : "trackawesomelist",
-  );
-}
 export async function walkFile(path: string) {
   // ensure path exists
   await fs.ensureDir(path);
@@ -712,11 +709,20 @@ export function pathnameToFeedUrl(pathname: string, isDay: boolean): string {
 }
 export async function got(
   url: string,
-  init?: RequestInit,
+  init: RequestInit = {},
 ): Promise<string> {
   const c = new AbortController();
   const id = setTimeout(() => c.abort(), 30000);
-  const r = await fetch(url, { ...init, signal: c.signal });
+  let params: RequestInit = {
+    ...init,
+    headers: {
+      ...init.headers,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0",
+    },
+  };
+  console.log("params", params);
+  const r = await fetch(url, params);
   clearTimeout(id);
 
   if (r.ok) {
@@ -725,30 +731,39 @@ export async function got(
     throw new Error(`fetch ${url} failed with status ${r.status}`);
   }
 }
-export function getCachedFileInfo(
+export function getCachedFolder(
   url: string,
   method: string,
-  expired: number,
-): string[] {
+  isDb: boolean,
+): string {
   const urlObj = new URL(url);
   const host = urlObj.host;
   const pathname = urlObj.pathname;
   const params = urlObj.searchParams;
   const cacheFileFolder = path.join(
-    getCachePath(),
+    getCachePath(isDb),
     "http",
     encodeURIComponent(host),
     method,
     pathname,
     encodeURIComponent(params.toString()),
   );
-  return [cacheFileFolder, (Date.now() + expired) + ".txt"];
+  return cacheFileFolder;
+}
+export function getCachedFileInfo(
+  url: string,
+  method: string,
+  isDb: boolean,
+  expired: number,
+): string[] {
+  return [getCachedFolder(url, method, isDb), (Date.now() + expired) + ".txt"];
 }
 
 export async function writeCacheFile(
   url: string,
   method: string,
   body: string,
+  isDb: boolean,
   expired?: number,
 ) {
   expired = expired || 1000 * 60 * 60 * 24 * 3;
@@ -758,6 +773,7 @@ export async function writeCacheFile(
   const [cacheFileFolder, cacheFilePath] = getCachedFileInfo(
     url,
     method,
+    isDb,
     expired,
   );
   await writeTextFile(path.join(cacheFileFolder, cacheFilePath), body);
@@ -767,11 +783,11 @@ export async function writeCacheFile(
 export async function readCachedFile(
   url: string,
   method: string,
-  expired = 60 * 60 * 24 * 1000,
+  isDb: boolean,
 ): Promise<string> {
   // check folder is exists
-  const cachedFolder = getCachedFileInfo(url, method, expired)[0];
-  for await (const file of await Deno.readDir(cachedFolder)) {
+  const cachedFolder = getCachedFolder(url, method, isDb);
+  for await (const file of Deno.readDir(cachedFolder)) {
     if (file.isFile && file.name.endsWith(".txt")) {
       // check is expired
       const expired = parseInt(file.name.slice(0, -4));
@@ -788,14 +804,14 @@ export async function readCachedFile(
   }
   throw new NotFound("cached file is expired");
 }
-export async function gotWithCache(
+export async function gotWithDbCache(
   url: string,
   init?: RequestInit,
 ): Promise<string> {
   // check is exists cache
   let cacheFileContent;
   try {
-    cacheFileContent = await readCachedFile(url, init?.method ?? "GET");
+    cacheFileContent = await readCachedFile(url, init?.method ?? "GET", true);
     log.debug(`use cache file for ${url}`);
   } catch (e) {
     if (e.name === "NotFound") {
@@ -809,7 +825,37 @@ export async function gotWithCache(
     return cacheFileContent;
   }
   const responseText = await got(url, init);
-  await writeCacheFile(url, init?.method ?? "GET", responseText);
+  await writeCacheFile(
+    url,
+    init?.method ?? "GET",
+    responseText,
+    true,
+    7 * 24 * 60 * 60 * 1000,
+  );
+  return responseText;
+}
+export async function gotWithCache(
+  url: string,
+  init?: RequestInit,
+): Promise<string> {
+  // check is exists cache
+  let cacheFileContent;
+  try {
+    cacheFileContent = await readCachedFile(url, init?.method ?? "GET", false);
+    log.debug(`use cache file for ${url}`);
+  } catch (e) {
+    if (e.name === "NotFound") {
+      // ignore
+      log.debug(`not found cache file for ${url}`);
+    } else {
+      throw e;
+    }
+  }
+  if (cacheFileContent !== undefined) {
+    return cacheFileContent;
+  }
+  const responseText = await got(url, init);
+  await writeCacheFile(url, init?.method ?? "GET", responseText, false);
   return responseText;
 }
 
@@ -818,7 +864,7 @@ export async function gotGithubStar(
   repo: string,
 ): Promise<string> {
   const url = `https://img.shields.io/github/stars/${owner}/${repo}`;
-  const response = await gotWithCache(url);
+  const response = await gotWithDbCache(url);
   const endWith = "</text></a></g></svg>";
 
   if (response.endsWith(endWith)) {

@@ -33,8 +33,8 @@ export default class github extends API {
 
     let result;
     // temp test content
-
-    return readTextFile("./example/data/1-raw/heading.md");
+    // TODO
+    // return readTextFile("./example/data/1-raw/heading.md");
     if (isUseCache()) {
       result = await gotWithCache(
         url,

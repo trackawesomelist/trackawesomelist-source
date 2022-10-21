@@ -254,25 +254,27 @@ export default async function formatItemMarkdown<T>(
     }
   });
   if (!isMock()) {
-    const limit = pLimit(50);
-    await Promise.all(matchedNodes.map((matched) => {
-      const { owner, repo } = matched.meta;
-      const node = matched.node;
-      return limit(() =>
-        gotGithubStar(owner, repo).then((star: string) => {
-          if (star) {
-            const badge = ` (⭐${star})`;
-            node.children = [
-              ...node.children,
-              {
-                type: "text",
-                value: badge,
-              },
-            ];
-          }
-        })
-      );
-    }));
+    const limit = pLimit(30);
+    await Promise.all(
+      matchedNodes.map((matched) => {
+        const { owner, repo } = matched.meta;
+        const node = matched.node;
+        return limit(() =>
+          gotGithubStar(owner, repo).then((star: string) => {
+            if (star) {
+              const badge = ` (⭐${star})`;
+              node.children = [
+                ...node.children,
+                {
+                  type: "text",
+                  value: badge,
+                },
+              ];
+            }
+          })
+        );
+      }),
+    );
   }
   return item;
 }
