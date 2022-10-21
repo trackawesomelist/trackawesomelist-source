@@ -157,7 +157,6 @@ function uglyIsValidCategory(
 }
 
 function uglyFormatItemIdentifier(
-import log from "./log.ts";
   fileInfo: FileInfo,
   item: Content,
 ): string | undefined {
