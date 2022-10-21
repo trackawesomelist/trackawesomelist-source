@@ -24,7 +24,7 @@ on:
     paths-ignore:
       - "**.md"
   schedule:
-    - cron: "9 1 * * *"
+    - cron: "9 */6 * * *"
 jobs:
   build:
     runs-on: ubuntu-latest
