@@ -12,3 +12,8 @@ export const SUBSCRIPTION_URL =
 export const HOME_NAV = "🏠 Home";
 export const FEED_NAV = "🔥 Feed";
 export const SUBSCRIBE_NAV = "📮 Subscribe";
+
+export const GITHUB_NAV = "😺 Github";
+export const WEBSITE_NAV = "🌐 Website";
+export const GITHUB_REPO =
+  "https://github.com/trackawesomelist/trackawesomelist/";

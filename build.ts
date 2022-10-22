@@ -14,9 +14,13 @@ import {
 } from "./interface.ts";
 import renderMarkdown from "./render-markdown.ts";
 import {
+  GITHUB_NAV,
+  GITHUB_REPO,
   INDEX_MARKDOWN_PATH,
+  PROD_DOMAIN,
   SUBSCRIPTION_URL,
   TOP_REPOS_COUNT,
+  WEBSITE_NAV,
 } from "./constant.ts";
 import {
   exists,
@@ -390,13 +394,13 @@ export default async function buildMarkdown(options: RunOptions) {
       if (isDay) {
         indexNav = `[📅 Weekly](/week/README.md) · [🔥 Feed](${
           pathnameToFeedUrl("/", true)
-        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · 📝 ${
+        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
           formatHumanTime(dbItemsLatestUpdatedAt)
         } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       } else {
         indexNav = `[🏠 Home](/README.md)· [🔥 Feed](${
           pathnameToFeedUrl("/week/", true)
-        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · 📝 ${
+        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
           formatHumanTime(dbItemsLatestUpdatedAt)
         } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       }

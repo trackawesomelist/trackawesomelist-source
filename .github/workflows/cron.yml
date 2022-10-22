@@ -102,7 +102,7 @@ jobs:
           exit 1
       - name: Publish pages
         if: true
-        run: test -d "./prod-public" && make prod-publish || echo "no prod-public folder"
+        run: make prod-publish
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
           CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}
