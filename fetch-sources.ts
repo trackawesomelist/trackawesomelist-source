@@ -103,7 +103,7 @@ export default async function (options: RunOptions) {
             `${fileIndex}/${fileKeys.length}${sourceIdentifier}/${file} updated less than ${file_min_updated_hours} hours, skip`,
           );
           continue;
-        } else if (!force) {
+        } else if (force) {
           log.info(
             `${sourceIdentifier}/${file} updated less than ${file_min_updated_hours} hours, force update`,
           );
