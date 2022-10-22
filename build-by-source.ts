@@ -397,7 +397,7 @@ ${
       url: SUBSCRIPTION_URL,
     },
     {
-      name: `🔗 ${sourceIdentifier}`,
+      name: `😺 ${sourceIdentifier}`,
       url: getRepoHTMLURL(
         repoMeta.url,
         repoMeta.default_branch,
