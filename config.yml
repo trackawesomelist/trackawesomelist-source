@@ -3,7 +3,7 @@ site:
   url: https://www.trackawesomelist.com
   title: "Track Awesome List"
   description:
-    "Track daily updates of more than 500 awesome projects, including selfhosted, rust, javascript, swift, python, react, vue,  free for dev, flutter, go etc."
+    "We track over 500 awesome list updates, and you can also subscribe to daily or weekly updates via RSS or News Letter. [Source Code](https://github.com/trackawesomelist/trackawesomelist-source)"
 sources:
   mjhea0/awesome-flask:
     category: Back-End Development

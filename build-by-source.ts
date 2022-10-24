@@ -122,7 +122,7 @@ export default async function main(
         url: SUBSCRIPTION_URL,
       },
       {
-        name: `🔗 ${sourceIdentifier}`,
+        name: `😺 ${sourceIdentifier}`,
         url: getRepoHTMLURL(
           repoMeta.url,
           repoMeta.default_branch,
@@ -225,7 +225,7 @@ export default async function main(
         dayInfo = parseWeekInfo(Number(key));
       }
       const slug = dayInfo.path + "/";
-      const itemUrl = `${domain}/${dayInfo.path}/#${slugy(fileConfig.name)}`;
+      const itemUrl = `${domain}/${dayInfo.path}/`;
       const url = `${domain}/${slug}`;
       const feedItem: FeedItem = {
         id: itemUrl,
@@ -234,8 +234,6 @@ export default async function main(
         _slug: slug,
         _filepath: pathnameToFilePath("/" + slug),
         url: itemUrl,
-        external_url: url,
-        _external_slug: slug,
         date_published: datePublished.toISOString(),
         date_modified: dateModified.toISOString(),
         content_text: groupMarkdown,
@@ -277,7 +275,7 @@ ${nav2ToMarkdown(nav2)}
 
 ${
       feedItems.map((item) => {
-        return `\n\n## [${item._short_title}](/${CONTENT_DIR}/${item._external_slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
+        return `\n\n## [${item._short_title}](/${CONTENT_DIR}/${item._slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
       }).join("")
     }`;
     if (isBuildMarkdown) {

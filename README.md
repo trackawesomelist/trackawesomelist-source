@@ -1,35 +1,14 @@
-# Track Awesome List
+# Track Awesome List Source
 
-> WIP
+This repo is for generating [trackawesomelist](https://github.com/trackawesomelist/trackawesomelist), runing with Deno, `json` files as database.
 
-## How to
-
-1. git clone repo
-2. get init parsed data
-
-```json
-{
-    "name": "awesome",
-    "url": "github.com/sindresorhus/awesome",
-    "description": "",
-    "description_html": "",
-    "awesome_docs": ["https://weibo.com"],
-    "items": {
-        "item": {
-            "date_published": "2019-01-01"
-        }
-    }
-}
-```
-
-### update
-
-3. fetch readme, parsed it, compare with old data, if anything changed
-
-delete all un-exist items,
-
+> Documentation is being improved.
 
 ## Dev
 
+1. Install [Deno](https://deno.land/manual@v1.26.2/getting_started/installation)
+2. `git clone git@github.com:trackawesomelist/trackawesomelist-source.git`
+3. Add github awesome repo to `config.yml` -> `sources`
+4. `make startsource source=owner/repo`
 
-Open <http://localhost:8000/ripienaar/free-for-dev/>
+Open <http://127.0.0.1:8000>

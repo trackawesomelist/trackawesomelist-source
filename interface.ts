@@ -118,8 +118,11 @@ export interface Source {
 }
 export interface ListItem {
   name: string;
+  updated: string;
   url: string;
-  description: string;
+  meta: RepoMeta;
+  star: string;
+  source_url: string;
 }
 export interface List {
   category: string;
@@ -255,8 +258,6 @@ export interface FeedItem {
   date_published: string;
   date_modified: string;
   tags?: string[];
-  external_url?: string;
-  _external_slug?: string;
   authors?: Author[];
   title: string;
   _short_title?: string;

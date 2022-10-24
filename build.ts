@@ -25,6 +25,7 @@ import {
 import {
   exists,
   formatHumanTime,
+  formatNumber,
   getBaseFeed,
   getDayNumber,
   getDbIndex,
@@ -336,15 +337,20 @@ export default async function buildMarkdown(options: RunOptions) {
 
       const sourceFileConfig = getIndexFileConfig(sourceConfig.files);
       const sourceMeta = dbSources[sourceIdentifier].meta;
+      const dbFileInfo =
+        dbSources[sourceIdentifier].files[sourceFileConfig.filepath];
 
       return {
         name: sourceFileConfig.name,
         url: pathnameToFilePath(sourceFileConfig.pathname),
+        star: formatNumber(sourceMeta.stargazers_count),
         source_url: getRepoHTMLURL(
           sourceConfig.url,
           sourceMeta.default_branch,
           sourceFileConfig.filepath,
         ),
+        meta: sourceMeta,
+        updated: formatHumanTime(new Date(dbFileInfo.updated_at)),
       };
     });
     // write dbMeta
@@ -427,10 +433,15 @@ export default async function buildMarkdown(options: RunOptions) {
           const sourceConfig = sourcesConfig[sourceIdentifier];
           const indexFileConfig = getIndexFileConfig(sourceConfig.files);
           const sourceMeta = dbSources[sourceIdentifier]?.meta;
+          const dbFileInfo =
+            dbSources[sourceIdentifier]?.files[indexFileConfig.filepath];
           const item: ListItem = {
             name: indexFileConfig.name,
-            description: sourceMeta?.description || "",
+            meta: sourceMeta,
+            updated: formatHumanTime(new Date(dbFileInfo?.updated_at ?? 0)),
             url: pathnameToFilePath(indexFileConfig.pathname),
+            star: formatNumber(sourceMeta?.stargazers_count ?? 0),
+            source_url: sourceConfig.url,
           };
           return item;
         }).sort((a: ListItem, b: ListItem) => a.name.localeCompare(b.name));
