@@ -116,9 +116,16 @@ export function startDateOfWeek(date: Date, start_day = 1): Date {
   return date;
 }
 export const parseWeekInfo = (week: number): WeekOfYear => {
+  // check week number 5 or 6 digit
   // split by year and week
-  const year = Math.floor(week / 100);
-  const weekOfYear = week % 100;
+  let year = Math.floor(week / 100);
+  let weekOfYear = week % 100;
+  if (week < 100000) {
+    // week add 0
+    year = Math.floor(week / 10);
+    weekOfYear = week % 10;
+  }
+
   // week to date
   const date = weekNumberToDate(week);
 
@@ -134,8 +141,13 @@ export const parseWeekInfo = (week: number): WeekOfYear => {
 };
 
 export function weekToRange(weekNumber: number): string {
-  const year = Math.floor(weekNumber / 100);
-  const week = weekNumber % 100;
+  let year = Math.floor(weekNumber / 100);
+  let week = weekNumber % 100;
+  if (weekNumber < 100000) {
+    // week add 0
+    year = Math.floor(weekNumber / 10);
+    week = weekNumber % 10;
+  }
   // Get first day of year
   const yearStart = new Date(Date.UTC(year, 0, 1));
 
