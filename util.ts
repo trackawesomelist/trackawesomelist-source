@@ -901,7 +901,7 @@ export async function gotGithubStar(
   }
 
   const url = `https://img.shields.io/github/stars/${key}`;
-  const response = await gotWithDbCache(url, {});
+  const response = await gotWithCache(url, {});
   const endWith = "</text></a></g></svg>";
 
   if (response.endsWith(endWith)) {
