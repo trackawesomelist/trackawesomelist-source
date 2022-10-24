@@ -1,5 +1,6 @@
 import {
   DocItem,
+  ExpiredValue,
   FileConfigInfo,
   FileInfo,
   ParseOptions,
@@ -21,6 +22,7 @@ import { uglyFormatItemIdentifier } from "./util.ts";
 export default async function (
   content: string,
   fileInfo: FileInfo,
+  dbCachedStars: Record<string, ExpiredValue>,
 ): Promise<DocItem[]> {
   const sourceConfig = fileInfo.sourceConfig;
   const fileConfig = sourceConfig.files[fileInfo.filepath];
@@ -89,51 +91,53 @@ export default async function (
             }
             category += currentSubCategory.trim().replace(/\n/g, " ");
           }
+          const itemIdentifier = uglyFormatItemIdentifier(fileInfo, item);
           funcs.push(() => {
-            return formatMarkdownItem(item as TableRow, fileInfo).then(
-              (formatedItem) => {
-                let markdown = "- ";
-                // transform table row to item
-                (formatedItem as TableRow).children.forEach(
-                  (child, cellIndex) => {
-                    const tableHeaderCell =
-                      rootNode.children[0].children[cellIndex];
-                    let tableHeaderCellMarkdown = "";
-                    try {
-                      tableHeaderCellMarkdown = toMarkdown(
-                        tableHeaderCell,
+            return formatMarkdownItem(item as TableRow, fileInfo, dbCachedStars)
+              .then(
+                (formatedItem) => {
+                  let markdown = "- ";
+                  // transform table row to item
+                  (formatedItem as TableRow).children.forEach(
+                    (child, cellIndex) => {
+                      const tableHeaderCell =
+                        rootNode.children[0].children[cellIndex];
+                      let tableHeaderCellMarkdown = "";
+                      try {
+                        tableHeaderCellMarkdown = toMarkdown(
+                          tableHeaderCell,
+                          {
+                            extensions: [gfmToMarkdown()],
+                          },
+                        ).trim();
+                      } catch (e) {
+                        console.log("e", e);
+                        console.log("tableHeaderCell", tableHeaderCell);
+                      }
+                      const rowCellMarkdown = toMarkdown(
+                        child,
                         {
                           extensions: [gfmToMarkdown()],
                         },
                       ).trim();
-                    } catch (e) {
-                      console.log("e", e);
-                      console.log("tableHeaderCell", tableHeaderCell);
-                    }
-                    const rowCellMarkdown = toMarkdown(
-                      child,
-                      {
-                        extensions: [gfmToMarkdown()],
-                      },
-                    ).trim();
-                    if (cellIndex > 0) {
-                      markdown +=
-                        `  ${tableHeaderCellMarkdown}: ${rowCellMarkdown}\n\n`;
-                    } else {
-                      markdown +=
-                        `${tableHeaderCellMarkdown}: ${rowCellMarkdown}\n\n`;
-                    }
-                  },
-                );
+                      if (cellIndex > 0) {
+                        markdown +=
+                          `  ${tableHeaderCellMarkdown}: ${rowCellMarkdown}\n\n`;
+                      } else {
+                        markdown +=
+                          `${tableHeaderCellMarkdown}: ${rowCellMarkdown}\n\n`;
+                      }
+                    },
+                  );
 
-                return {
-                  formatedMarkdown: markdown,
-                  rawMarkdown: uglyFormatItemIdentifier(fileInfo, item),
-                  category: category,
-                  line: item.position!.end.line,
-                };
-              },
-            );
+                  return {
+                    formatedMarkdown: markdown,
+                    rawMarkdown: itemIdentifier,
+                    category: category,
+                    line: item.position!.end.line,
+                  };
+                },
+              );
           });
           rowIndex++;
         }

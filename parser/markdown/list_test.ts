@@ -1,20 +1,14 @@
-import markdownlist from "./markdownlist.ts";
-import { readTextFile } from "../util.ts";
-import { assertEquals } from "../test-deps.ts";
-Deno.test("markdown list test #1", async () => {
-  const content = await readTextFile("./example/simple.md");
-
-  const items = markdownlist(content);
-  // assertEquals(items, [
-  //   { markdown: "*   Item1\n", categories: ["Subtitle1\n"] },
-  //   { markdown: "*   Item2\n", categories: ["Subtitle1\n"] },
-  //   { markdown: "*   Item1\n", categories: ["Subtitle2\n"] },
-  //   { markdown: "*   Item2\n", categories: ["Subtitle2\n"] },
-  // ]);
-});
-
-Deno.test("markdown list test #2", async () => {
-  const content = await readTextFile("./example/books.md");
-
-  const items = markdownlist(content);
+import markdownlist from "./list.ts";
+import { getFakeFileInfo } from "./util.ts";
+import {
+  getDbCachedStars,
+  readTextFile,
+  writeDbCachedStars,
+} from "../../util.ts";
+import { assertEquals } from "../../test-deps.ts";
+Deno.test("markdown list test #3", async () => {
+  const content = await readTextFile("./example/mac.md");
+  const dbCachedStars = await getDbCachedStars();
+  const items = await markdownlist(content, getFakeFileInfo(), dbCachedStars);
+  await writeDbCachedStars(dbCachedStars);
 });

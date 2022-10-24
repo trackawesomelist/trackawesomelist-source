@@ -37,7 +37,7 @@ export {
 // export { default as kebabCase } from "https://jspm.dev/lodash@4.17.21/kebabCase";
 export { toMarkdown } from "https://esm.sh/mdast-util-to-markdown@1.3.0";
 export { fromMarkdown } from "https://esm.sh/mdast-util-from-markdown@1.2.0";
-export { visit } from "https://esm.sh/unist-util-visit@4.1.1";
+export { EXIT, visit } from "https://esm.sh/unist-util-visit@4.1.1";
 export { selectAll } from "https://esm.sh/unist-util-select@4.0.1";
 export { remove } from "https://esm.sh/unist-util-remove@3.1.0";
 export { u } from "https://esm.sh/unist-builder@3.0.0";

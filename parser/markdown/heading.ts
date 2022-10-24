@@ -1,4 +1,9 @@
-import { DocItem, FileInfo, ParseOptions } from "../../interface.ts";
+import {
+  DocItem,
+  ExpiredValue,
+  FileInfo,
+  ParseOptions,
+} from "../../interface.ts";
 import {
   Content,
   fromMarkdown,
@@ -18,6 +23,7 @@ import { uglyFormatItemIdentifier } from "./util.ts";
 export default function (
   content: string,
   fileInfo: FileInfo,
+  dbCachedStars: Record<string, ExpiredValue>,
 ): Promise<DocItem[]> {
   const sourceConfig = fileInfo.sourceConfig;
   const fileConfig = sourceConfig.files[fileInfo.filepath];
@@ -112,17 +118,20 @@ export default function (
           const line =
             tempItemSections[tempItemSections.length - 1].position!.end
               .line;
+          const itemIdentifier = uglyFormatItemIdentifier(fileInfo, item);
           const fn = () => {
-            return formatMarkdownItem(item, fileInfo).then((formatedItem) => {
-              return {
-                formatedMarkdown: toMarkdown(formatedItem, {
-                  extensions: [gfmToMarkdown()],
-                }).trim(),
-                rawMarkdown: uglyFormatItemIdentifier(fileInfo, item),
-                category: isParseCategory ? category : "",
-                line,
-              };
-            });
+            return formatMarkdownItem(item, fileInfo, dbCachedStars).then(
+              (formatedItem) => {
+                return {
+                  formatedMarkdown: toMarkdown(formatedItem, {
+                    extensions: [gfmToMarkdown()],
+                  }).trim(),
+                  rawMarkdown: itemIdentifier,
+                  category: isParseCategory ? category : "",
+                  line,
+                };
+              },
+            );
           };
           funcs.push(fn);
         }
@@ -161,17 +170,20 @@ export default function (
     }
     const line = tempItemSections[tempItemSections.length - 1].position!.end
       .line;
+    const itemIdentifier = uglyFormatItemIdentifier(fileInfo, item);
     const fn = () => {
-      return formatMarkdownItem(item, fileInfo).then((formatedItem) => {
-        return {
-          formatedMarkdown: toMarkdown(formatedItem, {
-            extensions: [gfmToMarkdown()],
-          }).trim(),
-          rawMarkdown: uglyFormatItemIdentifier(fileInfo, item),
-          category: isParseCategory ? category : "",
-          line: line,
-        };
-      });
+      return formatMarkdownItem(item, fileInfo, dbCachedStars).then(
+        (formatedItem) => {
+          return {
+            formatedMarkdown: toMarkdown(formatedItem, {
+              extensions: [gfmToMarkdown()],
+            }).trim(),
+            rawMarkdown: itemIdentifier,
+            category: isParseCategory ? category : "",
+            line: line,
+          };
+        },
+      );
     };
     funcs.push(fn);
   }

@@ -1,4 +1,5 @@
-import { Content, DB } from "./deps.ts";
+import { Content } from "./deps.ts";
+export type ExpiredValue = [number, string];
 export interface WeekOfYear {
   year: number;
   week: number;
@@ -7,6 +8,9 @@ export interface WeekOfYear {
   date: Date;
   id: string;
   name: string;
+}
+export interface CustomRequestOptions {
+  expires?: number;
 }
 export interface BuiltMarkdownInfo {
   commitMessage: string;

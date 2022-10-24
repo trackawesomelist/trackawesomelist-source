@@ -1,4 +1,9 @@
-import { DocItem, FileInfo, ParseOptions } from "../../interface.ts";
+import {
+  DocItem,
+  ExpiredValue,
+  FileInfo,
+  ParseOptions,
+} from "../../interface.ts";
 import {
   Content,
   fromMarkdown,
@@ -18,6 +23,7 @@ import { uglyFormatItemIdentifier } from "./util.ts";
 export default function (
   content: string,
   fileInfo: FileInfo,
+  dbCachedStars: Record<string, ExpiredValue>,
 ): Promise<DocItem[]> {
   const sourceConfig = fileInfo.sourceConfig;
   const fileConfig = sourceConfig.files[fileInfo.filepath];
@@ -121,18 +127,22 @@ export default function (
             }
             category += currentSubCategory.trim().replace(/\n/g, " ");
           }
+          const itemIdentifier = uglyFormatItemIdentifier(fileInfo, item);
+          // console.log("itemIdentifier", itemIdentifier);
           if (uglyIsValidCategory(fileInfo, category)) {
             funcs.push(() => {
-              return formatMarkdownItem(item, fileInfo).then((formatedItem) => {
-                return {
-                  formatedMarkdown: toMarkdown(formatedItem, {
-                    extensions: [gfmToMarkdown()],
-                  }).trim(),
-                  rawMarkdown: uglyFormatItemIdentifier(fileInfo, item),
-                  category: isParseCategory ? category : "",
-                  line: item.position!.end.line,
-                };
-              });
+              return formatMarkdownItem(item, fileInfo, dbCachedStars).then(
+                (formatedItem) => {
+                  return {
+                    formatedMarkdown: toMarkdown(formatedItem, {
+                      extensions: [gfmToMarkdown()],
+                    }).trim(),
+                    rawMarkdown: itemIdentifier,
+                    category: isParseCategory ? category : "",
+                    line: item.position!.end.line,
+                  };
+                },
+              );
             });
           }
         }

@@ -1,9 +1,11 @@
 import {
   getDayNumber,
+  getDbCachedStars,
   getDbIndex,
   getDbMeta,
   getWeekNumber,
   sha1,
+  writeDbCachedStars,
   writeDbIndex,
   writeDbMeta,
   writeJSONFile,
@@ -40,6 +42,7 @@ export default async function (options: RunOptions) {
   }
   const dbMeta = await getDbMeta();
   const dbIndex = await getDbIndex();
+  const dbCachedStars = await getDbCachedStars();
   const dbSources = dbMeta.sources;
 
   const invalidFiles: ParsedItemsFilePath[] = [];
@@ -56,7 +59,7 @@ export default async function (options: RunOptions) {
 
       if (!dbSources[sourceIdentifier] || (isSpecificSource && isRebuild)) {
         // need to init source
-        await initItems(source, options, dbMeta, dbIndex);
+        await initItems(source, options, dbMeta, dbIndex, dbCachedStars);
         continue;
       } else {
         // check is all files is init
@@ -68,7 +71,7 @@ export default async function (options: RunOptions) {
         });
         if (!isAllFilesInit) {
           // need to init source
-          await initItems(source, options, dbMeta, dbIndex);
+          await initItems(source, options, dbMeta, dbIndex, dbCachedStars);
           continue;
         }
       }
@@ -84,7 +87,7 @@ export default async function (options: RunOptions) {
         const dbFileMeta = dbFiles[file];
         if (!dbFileMeta) {
           // reinit items
-          await initItems(source, options, dbMeta, dbIndex);
+          await initItems(source, options, dbMeta, dbIndex, dbCachedStars);
 
           break;
         }
@@ -131,7 +134,7 @@ export default async function (options: RunOptions) {
           } catch (e) {
             log.warn(`get items error`, e);
             // try to reinit
-            await initItems(source, options, dbMeta, dbIndex);
+            await initItems(source, options, dbMeta, dbIndex, dbCachedStars);
             continue;
           }
           const fileInfo: FileInfo = {
@@ -140,7 +143,7 @@ export default async function (options: RunOptions) {
             sourceMeta: dbSource,
           };
 
-          const docItems = await parser(content, fileInfo);
+          const docItems = await parser(content, fileInfo, dbCachedStars);
           //compare updated items
           const newItems: Record<string, Item> = {};
           let newCount = 0;
@@ -234,10 +237,12 @@ export default async function (options: RunOptions) {
     // write to dbMeta
     await writeDbMeta(dbMeta);
     await writeDbIndex(dbIndex);
+    await writeDbCachedStars(dbCachedStars);
   } catch (e) {
     // write to dbMeta
     await writeDbMeta(dbMeta);
     await writeDbIndex(dbIndex);
+    await writeDbCachedStars(dbCachedStars);
     throw e;
   }
   if (invalidFiles.length > 0) {

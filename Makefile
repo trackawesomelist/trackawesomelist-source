@@ -145,6 +145,6 @@ prod-zipdb:
 prod-unzipdb:
 	unzip -q -o prod-db.zip
 
-.Phony: prod-clean
-prod-clean:
+.Phony: prod-dbclean
+prod-dbclean:
 	rm -rf ./prod-db/public && rm -rf ./prod-db/repos && rm ./prod-db/index.json && rm ./prod-db/meta.json && make prod-initdb 

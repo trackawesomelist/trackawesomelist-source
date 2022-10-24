@@ -43,10 +43,13 @@ export default class github extends API {
     // TODO
     // return readTextFile("./example/data/1-raw/heading.md");
     if (isUseCache()) {
-      result = await gotWithCache(
+      result = await gotWithDbCache(
         url,
         {
           headers: this.headers,
+        },
+        {
+          expires: 4 * 60 * 60 * 1000,
         },
       );
     } else {

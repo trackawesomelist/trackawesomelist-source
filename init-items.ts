@@ -1,6 +1,7 @@
 import {
   DBIndex,
   DBMeta,
+  ExpiredValue,
   FileInfo,
   Item,
   RepoMetaOverride,
@@ -27,6 +28,7 @@ export default async function initItems(
   options: RunOptions,
   dbMeta: DBMeta,
   dbIndex: DBIndex,
+  dbCachedStars: Record<string, ExpiredValue>,
 ) {
   // first get repo meta info from api
   const api = new Github(source);
@@ -37,7 +39,7 @@ export default async function initItems(
   const meta = await api.getRepoMeta(metaOverrides);
   const sources = dbMeta.sources;
   //check repo folder is empty
-  const repoPath = path.join(getCachePath(), "repos", source.identifier);
+  const repoPath = path.join(getCachePath(false), "repos", source.identifier);
 
   const isExist = await exists(repoPath);
   log.debug(`repo ${repoPath} exist cache, try to pull updates`);
@@ -97,7 +99,7 @@ export default async function initItems(
       sourceMeta: sources[source.identifier],
       filepath: file,
     };
-    const docItems = await parser(content, fileInfo);
+    const docItems = await parser(content, fileInfo, dbCachedStars);
     // console.log("docItems", docItems);
     let latestUpdatedAt = new Date(0);
     for (const docItem of docItems) {

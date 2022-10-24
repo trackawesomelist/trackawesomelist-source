@@ -16,9 +16,11 @@ import log from "./log.ts";
 import {
   BaseFeed,
   Config,
+  CustomRequestOptions,
   DayInfo,
   DBIndex,
   DBMeta,
+  ExpiredValue,
   FileConfig,
   FileConfigInfo,
   FileInfo,
@@ -615,6 +617,25 @@ export async function getDbMeta(): Promise<DBMeta> {
   const dbMeta = await readJSONFile(dbMetaFilePath) as DBMeta;
   return dbMeta;
 }
+export async function getDbCachedStars(): Promise<
+  Record<string, ExpiredValue>
+> {
+  // first check local
+  const dbMetaFilePath = getDbStarsPath();
+  try {
+    const dbMeta = await readJSONFile(dbMetaFilePath) as Record<
+      string,
+      ExpiredValue
+    >;
+    return dbMeta;
+  } catch (_e) {
+    return {};
+  }
+}
+export function writeDbCachedStars(stars: Record<string, ExpiredValue>) {
+  const dbMetaFilePath = getDbStarsPath();
+  return writeJSONFile(dbMetaFilePath, stars);
+}
 export async function getDbIndex(): Promise<DBIndex> {
   // first check local
   const dbMetaFilePath = getDbIndexFilePath();
@@ -803,7 +824,8 @@ export async function readCachedFile(
 }
 export async function gotWithDbCache(
   url: string,
-  init?: RequestInit,
+  init: RequestInit,
+  options?: CustomRequestOptions,
 ): Promise<string> {
   // check is exists cache
   let cacheFileContent;
@@ -822,18 +844,21 @@ export async function gotWithDbCache(
     return cacheFileContent;
   }
   const responseText = await got(url, init);
+  const expires = options?.expires ?? 15 * 24 * 60 * 60 * 1000;
+
   await writeCacheFile(
     url,
     init?.method ?? "GET",
     responseText,
     true,
-    15 * 24 * 60 * 60 * 1000,
+    expires,
   );
   return responseText;
 }
 export async function gotWithCache(
   url: string,
-  init?: RequestInit,
+  init: RequestInit,
+  options?: CustomRequestOptions,
 ): Promise<string> {
   // check is exists cache
   let cacheFileContent;
@@ -852,22 +877,45 @@ export async function gotWithCache(
     return cacheFileContent;
   }
   const responseText = await got(url, init);
-  await writeCacheFile(url, init?.method ?? "GET", responseText, false);
+  const expires = options?.expires ?? 3 * 24 * 60 * 60 * 1000;
+  await writeCacheFile(
+    url,
+    init?.method ?? "GET",
+    responseText,
+    false,
+    expires,
+  );
   return responseText;
 }
 
 export async function gotGithubStar(
   owner: string,
   repo: string,
+  dbCachedStars: Record<string, ExpiredValue>,
 ): Promise<string> {
-  const url = `https://img.shields.io/github/stars/${owner}/${repo}`;
-  const response = await gotWithDbCache(url);
+  // check is there is any cache
+  const key = `${owner}/${repo}`;
+  const cached = getDbExpiredItem(dbCachedStars, key);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const url = `https://img.shields.io/github/stars/${key}`;
+  const response = await gotWithDbCache(url, {});
   const endWith = "</text></a></g></svg>";
 
   if (response.endsWith(endWith)) {
     const text = response.slice(0, -endWith.length);
     const start = text.lastIndexOf(">") + 1;
     const star = text.slice(start);
+    // write to cache
+    writeDbExpiredItem(
+      dbCachedStars,
+      key,
+      star,
+      15 * 24 * 60 * 60 * 1000,
+    );
+
     return star;
   } else {
     log.debug(`got github star failed for ${owner}/${repo}`);
@@ -1098,4 +1146,35 @@ export function nav2ToHtml(nav1: Nav[]) {
       return `<span>${item.name}</span>`;
     }
   }).join("<span> / </span>") + "<span> ]</span>";
+}
+
+export function getDbStarsPath() {
+  return path.join(getDbPath(), "stars.json");
+}
+
+export function writeDbExpiredItem(
+  json: Record<string, ExpiredValue>,
+  key: string,
+  value: string,
+  expired: number,
+) {
+  const now = Date.now();
+  const expiredAt = now + expired;
+  json[key] = [expiredAt, value];
+}
+
+export function getDbExpiredItem(
+  json: Record<string, ExpiredValue>,
+  key: string,
+): string | undefined {
+  const now = Date.now();
+  const value = json[key];
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value[0] < now) {
+    delete json[key];
+    return undefined;
+  }
+  return value[1];
 }

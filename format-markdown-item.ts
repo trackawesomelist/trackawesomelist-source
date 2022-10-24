@@ -1,4 +1,4 @@
-import { DocItem, FileInfo } from "./interface.ts";
+import { DocItem, ExpiredValue, FileInfo } from "./interface.ts";
 import { Content, Link, pLimit, Root, toMarkdown, visit } from "./deps.ts";
 import {
   childrenToMarkdown,
@@ -171,6 +171,7 @@ export interface MatchedNode {
 export default async function formatItemMarkdown<T>(
   item: Content | Root,
   fileInfo: FileInfo,
+  dbCachedStars: Record<string, ExpiredValue>,
 ): Promise<Content | Root> {
   const sourceConfig = fileInfo.sourceConfig;
   const filepath = fileInfo.filepath;
@@ -205,11 +206,18 @@ export default async function formatItemMarkdown<T>(
         });
       }
     }
-    if (node.type === "link" && node.url.startsWith("https")) {
+    if (
+      node.type === "link" &&
+      (node.url.startsWith("http:") || node.url.startsWith("https:"))
+    ) {
       const url = node.url;
       try {
         const urlObj = new URL(url);
-        if (urlObj.hostname === "github.com") {
+        if (
+          urlObj.hostname === "github.com" && node.children &&
+          node.children.length > 0 && node.children[0].type === "text" &&
+          !node.children[0].value.startsWith(![])
+        ) {
           // disable white list pathname
           const pathname = urlObj.pathname;
           const pathArr = pathname.split("/");
@@ -229,7 +237,10 @@ export default async function formatItemMarkdown<T>(
       } catch (e) {
         log.debug("url parse error", url, e);
       }
-    } else if (node.type === "link" && !node.url.startsWith("#")) {
+    } else if (
+      node.type === "link" && !node.url.startsWith("#") &&
+      !node.url.includes("://")
+    ) {
       // transform relative link to absolute link
       const url = node.url;
       if (url.startsWith("/")) {
@@ -260,7 +271,7 @@ export default async function formatItemMarkdown<T>(
         const { owner, repo } = matched.meta;
         const node = matched.node;
         return limit(() =>
-          gotGithubStar(owner, repo).then((star: string) => {
+          gotGithubStar(owner, repo, dbCachedStars).then((star: string) => {
             if (star) {
               const badge = ` (⭐${star})`;
               node.children = [
@@ -271,6 +282,8 @@ export default async function formatItemMarkdown<T>(
                 },
               ];
             }
+          }).catch((_e) => {
+            // ignore error
           })
         );
       }),
