@@ -1,7 +1,13 @@
-import { DocItem, FileConfigInfo, ParseOptions } from "../../interface.ts";
+import {
+  DocItem,
+  FileConfigInfo,
+  FileInfo,
+  ParseOptions,
+} from "../../interface.ts";
 import {
   Content,
   fromMarkdown,
+  remarkInlineLinks,
   TableRow,
   toMarkdown,
   visit,
@@ -11,9 +17,10 @@ import _log from "../../log.ts";
 import formatMarkdownItem from "../../format-markdown-item.ts";
 import { gfm, gfmFromMarkdown, gfmToMarkdown } from "../../deps.ts";
 
+import { uglyFormatItemIdentifier } from "./util.ts";
 export default async function (
   content: string,
-  fileInfo: FileConfigInfo,
+  fileInfo: FileInfo,
 ): Promise<DocItem[]> {
   const sourceConfig = fileInfo.sourceConfig;
   const fileConfig = sourceConfig.files[fileInfo.filepath];
@@ -23,6 +30,9 @@ export default async function (
     extensions: [gfm()],
     mdastExtensions: [gfmFromMarkdown()],
   });
+  // @ts-ignore: remarkInlineLinks is not typed
+  remarkInlineLinks()(tree);
+
   let index = 0;
   let currentLevel = 0;
   let currentSubCategory = "";
@@ -118,10 +128,7 @@ export default async function (
 
                 return {
                   formatedMarkdown: markdown,
-                  rawMarkdown: toMarkdown(item, {
-                    extensions: [gfmToMarkdown()],
-                  })
-                    .trim(),
+                  rawMarkdown: uglyFormatItemIdentifier(fileInfo, item),
                   category: category,
                   line: item.position!.end.line,
                 };

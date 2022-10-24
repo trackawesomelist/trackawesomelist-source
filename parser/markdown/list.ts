@@ -6,6 +6,7 @@ import {
   gfmFromMarkdown,
   gfmToMarkdown,
   Link,
+  remarkInlineLinks,
   toMarkdown,
   visit,
 } from "../../deps.ts";
@@ -13,6 +14,7 @@ import { childrenToRoot, getRepoHTMLURL, promiseLimit } from "../../util.ts";
 import log from "../../log.ts";
 import formatMarkdownItem from "../../format-markdown-item.ts";
 import formatCategory from "../../format-category.ts";
+import { uglyFormatItemIdentifier } from "./util.ts";
 export default function (
   content: string,
   fileInfo: FileInfo,
@@ -28,6 +30,9 @@ export default function (
     extensions: [gfm()],
     mdastExtensions: [gfmFromMarkdown()],
   });
+  // transform inline links to link
+  // @ts-ignore: remarkInlineLinks is not typed
+  remarkInlineLinks()(tree);
   let index = 0;
   let currentLevel = 0;
   let currentSubCategory = "";
@@ -119,14 +124,11 @@ export default function (
           if (uglyIsValidCategory(fileInfo, category)) {
             funcs.push(() => {
               return formatMarkdownItem(item, fileInfo).then((formatedItem) => {
-                const rawMarkdown = uglyFormatItemIdentifier(fileInfo, item);
                 return {
                   formatedMarkdown: toMarkdown(formatedItem, {
                     extensions: [gfmToMarkdown()],
                   }).trim(),
-                  rawMarkdown: rawMarkdown ? rawMarkdown : toMarkdown(item, {
-                    extensions: [gfmToMarkdown()],
-                  }).trim(),
+                  rawMarkdown: uglyFormatItemIdentifier(fileInfo, item),
                   category: isParseCategory ? category : "",
                   line: item.position!.end.line,
                 };
@@ -154,26 +156,4 @@ function uglyIsValidCategory(
     }
   }
   return true;
-}
-
-function uglyFormatItemIdentifier(
-  fileInfo: FileInfo,
-  item: Content,
-): string | undefined {
-  const sourceConfig = fileInfo.sourceConfig;
-  const sourceIdentifier = sourceConfig.identifier;
-  if (sourceIdentifier === "analysis-tools-dev/static-analysis") {
-    // use link name as identifier
-    let linkItem;
-    visit(item, "link", (node) => {
-      linkItem = node;
-      return null;
-    });
-    if (linkItem) {
-      return toMarkdown(linkItem).trim();
-    } else {
-      return undefined;
-    }
-  }
-  return undefined;
 }

@@ -147,4 +147,4 @@ prod-unzipdb:
 
 .Phony: prod-clean
 prod-clean:
-	aws s3 rm s3://trackawesomelist/ --recursive --endpoint-url $(AWS_ENDPOINT) 
+	rm -rf ./prod-db/public && rm -rf ./prod-db/repos && rm ./prod-db/index.json && rm ./prod-db/meta.json && make prod-initdb 

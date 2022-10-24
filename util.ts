@@ -827,7 +827,7 @@ export async function gotWithDbCache(
     init?.method ?? "GET",
     responseText,
     true,
-    7 * 24 * 60 * 60 * 1000,
+    15 * 24 * 60 * 60 * 1000,
   );
   return responseText;
 }

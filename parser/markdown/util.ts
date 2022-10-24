@@ -1,4 +1,4 @@
-import { DocItem, ParseOptions } from "../../interface.ts";
+import { DocItem, FileInfo, ParseOptions } from "../../interface.ts";
 import {
   Content,
   fromMarkdown,
@@ -41,4 +41,24 @@ export function getValidSections(tree: Root, options: ParseOptions): Content[] {
     }
   }
   return validSections;
+}
+export function uglyFormatItemIdentifier(
+  _fileInfo: FileInfo,
+  item: Content | Root,
+): string {
+  // use link name as identifier
+  let linkItem;
+  visit(item, "link", (node) => {
+    linkItem = node;
+    return null;
+  });
+  if (linkItem) {
+    return toMarkdown(linkItem, {
+      extensions: [gfmToMarkdown()],
+    }).trim();
+  } else {
+    return toMarkdown(item, {
+      extensions: [gfmToMarkdown()],
+    }).trim();
+  }
 }
