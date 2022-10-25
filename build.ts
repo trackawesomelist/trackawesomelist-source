@@ -57,6 +57,7 @@ import buildByTime, { itemsToFeedItemsByDate } from "./build-by-time.ts";
 export default async function buildMarkdown(options: RunOptions) {
   const config = options.config;
   const sourcesConfig = config.sources;
+  const siteConfig = config.site;
   const sourcesKeys = Object.keys(sourcesConfig);
   const isBuildSite = options.html;
   const specificSourceIdentifiers = options.sourceIdentifiers;
@@ -332,7 +333,7 @@ export default async function buildMarkdown(options: RunOptions) {
 
         return score;
       },
-    ).slice(0, TOP_REPOS_COUNT).map((sourceIdentifier) => {
+    ).slice(0, TOP_REPOS_COUNT).map((sourceIdentifier, index) => {
       const sourceConfig = sourcesConfig[sourceIdentifier];
 
       const sourceFileConfig = getIndexFileConfig(sourceConfig.files);
@@ -341,6 +342,7 @@ export default async function buildMarkdown(options: RunOptions) {
         dbSources[sourceIdentifier].files[sourceFileConfig.filepath];
 
       return {
+        order: index + 1,
         name: sourceFileConfig.name,
         url: pathnameToFilePath(sourceFileConfig.pathname),
         star: formatNumber(sourceMeta.stargazers_count),
@@ -413,6 +415,7 @@ export default async function buildMarkdown(options: RunOptions) {
       const indexFeed: FeedInfo = {
         ...baseFeed,
         title: "Track Awesome List Updates " + (isDay ? "Daily" : "Weekly"),
+        _site_title: siteConfig.title,
         description: config.site.description,
         _seo_title:
           `${config.site.title} - Track your Favorite Github Awesome List ${

@@ -5,7 +5,7 @@ endif
 
 .Phony: start
 start:
-	LIMIT=3 deno run -A tal.ts "ripienaar/free-for-dev"
+	deno run -A tal.ts "ripienaar/free-for-dev"
 
 .Phony: startall
 startall:

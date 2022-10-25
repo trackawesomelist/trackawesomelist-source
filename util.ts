@@ -989,6 +989,42 @@ export const slug = function (tag: string): string {
   // @ts-ignore: npm module
   return slugFn(kebabCase(tag));
 };
+export function formatPaginationHtml(
+  page: PaginationInfo,
+  currentPathname: string,
+): string {
+  let text = "";
+  let isWeek = currentPathname.endsWith("/week/");
+  if (page.prev || page.next) {
+    text += "<hr>";
+  }
+  text += "<ul>";
+  if (isWeek) {
+    if (page.prev) {
+      text += `<li> Prev: <a href="${
+        pathnameToWeekFilePath(page.prev.pathname)
+      }">${page.prev.title}]</a></li>`;
+    }
+    if (page.next) {
+      text += `<li> Next: <a href="${
+        pathnameToWeekFilePath(page.next.pathname)
+      }">${page.next.title}]</a></li>`;
+    }
+  } else {
+    if (page.prev) {
+      text += `<li> Prev: <a href="${
+        pathnameToFilePath(page.prev.pathname)
+      }">${page.prev.title}]</a></li>`;
+    }
+    if (page.next) {
+      text += `<li> Next: <a href="${
+        pathnameToFilePath(page.next.pathname)
+      }">${page.next.title}]</a></li>`;
+    }
+  }
+  text += "</ul>";
+  return text;
+}
 
 export function formatPagination(
   page: PaginationInfo,
@@ -1064,6 +1100,32 @@ export function getPaginationTextByNumber(
   return paginationText;
 }
 
+export function getPaginationHtmlByNumber(
+  currentNumber: number,
+  allDays: (DayInfo | WeekOfYear)[],
+): string {
+  const currentDay = allDays.find((day: DayInfo | WeekOfYear) =>
+    day.number === currentNumber
+  );
+  if (currentDay === undefined) {
+    return "";
+  }
+  const currentDayIndex = allDays.indexOf(currentDay);
+  const prevDay = allDays[currentDayIndex - 1];
+  const nextDay = allDays[currentDayIndex + 1];
+
+  const paginationText = formatPagination({
+    prev: prevDay === undefined ? undefined : {
+      title: prevDay.name,
+      pathname: "/" + prevDay.path + "/",
+    },
+    next: nextDay === undefined ? undefined : {
+      title: nextDay.name,
+      pathname: "/" + nextDay.path + "/",
+    },
+  }, "/" + currentDay.path + "/");
+  return paginationText;
+}
 export function getnextPaginationTextByNumber(
   currentNumber: number,
   allDays: (DayInfo | WeekOfYear)[],

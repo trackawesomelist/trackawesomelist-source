@@ -274,6 +274,7 @@ export interface BaseFeed {
 }
 export interface FeedInfo extends BaseFeed {
   title: string;
+  _site_title: string;
   _seo_title: string;
   description: string;
   home_page_url: string;

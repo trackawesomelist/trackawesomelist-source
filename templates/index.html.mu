@@ -11,6 +11,11 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <title>{{{_seo_title}}}</title>
+    <meta property="og:url" content="{{{home_page_url}}}" />
+    <meta property="og:type" content="summary" />
+    <meta property="og:title" content="{{ title }}" />
+    <meta property="og:description" content="{{ description }}" />
+    <meta property="og:site_name" content="{{ _site_title }}" />
     <style>
       main {
         max-width: 800px;

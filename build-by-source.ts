@@ -257,6 +257,7 @@ export default async function main(
       ...baseFeed,
       title: feedTitle,
       _seo_title: `${feedSeoTitle} - ${siteConfig.title}`,
+      _site_title: siteConfig.title,
       description: repoMeta.description || "",
       home_page_url: `${domain}/${dailyRelativeFolder}/`,
       feed_url: `${domain}/${dailyRelativeFolder}/feed.json`,
@@ -464,6 +465,7 @@ ${readmeHtmlContent}
     const overviewFeedInfo: FeedInfo = {
       ...baseFeed,
       title: overviewTitle,
+      _site_title: siteConfig.title,
       _seo_title: `${overviewSeoTitle} - ${siteConfig.title}`,
       description: repoMeta.description,
       home_page_url: `${domain}/${relativeFolder}/readme/`,
