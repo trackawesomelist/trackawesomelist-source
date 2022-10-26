@@ -99,8 +99,11 @@ buildsitesource:
 	FORCE=1 deno run -A tal.ts --no-fetch --html ${source}
 .Phony: buildsiteall
 buildsiteall:
-	deno run -A tal.ts --no-fetch --html
+	FORCE=1 deno run -A tal.ts --no-fetch --html
 
+.Phony: prod-buildsiteall
+prod-buildsiteall:
+	PROD=1 FORCE=1 deno run -A tal.ts --no-fetch --html --no-serve
 .Phony: buildhtmlall
 buildhtmlall:
 	deno run -A tal.ts --no-fetch --no-markdown --html --no-serve

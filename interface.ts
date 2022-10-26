@@ -187,6 +187,7 @@ export interface PaginationInfo {
 }
 export interface BuildOptions {
   paginationText: string;
+  paginationHtml: string;
   dbMeta: DBMeta;
   dbIndex: DBIndex;
 }

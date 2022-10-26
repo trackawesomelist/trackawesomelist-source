@@ -1,6 +1,6 @@
 # {{{feed.title}}}
 
-{{{feed.description}}}
+{{{feed.description}}} Visit it [Online](https://www.trackawesomelist.com).
 
 {{{navText}}}
 

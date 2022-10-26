@@ -994,32 +994,32 @@ export function formatPaginationHtml(
   currentPathname: string,
 ): string {
   let text = "";
-  let isWeek = currentPathname.endsWith("/week/");
+  const isWeek = currentPathname.endsWith("/week/");
   if (page.prev || page.next) {
     text += "<hr>";
   }
   text += "<ul>";
   if (isWeek) {
     if (page.prev) {
-      text += `<li> Prev: <a href="${
-        pathnameToWeekFilePath(page.prev.pathname)
-      }">${page.prev.title}]</a></li>`;
+      text +=
+        `<li> Prev: <a href="${(page.prev
+          .pathname)}">${page.prev.title}</a></li>`;
     }
     if (page.next) {
-      text += `<li> Next: <a href="${
-        pathnameToWeekFilePath(page.next.pathname)
-      }">${page.next.title}]</a></li>`;
+      text +=
+        `<li> Next: <a href="${(page.next
+          .pathname)}">${page.next.title}</a></li>`;
     }
   } else {
     if (page.prev) {
-      text += `<li> Prev: <a href="${
-        pathnameToFilePath(page.prev.pathname)
-      }">${page.prev.title}]</a></li>`;
+      text +=
+        `<li> Prev: <a href="${(page.prev
+          .pathname)}">${page.prev.title}</a></li>`;
     }
     if (page.next) {
-      text += `<li> Next: <a href="${
-        pathnameToFilePath(page.next.pathname)
-      }">${page.next.title}]</a></li>`;
+      text +=
+        `<li> Next: <a href="${(page.next
+          .pathname)}">${page.next.title}</a></li>`;
     }
   }
   text += "</ul>";
@@ -1114,7 +1114,7 @@ export function getPaginationHtmlByNumber(
   const prevDay = allDays[currentDayIndex - 1];
   const nextDay = allDays[currentDayIndex + 1];
 
-  const paginationText = formatPagination({
+  const paginationText = formatPaginationHtml({
     prev: prevDay === undefined ? undefined : {
       title: prevDay.name,
       pathname: "/" + prevDay.path + "/",

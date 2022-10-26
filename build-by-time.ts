@@ -23,6 +23,7 @@ import {
   getBaseFeed,
   getDistRepoContentPath,
   getDomain,
+  getPaginationHtmlByNumber,
   getPublicPath,
   nav1ToHtml,
   nav1ToMarkdown,
@@ -52,7 +53,7 @@ export default async function main(
   const isDay = number.toString().length === 8;
   const isBuildMarkdown = options.markdown || false;
   const isBuildSite = options.html || false;
-  const { paginationText } = buildOptions;
+  const { paginationText, paginationHtml } = buildOptions;
 
   if (!isBuildMarkdown && !isBuildSite) {
     log.info("skip build timeline markdown and html");
@@ -112,6 +113,7 @@ export default async function main(
   const feed: Feed = {
     ...baseFeed,
     title: feedTitle,
+    _site_title: siteConfig.title,
     description: feedDescription,
     _seo_title: `${feedTitle} - ${siteConfig.title}`,
     feed_url: `${domain}/feed.json`,
@@ -157,7 +159,7 @@ ${
           index + 1
         }. ${item.title}</a></h2>${item.content_html}`;
       }).join("")
-    }`;
+    }${paginationHtml}`;
     const htmlDoc = mustache.render(htmlIndexTemplateContent, {
       ...feed,
       body,

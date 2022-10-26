@@ -35,6 +35,7 @@ import {
   getDistRepoPath,
   getIndexFileConfig,
   getnextPaginationTextByNumber,
+  getPaginationHtmlByNumber,
   getPaginationTextByNumber,
   getPublicPath,
   getRepoHTMLURL,
@@ -189,6 +190,7 @@ export default async function buildMarkdown(options: RunOptions) {
         fileInfo,
         options,
         {
+          paginationHtml: "",
           dbMeta,
           paginationText: "",
           dbIndex,
@@ -231,6 +233,7 @@ export default async function buildMarkdown(options: RunOptions) {
       for (const day of updatedDays) {
         const builtInfo = await buildByTime(day.number, options, {
           paginationText: getPaginationTextByNumber(day.number, allDays),
+          paginationHtml: getPaginationHtmlByNumber(day.number, allDays),
           dbMeta,
           dbIndex,
         });
@@ -271,6 +274,7 @@ export default async function buildMarkdown(options: RunOptions) {
 
         const builtInfo = await buildByTime(day.number, options, {
           paginationText: getPaginationTextByNumber(day.number, allWeeks),
+          paginationHtml: getPaginationHtmlByNumber(day.number, allWeeks),
           dbMeta,
           dbIndex,
         });

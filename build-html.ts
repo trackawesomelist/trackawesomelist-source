@@ -30,7 +30,6 @@ import {
   getDistRepoPath,
   getIndexFileConfig,
   getnextPaginationTextByNumber,
-  getPaginationTextByNumber,
   getPublicPath,
   getRepoHTMLURL,
   getStaticPath,
