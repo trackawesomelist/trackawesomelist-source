@@ -115,7 +115,7 @@ servepublic:
 
 .Phony: install
 install:
-	./scripts/install-mdbook.sh
+	./scripts/install-morsels.sh
 
 .Phony: servebook
 servebook:

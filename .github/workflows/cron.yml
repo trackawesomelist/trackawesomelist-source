@@ -58,7 +58,7 @@ jobs:
       #     path: |
       #       prod-cache
       #     key: cache-${{ hashFiles('**/*deps.ts') }}
-      # - run: make install
+      - run: make install
       - run: "make prod-build args='${{ github.event.inputs.args }}'"
         id: source
         continue-on-error: true
@@ -98,7 +98,7 @@ jobs:
       - name: throw if source failed
         if: steps.source.outcome == 'failure'
         run: |
-          echo "::error::Source build failed"
+          echo "::error::prod-build failed"
           exit 1
       - name: Publish pages
         if: true
