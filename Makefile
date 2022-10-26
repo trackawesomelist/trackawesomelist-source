@@ -154,7 +154,7 @@ prod-dbclean:
 
 .Phony: buildsearch
 buildsearch:
-	morsels ./db/public ./temp-morsels -c morsels_config.json && deno run -A ./build-search.ts
+	./bin/morsels ./db/public ./temp-morsels -c morsels_config.json && deno run -A ./build-search.ts
 .Phony: prod-buildsearch
 prod-buildsearch:
-	morsels ./prod-db/public ./temp-morsels -c morsels_config.json && PROD=1 deno run -A ./build-search.ts
+	./bin/morsels ./prod-db/public ./temp-morsels -c morsels_config.json && PROD=1 deno run -A ./build-search.ts

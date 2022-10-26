@@ -8,6 +8,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     cd -- /tmp
     curl -OL https://github.com/ang-zeyu/morsels/releases/download/v0.7.3/indexer.x86_64-unknown-linux-gnu.zip
     unzip indexer.x86_64-unknown-linux-gnu.zip -d $BIN_DIR
+    chmod +x $BIN_DIR/morsels
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
     cd -- /tmp/
