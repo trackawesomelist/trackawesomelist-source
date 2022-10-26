@@ -16,6 +16,7 @@ import {
   HOME_NAV,
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
+  SEARCH_NAV,
   SUBSCRIBE_NAV,
   SUBSCRIPTION_URL,
 } from "./constant.ts";
@@ -31,6 +32,7 @@ import {
   parseWeekInfo,
   pathnameToFeedUrl,
   pathnameToFilePath,
+  pathnameToUrl,
   readTextFile,
   writeJSONFile,
   writeTextFile,
@@ -100,6 +102,10 @@ export default async function main(
       name: HOME_NAV,
       markdown_url: "/" + INDEX_MARKDOWN_PATH,
       url: "/",
+    },
+    {
+      name: SEARCH_NAV,
+      url: pathnameToUrl("/search/"),
     },
     {
       name: FEED_NAV,

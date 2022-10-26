@@ -18,6 +18,7 @@ import {
   GITHUB_REPO,
   INDEX_MARKDOWN_PATH,
   PROD_DOMAIN,
+  SEARCH_NAV,
   SUBSCRIPTION_URL,
   TOP_REPOS_COUNT,
   WEBSITE_NAV,
@@ -43,6 +44,7 @@ import {
   getWeekNumber,
   pathnameToFeedUrl,
   pathnameToFilePath,
+  pathnameToUrl,
   readTextFile,
   slug,
   walkFile,
@@ -73,6 +75,9 @@ export default async function buildMarkdown(options: RunOptions) {
   let dbItemsLatestUpdatedAt = new Date(0);
   const htmlIndexTemplateContent = await readTextFile(
     "./templates/index.html.mu",
+  );
+  const htmlSearchTemplateContent = await readTextFile(
+    "./templates/search.html.mu",
   );
   for (const sourceIdentifier of Object.keys(dbSources)) {
     const source = dbSources[sourceIdentifier];
@@ -404,13 +409,17 @@ export default async function buildMarkdown(options: RunOptions) {
       const baseFeed = getBaseFeed();
       let indexNav = "";
       if (isDay) {
-        indexNav = `[📅 Weekly](/week/README.md) · [🔥 Feed](${
+        indexNav = `[📅 Weekly](/week/README.md) · [${SEARCH_NAV}](${
+          pathnameToUrl("/search")
+        }) · [🔥 Feed](${
           pathnameToFeedUrl("/", true)
         }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
           formatHumanTime(dbItemsLatestUpdatedAt)
         } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       } else {
-        indexNav = `[🏠 Home](/README.md)· [🔥 Feed](${
+        indexNav = `[🏠 Home](/README.md) · [${SEARCH_NAV}](${
+          pathnameToUrl("/search")
+        }) · [🔥 Feed](${
           pathnameToFeedUrl("/week/", true)
         }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
           formatHumanTime(dbItemsLatestUpdatedAt)
@@ -573,6 +582,7 @@ export default async function buildMarkdown(options: RunOptions) {
           isDay ? "index.html" : "week/index.html",
         );
         await writeTextFile(htmlPath, htmlDoc);
+
         // build feed json
         const feedJsonDistPath = path.join(
           getPublicPath(),

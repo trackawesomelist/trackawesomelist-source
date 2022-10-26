@@ -7,7 +7,7 @@
       "morsels_config.json"
     ],
     "include": [
-      "**/readme/index.html"
+      "*/*/readme/index.html"
     ],
     "loaders": {
       "HtmlLoader": {

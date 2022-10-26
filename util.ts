@@ -736,6 +736,10 @@ export function pathnameToFeedUrl(pathname: string, isDay: boolean): string {
   const domain = getDomain();
   return domain + posixPath.join(pathname, isDay ? "" : "week", "feed.xml");
 }
+export function pathnameToUrl(pathname: string): string {
+  const domain = getDomain();
+  return domain + pathname;
+}
 export async function got(
   url: string,
   init: RequestInit = {},
@@ -1001,25 +1005,21 @@ export function formatPaginationHtml(
   text += "<ul>";
   if (isWeek) {
     if (page.prev) {
-      text +=
-        `<li> Prev: <a href="${(page.prev
-          .pathname)}">${page.prev.title}</a></li>`;
+      text += `<li> Prev: <a href="${(page.prev
+        .pathname)}">${page.prev.title}</a></li>`;
     }
     if (page.next) {
-      text +=
-        `<li> Next: <a href="${(page.next
-          .pathname)}">${page.next.title}</a></li>`;
+      text += `<li> Next: <a href="${(page.next
+        .pathname)}">${page.next.title}</a></li>`;
     }
   } else {
     if (page.prev) {
-      text +=
-        `<li> Prev: <a href="${(page.prev
-          .pathname)}">${page.prev.title}</a></li>`;
+      text += `<li> Prev: <a href="${(page.prev
+        .pathname)}">${page.prev.title}</a></li>`;
     }
     if (page.next) {
-      text +=
-        `<li> Next: <a href="${(page.next
-          .pathname)}">${page.next.title}</a></li>`;
+      text += `<li> Next: <a href="${(page.next
+        .pathname)}">${page.next.title}</a></li>`;
     }
   }
   text += "</ul>";

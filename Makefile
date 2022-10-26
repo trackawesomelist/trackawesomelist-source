@@ -21,7 +21,7 @@ prod-start:
 
 .Phony: prod-build
 prod-build:
-	PROD=1 deno run -A tal.ts --html --no-serve ${args} 
+	PROD=1 deno run -A tal.ts --html --no-serve ${args} && make prod-buildsearch 
 
 .Phony: prod-run
 prod-run:
@@ -67,7 +67,7 @@ serve:
 
 .Phony: run
 run:
-	LIMIT=50 FORCE=1 deno run -A tal.ts --no-fetch --html
+	LIMIT=3 FORCE=1 deno run -A tal.ts --no-fetch --html
 
 .Phony: siteall
 siteall:
@@ -151,3 +151,10 @@ prod-unzipdb:
 .Phony: prod-dbclean
 prod-dbclean:
 	rm -rf ./prod-db/public && rm -rf ./prod-db/repos && rm ./prod-db/index.json && rm ./prod-db/meta.json && make prod-initdb 
+
+.Phony: buildsearch
+buildsearch:
+	morsels ./db/public ./temp-morsels -c morsels_config.json && deno run -A ./build-search.ts
+.Phony: prod-buildsearch
+prod-buildsearch:
+	morsels ./prod-db/public ./temp-morsels -c morsels_config.json && PROD=1 deno run -A ./build-search.ts
