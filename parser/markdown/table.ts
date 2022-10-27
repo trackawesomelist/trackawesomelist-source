@@ -27,6 +27,11 @@ export default async function (
   const sourceConfig = fileInfo.sourceConfig;
   const fileConfig = sourceConfig.files[fileInfo.filepath];
   const options = fileConfig.options;
+  const parseOptions = fileConfig.options;
+  const isParseCategory = parseOptions.is_parse_category === undefined
+    ? true
+    : parseOptions.is_parse_category;
+
   const items: DocItem[] = [];
   const tree = fromMarkdown(content, "utf8", {
     extensions: [gfm()],
@@ -71,7 +76,6 @@ export default async function (
     } else if (rootNode.type === "table") {
       // console.log("rootNode", rootNode);
       // await writeTextFile("temp.json", JSON.stringify(rootNode));
-      await console.log("s");
       let rowIndex = 0;
       for (const item of rootNode.children) {
         // console.log("item", item);
@@ -133,7 +137,7 @@ export default async function (
                   return {
                     formatedMarkdown: markdown,
                     rawMarkdown: itemIdentifier,
-                    category: category,
+                    category: isParseCategory ? category : "",
                     line: item.position!.end.line,
                   };
                 },

@@ -9,14 +9,31 @@ import {
 } from "./deps.ts";
 import { childrenToRoot, getDomain } from "./util.ts";
 import _log from "./log.ts";
-import { gfm, gfmFromMarkdown, gfmToMarkdown } from "./deps.ts";
+import {
+  gfm,
+  gfmFromMarkdown,
+  gfmToMarkdown,
+  remarkEmoji,
+  remarkGemoji,
+  remarkGithub,
+} from "./deps.ts";
 import { CONTENT_DIR, INDEX_MARKDOWN_PATH } from "./constant.ts";
 export default function renderMarkdown(content: string): string {
   const domain = getDomain();
+  const remarkGithubPlugin = remarkGithub();
   const tree = fromMarkdown(content, "utf8", {
-    extensions: [gfm()],
+    // @ts-ignore: remarkInlineLinks is not typed
+    extensions: [gfm(), remarkGithub()],
     mdastExtensions: [gfmFromMarkdown()],
   });
+  // @ts-ignore: node function
+  const remarkEmojiPlugin = remarkEmoji();
+  // @ts-ignore: node function
+  remarkEmojiPlugin(tree);
+  const remarkGemojiPlugin = remarkGemoji();
+  // @ts-ignore: node function
+  remarkGemojiPlugin(tree);
+
   visit(tree, "link", (node) => {
     const { url } = node;
     if (

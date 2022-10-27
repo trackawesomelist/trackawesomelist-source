@@ -18,7 +18,7 @@
     <meta property="og:site_name" content="{{ _site_title }}" />
     <style>
       main {
-        max-width: 800px;
+        max-width: 1024px;
         margin: 0 auto;
       }
       {{{CSS}}}

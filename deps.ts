@@ -42,6 +42,9 @@ export { selectAll } from "https://esm.sh/unist-util-select@4.0.1";
 export { remove } from "https://esm.sh/unist-util-remove@3.1.0";
 export { u } from "https://esm.sh/unist-builder@3.0.0";
 export { default as remarkInlineLinks } from "https://esm.sh/remark-inline-links@6.0.1";
+export { default as remarkEmoji } from "https://esm.sh/remark-emoji@3.0.2";
+export { default as remarkGemoji } from "https://esm.sh/remark-gemoji@7.0.1";
+export { default as remarkGithub } from "https://esm.sh/remark-github@11";
 export type {
   Content,
   Link,
