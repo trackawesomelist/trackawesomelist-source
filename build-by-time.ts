@@ -236,6 +236,8 @@ export function itemsToFeedItems(
       if (key) {
         groupMarkdown += `\n\n### ${key}\n`;
         groupHtml += `<h3>${categoryItem.category_html}</h3>`;
+      } else {
+        groupMarkdown += `\n`;
       }
       categoryGroup[key].forEach((item) => {
         groupMarkdown += "\n" + item.markdown;

@@ -272,6 +272,12 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 4
+          max_heading_level: 2
+          min_heading_level: 2
+
   TalAter/awesome-book-authoring:
     category: Books
     default_branch: master
@@ -296,6 +302,9 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 1
+          min_heading_level: 1
   domenicosolazzo/awesome-okr:
     category: Business
     default_branch: master
@@ -454,6 +463,9 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
+          min_heading_level: 3
   sobolevn/awesome-cryptography:
     category: Computer Science
     default_branch: master
@@ -652,6 +664,9 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 4
+          min_heading_level: 5
   mohataher/awesome-tinkerpop:
     category: Databases
     default_branch: master
@@ -718,6 +733,9 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 4
+          min_heading_level: 5
   quilloughbee/awesome-pleb-projects:
     category: Decentralized Systems
     files:
@@ -795,6 +813,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
   redecentralize/alternative-internet:
     category: Decentralized Systems
     default_branch: master
@@ -1094,6 +1114,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
   awesome-css-group/awesome-css:
     category: Front-End Development
     default_branch: master
@@ -1217,12 +1239,6 @@ sources:
     files:
       README.md:
         index: true
-  cjwirth/awesome-ios-ui:
-    category: Front-End Development
-    default_branch: master
-    files:
-      README.md:
-        index: true
   Urigo/awesome-meteor:
     category: Front-End Development
     default_branch: master
@@ -1253,6 +1269,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 1
   wbkd/awesome-d3:
     category: Front-End Development
     default_branch: master
@@ -1354,6 +1372,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 4
   ChromeDevTools/awesome-chrome-devtools:
     category: Front-End Development
     default_branch: master
@@ -1676,6 +1696,12 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 3
+          max_heading_level: 3
+          min_heading_level: 3
+          is_parse_category: false
   tobiasvl/awesome-chip-8:
     category: Gaming
     default_branch: main
@@ -1700,6 +1726,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
   HQarroum/awesome-iot:
     category: Hardware
     default_branch: master
@@ -1808,6 +1836,11 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 4
+          max_heading_level: 2
+          min_heading_level: 2
   matteofigus/awesome-speaking:
     category: Learn
     default_branch: master
@@ -1868,12 +1901,6 @@ sources:
     files:
       README.md:
         index: true
-  JoseDeFreitas/awesome-youtubers:
-    category: Learn
-    default_branch: main
-    files:
-      README.md:
-        index: true
   shime/creative-commons-media:
     category: Media
     default_branch: master
@@ -1892,6 +1919,11 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 3
+          max_heading_level: 2
+          min_heading_level: 2
   neutraltone/awesome-stock-resources:
     category: Media
     default_branch: master
@@ -2015,6 +2047,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
   jdorfman/awesome-json-datasets:
     category: Miscellaneous
     default_branch: master
@@ -2114,6 +2148,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
   awesome-selfhosted/awesome-selfhosted: null
   DataDaoDe/awesome-foss-apps:
     category: Miscellaneous
@@ -2133,6 +2169,8 @@ sources:
     files:
       readme.md:
         index: true
+        options:
+          max_heading_level: 4
   ibaaj/awesome-OpenSourcePhotography:
     category: Miscellaneous
     default_branch: master
@@ -2163,6 +2201,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 3
   emptymalei/awesome-research:
     category: Miscellaneous
     default_branch: master
@@ -2519,12 +2559,22 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: heading
+          heading_level: 3
+          max_heading_level: 1
+          min_heading_level: 2
   edm00se/awesome-board-games:
     category: Miscellaneous
     default_branch: main
     files:
       readme.md:
         index: true
+        options:
+          type: heading
+          heading_level: 3
+          max_heading_level: 2
+          min_heading_level: 2
   uraimo/awesome-software-patreons:
     category: Miscellaneous
     default_branch: master
@@ -2926,12 +2976,6 @@ sources:
     files:
       README.md:
         index: true
-  yenchenlin/awesome-watchos:
-    category: Platforms
-    default_branch: master
-    files:
-      README.md:
-        index: true
   deephacks/awesome-jvm:
     category: Platforms
     default_branch: master
@@ -3183,12 +3227,6 @@ sources:
     default_branch: master
     files:
       README.md:
-        index: true
-  maxogden/maintenance-modules:
-    category: Programming Languages
-    default_branch: master
-    files:
-      readme.md:
         index: true
   sindresorhus/awesome-npm:
     category: Programming Languages
@@ -3668,6 +3706,8 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 1
   fabacab/awesome-cybersecurity-blueteam:
     category: Security
     default_branch: main
@@ -3789,13 +3829,9 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          max_heading_level: 4
   tayllan/awesome-algorithms:
-    category: Theory
-    default_branch: master
-    files:
-      README.md:
-        index: true
-  enjalot/algovis:
     category: Theory
     default_branch: master
     files:

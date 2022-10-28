@@ -85,10 +85,25 @@ export default async function (options: RunOptions) {
       for (const file of fileKeys) {
         fileIndex++;
         const dbFileMeta = dbFiles[file];
+        let isRebuild = false;
+
+        if (dbFileMeta) {
+          const dbFileMetaUpdatedAt = new Date(dbFileMeta.updated_at);
+          if (dbFileMetaUpdatedAt.getTime() === 0) {
+            log.info(
+              `[${fileIndex}/${fileKeys.length}] ${source.identifier}/${file} is parsed failed, try to rebuild it.`,
+            );
+            isRebuild = true;
+          }
+        }
+
         if (!dbFileMeta) {
           // reinit items
-          await initItems(source, options, dbMeta, dbIndex, dbCachedStars);
+          isRebuild = true;
+        }
 
+        if (isRebuild) {
+          await initItems(source, options, dbMeta, dbIndex, dbCachedStars);
           break;
         }
 
@@ -99,7 +114,7 @@ export default async function (options: RunOptions) {
         const now = new Date();
         const diff = now.getTime() - dbFileUpdated.getTime();
 
-        if (!force && diff / 1000 / 60 / 60 < file_min_updated_hours) {
+        if (!force && (diff / 1000 / 60 / 60) < file_min_updated_hours) {
           // add max number function
           // not updated
           log.info(
@@ -126,6 +141,8 @@ export default async function (options: RunOptions) {
 
         if (dbFileSha1 === contentSha1 && !force) {
           log.info(`${file} is up to date, cause sha1 is same`);
+          // update checked_at
+          dbFileMeta.checked_at = new Date().toISOString();
           continue;
         } else {
           let items: Record<string, Item> = {};

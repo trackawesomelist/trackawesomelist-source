@@ -66,6 +66,8 @@ export default async function buildMarkdown(options: RunOptions) {
   const specificSourceIdentifiers = options.sourceIdentifiers;
   const isBuildMarkdown = options.markdown;
   const now = new Date();
+  // TODO
+  options.limit = 0;
   if (!isBuildSite && !isBuildMarkdown) {
     log.info("skip build site or markdown");
     return;
