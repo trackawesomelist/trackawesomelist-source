@@ -21,7 +21,7 @@
 ## Top 50 Awesome List
 
 {{#sortedRepos}}
-- [{{order}}. {{{name}}}]({{{url}}}) - ([Source ⭐ {{star}} 📝 {{updated}} ]({{{source_url}}})) - {{{meta.description}}}
+{{order}}. [{{{name}}}]({{{url}}}) - ([Source ⭐ {{star}} 📝 {{updated}} ]({{{source_url}}})) - {{{meta.description}}}
 {{/sortedRepos}}
 
 ## All Tracked List

@@ -31,6 +31,10 @@ prod-run:
 startsource:
 	deno run -A tal.ts ${source}
 
+.Phony: prod-startsource
+prod-startsource:
+	PROD=1 deno run -A tal.ts ${source}
+
 .Phony: all
 all:
 	FORCE=1 deno run -A tal.ts --html "ripienaar/free-for-dev"
@@ -82,8 +86,12 @@ prod-initdb:
 
 .Phony: clean
 clean:
-	rm -rf ./db rm -rf ./public && rm -rf ./dist && rm -rf ./prod-db && rm -rf ./prod-dist && rm -rf ./prod-public && make initdb && make prod-initdb
+	rm -rf ./db rm -rf ./public && rm -rf ./dist && make initdb
 
+
+.Phony: cleanall
+cleanall:
+	rm -rf ./db rm -rf ./public && rm -rf ./dist && rm -rf ./prod-db && rm -rf ./prod-dist && rm -rf ./prod-public && make initdb && make prod-initdb
 .Phony: push
 push:
 	cd -- ./dist/repo && git add . && git commit -m "update" && git push

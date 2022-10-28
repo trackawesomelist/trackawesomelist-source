@@ -65,6 +65,7 @@ export default async function buildMarkdown(options: RunOptions) {
   const isBuildSite = options.html;
   const specificSourceIdentifiers = options.sourceIdentifiers;
   const isBuildMarkdown = options.markdown;
+  const now = new Date();
   if (!isBuildSite && !isBuildMarkdown) {
     log.info("skip build site or markdown");
     return;
@@ -313,34 +314,56 @@ export default async function buildMarkdown(options: RunOptions) {
       }
     }
     // top 50 repos
+    // https://bearblog.dev/discover/
+    // Score = log10(U) + (S / D * 8600)
     const sortedRepos = dbSourcesKeys.sort(
       (aSourceIdentifier, bSourceIdentifier) => {
         const sourceMeta = dbSources[aSourceIdentifier];
         const aMeta = dbSources[aSourceIdentifier];
         const bMeta = dbSources[bSourceIdentifier];
+        const aSourceConfig = sourcesConfig[aSourceIdentifier];
+        const bSourceConfig = sourcesConfig[bSourceIdentifier];
+        const aIndexFileConfig = getIndexFileConfig(aSourceConfig.files);
+        const bIndexFileConfig = getIndexFileConfig(bSourceConfig.files);
+        const aIndexFileMeta = aMeta.files[aIndexFileConfig.filepath];
+        const bIndexFileMeta = bMeta.files[bIndexFileConfig.filepath];
+        const aUpdated = new Date(aIndexFileMeta.updated_at);
+        const bUpdated = new Date(bIndexFileMeta.updated_at);
         const unmaintainedTime = new Date().getTime() -
           2 * 365 * 24 * 60 * 60 * 1000;
+        // const flagTime = new Date("2020-01-01");
+        const aUnmaintained = aUpdated.getTime() <
+          unmaintainedTime;
+        const bUnmaintained = bUpdated.getTime() <
+          unmaintainedTime;
 
-        let aAddedScore =
-          (new Date(aMeta.updated_at).getTime() - unmaintainedTime) /
-          100000;
-
-        let bAddedScore =
-          (new Date(bMeta.updated_at).getTime() - unmaintainedTime) /
-          100000;
-
-        if (aMeta.meta.stargazers_count < 20000) {
-          aAddedScore = aAddedScore / 10;
+        if (aUnmaintained && !bUnmaintained) {
+          return 1;
+        }
+        if (!aUnmaintained && bUnmaintained) {
+          return -1;
         }
 
-        if (bMeta.meta.stargazers_count < 20000) {
-          bAddedScore = bAddedScore / 10;
+        if (aUnmaintained && bUnmaintained) {
+          return 0;
         }
 
-        const score = bMeta.meta.stargazers_count + bAddedScore -
-          (aAddedScore + aMeta.meta.stargazers_count);
+        const aScore = aMeta.meta.stargazers_count;
+        const aLogScore = Math.log2(aScore);
+        const bScore = bMeta.meta.stargazers_count;
+        const bLogScore = Math.log2(bScore);
+        // console.log("aLogScore", aLogScore);
+        // console.log("bLogScore", bLogScore);
+        const aUpdatedScore = ((now.getTime() - aUpdated.getTime()) / 1000 /
+          604800);
+        const bUpdatedScore = ((now.getTime() - bUpdated.getTime()) / 1000 /
+          604800);
+        const result = (bLogScore - bUpdatedScore) -
+          (aLogScore - aUpdatedScore);
+        // console.log("result", result);
+        return result;
 
-        return score;
+        // return score;
       },
     ).slice(0, TOP_REPOS_COUNT).map((sourceIdentifier, index) => {
       const sourceConfig = sourcesConfig[sourceIdentifier];
@@ -410,7 +433,7 @@ export default async function buildMarkdown(options: RunOptions) {
       let indexNav = "";
       if (isDay) {
         indexNav = `[📅 Weekly](/week/README.md) · [${SEARCH_NAV}](${
-          pathnameToUrl("/search")
+          pathnameToUrl("/search/")
         }) · [🔥 Feed](${
           pathnameToFeedUrl("/", true)
         }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
@@ -418,7 +441,7 @@ export default async function buildMarkdown(options: RunOptions) {
         } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       } else {
         indexNav = `[🏠 Home](/README.md) · [${SEARCH_NAV}](${
-          pathnameToUrl("/search")
+          pathnameToUrl("/search/")
         }) · [🔥 Feed](${
           pathnameToFeedUrl("/week/", true)
         }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
