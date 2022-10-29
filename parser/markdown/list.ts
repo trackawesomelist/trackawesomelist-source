@@ -128,6 +128,7 @@ export default function (
             category += currentSubCategory.trim().replace(/\n/g, " ");
           }
           const itemIdentifier = uglyFormatItemIdentifier(fileInfo, item);
+          console.log("itemIdentifier", itemIdentifier);
           // console.log("itemIdentifier", itemIdentifier);
           if (uglyIsValidCategory(fileInfo, category)) {
             funcs.push(() => {

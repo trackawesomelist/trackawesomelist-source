@@ -39,11 +39,8 @@ export default class github extends API {
     const url = `${this.apiPrefix}/repos/${this.repo}/contents/${filePath}`;
 
     let result;
-    // temp test content
-    // TODO
-    // return readTextFile("./example/data/1-raw/heading.md");
     if (isUseCache()) {
-      result = await gotWithDbCache(
+      result = await gotWithCache(
         url,
         {
           headers: this.headers,
