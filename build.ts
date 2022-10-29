@@ -420,7 +420,7 @@ export default async function buildMarkdown(options: RunOptions) {
         name: sourceFileConfig.name,
         url: pathnameToFilePath(sourceFileConfig.pathname),
         star: formatNumber(sourceMeta.stargazers_count),
-        source_url: getRepoHTMLURL(
+        source_url: sourceFileConfig.index ? sourceMeta.url : getRepoHTMLURL(
           sourceConfig.url,
           sourceMeta.default_branch,
           sourceFileConfig.filepath,

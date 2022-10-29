@@ -1194,6 +1194,34 @@ export function nav1ToMarkdown(nav1: Nav[]) {
     }
   }).join(" · ");
 }
+export function relativedFilesToMarkdown(nav1: Nav[]) {
+  if (nav1.length === 0) {
+    return "";
+  }
+  const list = nav1.map((item) => {
+    if (item.url) {
+      return `- [${item.name}](${item.markdown_url || item.url})`;
+    } else {
+      return item.name;
+    }
+  }).join("\n");
+  return "\n## Related Files\n\n" + list;
+}
+export function relativedFilesToHtml(nav1: Nav[]) {
+  if (nav1.length === 0) {
+    return "";
+  }
+  const list = nav1.map((item) => {
+    if (item.url) {
+      return `<li><a href="${
+        item.markdown_url || item.url
+      }">${item.name}</a></li>`;
+    } else {
+      return item.name;
+    }
+  }).join("");
+  return "<h2>Related Files</h2>" + list;
+}
 export function nav2ToMarkdown(nav1: Nav[]) {
   return "[ " + nav1.map((item) => {
     if (item.url && !item.active) {

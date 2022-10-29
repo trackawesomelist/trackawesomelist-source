@@ -49,6 +49,8 @@ import {
   pathnameToUrl,
   pathnameToWeekFilePath,
   readTextFile,
+  relativedFilesToHtml,
+  relativedFilesToMarkdown,
   slugy,
   startDateOfWeek,
   writeJSONFile,
@@ -129,7 +131,7 @@ export default async function main(
       },
       {
         name: `😺 ${sourceIdentifier}`,
-        url: getRepoHTMLURL(
+        url: sourceFileConfig.index ? repoMeta.url : getRepoHTMLURL(
           repoMeta.url,
           repoMeta.default_branch,
           originalFilepath,
@@ -164,6 +166,24 @@ export default async function main(
         active: i === 2,
       },
     ];
+
+    let relatedFiles: Nav[] = [];
+    if (sourceFileConfig.index && Object.keys(sourceConfig.files).length > 1) {
+      const files = sourceConfig.files;
+      const fileKeys = Object.keys(files).filter((key) => {
+        return key !== originalFilepath;
+      });
+      relatedFiles = fileKeys.map((fileKey) => {
+        const file = files[fileKey];
+        return {
+          name: file.name,
+          markdown_url: isDay
+            ? pathnameToFilePath(file.pathname)
+            : pathnameToWeekFilePath(file.pathname),
+          url: isDay ? file.pathname : file.pathname + "week/",
+        };
+      });
+    }
 
     const feedTitle = `Track ${fileConfig.name} Updates ${
       isDay ? "Daily" : "Weekly"
@@ -285,9 +305,7 @@ export default async function main(
 
 ${nav1ToMarkdown(nav1)}
 
-${nav2ToMarkdown(nav2)}
-
-${
+${nav2ToMarkdown(nav2)}${relativedFilesToMarkdown(relatedFiles)}${
       feedItems.map((item) => {
         return `\n\n## [${item._short_title}](/${CONTENT_DIR}/${item._slug}${INDEX_MARKDOWN_PATH})${item.content_text}`;
       }).join("")
@@ -412,7 +430,7 @@ ${
     },
     {
       name: `😺 ${sourceIdentifier}`,
-      url: getRepoHTMLURL(
+      url: sourceFileConfig.index ? repoMeta.url : getRepoHTMLURL(
         repoMeta.url,
         repoMeta.default_branch,
         originalFilepath,
