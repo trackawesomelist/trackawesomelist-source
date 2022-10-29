@@ -75,6 +75,19 @@ export default async function buildMarkdown(options: RunOptions) {
   const dbMeta = await getDbMeta();
   const dbIndex = await getDbIndex();
   const dbSources = dbMeta.sources;
+
+  let dbSourcesKeys = Object.keys(dbSources);
+  // delete all dbMeta item that does not exist in config
+  // compare sources keys and dbSourcesKeys
+  const dbSourcesKeysToDelete = dbSourcesKeys.filter(
+    (key) => !sourcesKeys.includes(key),
+  );
+  dbSourcesKeysToDelete.forEach((key) => {
+    log.info(`delete source ${key} from dbMeta`);
+    delete dbSources[key];
+  });
+  dbSourcesKeys = Object.keys(dbSources);
+
   let dbItemsLatestUpdatedAt = new Date(0);
   const htmlIndexTemplateContent = await readTextFile(
     "./templates/index.html.mu",
@@ -82,7 +95,7 @@ export default async function buildMarkdown(options: RunOptions) {
   const htmlSearchTemplateContent = await readTextFile(
     "./templates/search.html.mu",
   );
-  for (const sourceIdentifier of Object.keys(dbSources)) {
+  for (const sourceIdentifier of dbSourcesKeys) {
     const source = dbSources[sourceIdentifier];
     const files = source.files;
     for (const fileKey of Object.keys(files)) {
@@ -205,7 +218,7 @@ export default async function buildMarkdown(options: RunOptions) {
         },
       );
 
-      commitMessage += builtInfo.commitMessage + "\n";
+      // commitMessage += builtInfo.commitMessage + "\n";
     }
 
     const endBuildSourceTime = new Date();
@@ -249,7 +262,7 @@ export default async function buildMarkdown(options: RunOptions) {
         log.debug(
           `build day markdown [${updatedDayIndex}/${updatedDays.length}] ${day.path}`,
         );
-        commitMessage += builtInfo.commitMessage + "\n";
+        // commitMessage += builtInfo.commitMessage + "\n";
       }
       const endBuildDayTime = new Date();
       const buildDayTime = endBuildDayTime.getTime() -
@@ -287,7 +300,7 @@ export default async function buildMarkdown(options: RunOptions) {
           dbIndex,
         });
 
-        commitMessage += builtInfo.commitMessage + "\n";
+        // commitMessage += builtInfo.commitMessage + "\n";
       }
       const endBuildWeekTime = new Date();
       const buildWeekTime = endBuildWeekTime.getTime() -
@@ -300,7 +313,6 @@ export default async function buildMarkdown(options: RunOptions) {
     } else {
       log.info("skip build day markdown");
     }
-    const dbSourcesKeys = Object.keys(dbSources);
     const allFilesMeta: FileMetaWithSource[] = [];
     for (const sourceIdentifier of dbSourcesKeys) {
       const sourceMeta = dbSources[sourceIdentifier];
@@ -325,45 +337,53 @@ export default async function buildMarkdown(options: RunOptions) {
         const bMeta = dbSources[bSourceIdentifier];
         const aSourceConfig = sourcesConfig[aSourceIdentifier];
         const bSourceConfig = sourcesConfig[bSourceIdentifier];
-        const aIndexFileConfig = getIndexFileConfig(aSourceConfig.files);
-        const bIndexFileConfig = getIndexFileConfig(bSourceConfig.files);
-        const aIndexFileMeta = aMeta.files[aIndexFileConfig.filepath];
-        const bIndexFileMeta = bMeta.files[bIndexFileConfig.filepath];
-        const aUpdated = new Date(aIndexFileMeta.updated_at);
-        const bUpdated = new Date(bIndexFileMeta.updated_at);
-        const unmaintainedTime = new Date().getTime() -
-          2 * 365 * 24 * 60 * 60 * 1000;
-        // const flagTime = new Date("2020-01-01");
-        const aUnmaintained = aUpdated.getTime() <
-          unmaintainedTime;
-        const bUnmaintained = bUpdated.getTime() <
-          unmaintainedTime;
+        try {
+          const aIndexFileConfig = getIndexFileConfig(aSourceConfig.files);
+          const bIndexFileConfig = getIndexFileConfig(bSourceConfig.files);
+          const aIndexFileMeta = aMeta.files[aIndexFileConfig.filepath];
+          const bIndexFileMeta = bMeta.files[bIndexFileConfig.filepath];
+          const aUpdated = new Date(aIndexFileMeta.updated_at);
+          const bUpdated = new Date(bIndexFileMeta.updated_at);
+          const unmaintainedTime = new Date().getTime() -
+            2 * 365 * 24 * 60 * 60 * 1000;
+          // const flagTime = new Date("2020-01-01");
+          const aUnmaintained = aUpdated.getTime() <
+            unmaintainedTime;
+          const bUnmaintained = bUpdated.getTime() <
+            unmaintainedTime;
 
-        if (aUnmaintained && !bUnmaintained) {
-          return 1;
-        }
-        if (!aUnmaintained && bUnmaintained) {
-          return -1;
-        }
+          if (aUnmaintained && !bUnmaintained) {
+            return 1;
+          }
+          if (!aUnmaintained && bUnmaintained) {
+            return -1;
+          }
 
-        if (aUnmaintained && bUnmaintained) {
-          return 0;
-        }
+          if (aUnmaintained && bUnmaintained) {
+            return 0;
+          }
 
-        const aScore = aMeta.meta.stargazers_count;
-        const aLogScore = Math.log2(aScore);
-        const bScore = bMeta.meta.stargazers_count;
-        const bLogScore = Math.log2(bScore);
-        // console.log("aLogScore", aLogScore);
-        // console.log("bLogScore", bLogScore);
-        const aUpdatedScore = ((now.getTime() - aUpdated.getTime()) / 1000 /
-          604800);
-        const bUpdatedScore = ((now.getTime() - bUpdated.getTime()) / 1000 /
-          604800);
-        const result = (bLogScore - bUpdatedScore) -
-          (aLogScore - aUpdatedScore);
-        // console.log("result", result);
-        return result;
+          const aScore = aMeta.meta.stargazers_count;
+          const aLogScore = Math.log2(aScore);
+          const bScore = bMeta.meta.stargazers_count;
+          const bLogScore = Math.log2(bScore);
+          // console.log("aLogScore", aLogScore);
+          // console.log("bLogScore", bLogScore);
+          const aUpdatedScore = ((now.getTime() - aUpdated.getTime()) / 1000 /
+            604800);
+          const bUpdatedScore = ((now.getTime() - bUpdated.getTime()) / 1000 /
+            604800);
+          const result = (bLogScore - bUpdatedScore) -
+            (aLogScore - aUpdatedScore);
+          // console.log("result", result);
+          return result;
+        } catch (e) {
+          log.error(
+            `failed to sort ${aSourceIdentifier} ${bSourceIdentifier}`,
+            e,
+          );
+          throw e;
+        }
 
         // return score;
       },

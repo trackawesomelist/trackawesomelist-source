@@ -76,7 +76,7 @@ export default async function main(
   const sourceIdentifier = sourceConfig.identifier;
   const dbSource = dbSources[sourceIdentifier];
   const originalFilepath = fileConfig.filepath;
-  const commitMessage = `Update ${sourceIdentifier}/${originalFilepath}`;
+  let commitMessage = ``;
   const sourceFileConfig = fileConfig;
   // get items
 
@@ -89,7 +89,7 @@ export default async function main(
   const isBuildHtml = runOptions.html;
   if (!isBuildMarkdown && !isBuildHtml) {
     return {
-      commitMessage,
+      commitMessage: "",
     };
   }
   if (!htmlIndexTemplateContent) {

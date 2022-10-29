@@ -18,6 +18,16 @@ build:
 .Phony: prod-start
 prod-start:
 	FORCE=1 PROD=1 deno run -A tal.ts ${args} 
+.Phony: prod-builddemo
+prod-builddemo:
+	FORCE=1 PROD=1 deno run -A tal.ts --no-fetch --html ripienaar/free-for-dev 
+.Phony: prod-buildindex
+prod-buildindex:
+	PROD=1 deno run -A tal.ts --no-fetch --html ripienaar/free-for-dev 
+
+.Phony: prod-buildsource
+prod-buildsource:
+	FORCE=1 PROD=1 deno run -A tal.ts --no-fetch --html ${source} 
 
 .Phony: prod-build
 prod-build:
@@ -26,6 +36,7 @@ prod-build:
 .Phony: prod-run
 prod-run:
 	FORCE=1 PROD=1 deno run -A tal.ts --html ${args} 
+
 
 .Phony: startsource
 startsource:
@@ -111,7 +122,7 @@ buildsiteall:
 
 .Phony: prod-buildsiteall
 prod-buildsiteall:
-	PROD=1 FORCE=1 deno run -A tal.ts --no-fetch --html --no-serve
+	PROD=1 deno run -A tal.ts --no-fetch --html --no-serve
 .Phony: buildhtmlall
 buildhtmlall:
 	deno run -A tal.ts --no-fetch --no-markdown --html --no-serve
