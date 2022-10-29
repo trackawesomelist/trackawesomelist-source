@@ -20,7 +20,7 @@ prod-start:
 	FORCE=1 PROD=1 deno run -A tal.ts ${args} 
 .Phony: prod-builddemo
 prod-builddemo:
-	FORCE=1 PROD=1 deno run -A tal.ts --no-fetch --html ripienaar/free-for-dev 
+	FORCE=1 PROD=1 deno run -A tal.ts --no-fetch --html ripienaar/free-for-dev ${args} 
 .Phony: prod-buildindex
 prod-buildindex:
 	PROD=1 deno run -A tal.ts --no-fetch --html ripienaar/free-for-dev 

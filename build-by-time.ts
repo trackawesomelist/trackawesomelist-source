@@ -21,6 +21,7 @@ import {
   SUBSCRIPTION_URL,
 } from "./constant.ts";
 import {
+  formatHumanTime,
   getBaseFeed,
   getDistRepoContentPath,
   getDomain,
@@ -214,6 +215,7 @@ export function itemsToFeedItems(
 
     let groupMarkdown = "";
     let groupHtml = "";
+    let summary = "";
 
     const categoryGroup = groupBy(items, "category") as Record<
       string,
@@ -231,6 +233,7 @@ export function itemsToFeedItems(
     tomorrow.setDate(tomorrow.getDate() + 1);
     let datePublished: Date = tomorrow;
     let dateModified: Date = new Date(0);
+    let total = 0;
     categoryKeys.forEach((key) => {
       const categoryItem = categoryGroup[key][0];
       if (key) {
@@ -240,6 +243,7 @@ export function itemsToFeedItems(
         groupMarkdown += `\n`;
       }
       categoryGroup[key].forEach((item) => {
+        total++;
         groupMarkdown += "\n" + item.markdown;
         groupHtml += item.html;
         firstItem = item;
@@ -252,6 +256,7 @@ export function itemsToFeedItems(
         }
       });
     });
+    summary = `${total} awesome projects updated`;
     if (!firstItem) {
       throw new Error(`${key} has no firstItem`);
     }
@@ -270,6 +275,7 @@ export function itemsToFeedItems(
       _slug: slug,
       _filepath: pathnameToFilePath("/" + slug),
       url: itemUrl,
+      summary: summary,
       content_text: groupMarkdown,
       content_html: groupHtml,
       date_published: datePublished.toISOString(),
@@ -332,10 +338,16 @@ export function itemsToFeedItemsByDate(
     tomorrow.setDate(tomorrow.getDate() + 1);
     let datePublished: Date = tomorrow;
     let dateModified: Date = new Date(0);
+    let total = 0;
+    let summary = "including ";
     categoryKeys.forEach((key, index) => {
       const firstSourceItem = categoryGroup[key][0];
       const sourceFileConfig = sourcesConfig[firstSourceItem.source_identifier]
         .files[firstSourceItem.file];
+      total++;
+      summary += `${sourceFileConfig.name}${
+        index < categoryKeys.length - 1 ? ", " : ""
+      }`;
       groupMarkdown += `\n\n#### [${index + 1}. ${sourceFileConfig.name}](${
         pathnameToFilePath(sourceFileConfig.pathname)
       })`;
@@ -385,11 +397,13 @@ export function itemsToFeedItemsByDate(
       : parseWeekInfo(Number(key));
     const slug = dayInfo.path + "/";
     const itemUrl = `${domain}/${slug}`;
+    summary = `${total} awesome list updated on ${dayInfo.name}, ` + summary;
     const feedItem: FeedItem = {
       id: itemUrl,
       title: `Awesome List Updated on ${dayInfo.name}`,
       _short_title: dayInfo.name,
       _slug: slug,
+      summary,
       _filepath: pathnameToFilePath("/" + slug),
       url: itemUrl,
       content_text: groupMarkdown,

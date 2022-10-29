@@ -70,6 +70,7 @@ export default async function buildMarkdown(options: RunOptions) {
     log.info("skip build site or markdown");
     return;
   }
+
   const dbMeta = await getDbMeta();
   const dbIndex = await getDbIndex();
   const dbSources = dbMeta.sources;
@@ -181,6 +182,29 @@ export default async function buildMarkdown(options: RunOptions) {
 
         await p.status();
       }
+    }
+
+    if (options.cleanMarkdown) {
+      log.info("clean markdown files");
+      // remove all dist repo path files, except .git
+      const walker = await fs.walk(distRepoPath);
+      for await (const entry of walker) {
+        const relativePath = path.relative(distRepoPath, entry.path);
+        if (relativePath.startsWith(".git")) {
+          continue;
+        } else {
+          await Deno.remove(entry.path, {
+            recursive: true,
+          });
+        }
+      }
+    }
+    if (options.cleanHtml) {
+      log.info("clean html files");
+      // remove all dist repo path files, except .git
+      await Deno.remove(getPublicPath(), {
+        recursive: true,
+      });
     }
     const rootTemplateContent = await readTextFile(
       "./templates/root-readme.md.mu",

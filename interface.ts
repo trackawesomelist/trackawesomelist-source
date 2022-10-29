@@ -144,6 +144,8 @@ export interface CliOptions {
   fetchRepoUpdates: boolean;
   markdown: boolean;
   fetch: boolean;
+  cleanMarkdown?: boolean;
+  cleanHtml?: boolean;
   dayMarkdown: boolean;
   rebuild?: boolean;
   html?: boolean;
@@ -256,6 +258,7 @@ export interface FeedItem {
   url: string;
   _slug: string;
   _filepath: string;
+  summary: string;
   date_published: string;
   date_modified: string;
   tags?: string[];

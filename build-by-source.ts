@@ -200,12 +200,14 @@ export default async function main(
       >;
       let groupMarkdown = "";
       let groupHtml = "";
+      let summary = "";
       const categoryKeys: string[] = Object.keys(categoryGroup);
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
       let datePublished: Date = tomorrow;
       let dateModified: Date = new Date(0);
+      let total = 0;
       categoryKeys.forEach((key: string) => {
         const categoryItem = categoryGroup[key][0];
         if (key) {
@@ -215,6 +217,7 @@ export default async function main(
           groupMarkdown += `\n`;
         }
         categoryGroup[key].forEach((item) => {
+          total++;
           groupMarkdown += `\n${item.markdown}`;
           groupHtml += `\n${item.html}`;
           const itemUpdatedAt = new Date(item.updated_at);
@@ -232,6 +235,7 @@ export default async function main(
       } else {
         dayInfo = parseWeekInfo(Number(key));
       }
+      summary = `${total} awesome projects updated on ${dayInfo.name}`;
       const slug = dayInfo.path + "/";
       const itemUrl = `${domain}/${dayInfo.path}/`;
       const url = `${domain}/${slug}`;
@@ -240,6 +244,7 @@ export default async function main(
         title: `${fileConfig.name} Updates on ${dayInfo.name}`,
         _short_title: dayInfo.name,
         _slug: slug,
+        summary,
         _filepath: pathnameToFilePath("/" + slug),
         url: itemUrl,
         date_published: datePublished.toISOString(),

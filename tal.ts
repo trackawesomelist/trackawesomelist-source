@@ -23,6 +23,8 @@ export default async function tal() {
     .option("-p, --push", "Push markdown to remote.")
     .option("--no-fetch", "Don't fetch remote sources.")
     .option("--no-markdown", "do not build markdown file.")
+    .option("--clean-html", "clean html files.")
+    .option("--clean-markdown", "clean markdown files.")
     .option("--no-day-markdown", "do not build day markdown file.")
     .option("--no-fetch-repo-updates", "do not fetch repo updates.")
     .option("--html", "Build html files.")

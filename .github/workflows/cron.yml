@@ -95,7 +95,7 @@ jobs:
       #     name: temp
       #     path: temp
       #     if-no-files-found: ignore
-      - name: throw if source failed
+      - name: throw if build failed
         if: steps.source.outcome == 'failure'
         run: |
           echo "::error::prod-build failed"
