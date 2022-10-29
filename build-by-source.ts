@@ -370,7 +370,7 @@ ${
       const rssDistPath = path.join(
         getPublicPath(),
         dailyRelativeFolder,
-        "feed.xml",
+        "rss.xml",
       );
       await writeTextFile(rssDistPath, feedOutput);
     }

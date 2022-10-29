@@ -646,7 +646,7 @@ export default async function buildMarkdown(options: RunOptions) {
         });
         const rssDistPath = path.join(
           getPublicPath(),
-          isDay ? "feed.xml" : `week/feed.xml`,
+          isDay ? "rss.xml" : `week/rss.xml`,
         );
         await writeTextFile(rssDistPath, feedOutput);
       }
