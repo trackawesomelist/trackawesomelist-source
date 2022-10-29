@@ -187,15 +187,13 @@ export default async function buildMarkdown(options: RunOptions) {
     if (options.cleanMarkdown) {
       log.info("clean markdown files");
       // remove all dist repo path files, except .git
-      const walker = await fs.walk(distRepoPath);
+      const walker = await walkFile(distRepoPath);
       for await (const entry of walker) {
         const relativePath = path.relative(distRepoPath, entry.path);
         if (relativePath.startsWith(".git")) {
           continue;
         } else {
-          await Deno.remove(entry.path, {
-            recursive: true,
-          });
+          await Deno.remove(entry.path);
         }
       }
     }
