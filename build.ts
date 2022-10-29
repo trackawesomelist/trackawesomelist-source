@@ -66,8 +66,6 @@ export default async function buildMarkdown(options: RunOptions) {
   const specificSourceIdentifiers = options.sourceIdentifiers;
   const isBuildMarkdown = options.markdown;
   const now = new Date();
-  // TODO
-  options.limit = 0;
   if (!isBuildSite && !isBuildMarkdown) {
     log.info("skip build site or markdown");
     return;
@@ -640,14 +638,20 @@ export default async function buildMarkdown(options: RunOptions) {
 
         await writeJSONFile(feedJsonDistPath, finalFeed);
         // build rss
+
+        const rssFeed = { ...finalFeed };
+        rssFeed.items = rssFeed.items.map(({ content_text: _, ...rest }) =>
+          rest
+        );
         // @ts-ignore: node modules
-        const feedOutput = jsonfeedToAtom(finalFeed, {
+        const feedOutput = jsonfeedToAtom(rssFeed, {
           language: "en",
         });
         const rssDistPath = path.join(
           getPublicPath(),
           isDay ? "rss.xml" : `week/rss.xml`,
         );
+
         await writeTextFile(rssDistPath, feedOutput);
       }
     }

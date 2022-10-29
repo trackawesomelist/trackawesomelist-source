@@ -263,7 +263,7 @@ export interface FeedItem {
   title: string;
   _short_title?: string;
   author?: Author;
-  content_text: string;
+  content_text?: string;
   content_html: string;
 }
 

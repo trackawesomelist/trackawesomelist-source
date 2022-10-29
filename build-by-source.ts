@@ -363,8 +363,10 @@ ${
 
       await writeJSONFile(feedJsonDistPath, feed);
       // build rss
+      const rssFeed = { ...feed };
+      rssFeed.items = rssFeed.items.map(({ content_text: _, ...rest }) => rest);
       // @ts-ignore: node modules
-      const feedOutput = jsonfeedToAtom(feed, {
+      const feedOutput = jsonfeedToAtom(rssFeed, {
         language: "en",
       });
       const rssDistPath = path.join(
