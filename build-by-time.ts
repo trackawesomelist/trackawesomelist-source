@@ -361,6 +361,7 @@ export function itemsToFeedItemsByDate(
         }
         categoryItems.forEach((item: ItemDetail) => {
           groupMarkdown += "\n" + item.markdown;
+          groupHtml += item.html;
           firstItem = item;
           const itemUpdated = new Date(item.updated_at);
           if (itemUpdated.getTime() < datePublished.getTime()) {
