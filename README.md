@@ -12,3 +12,7 @@ This repo is for generating [trackawesomelist](https://github.com/trackawesomeli
 4. `make startsource source=owner/repo`
 
 Open <http://127.0.0.1:8000>
+
+### Rebuild Single Repo
+
+`make prod-build args="--rebuild xxx/repo"`

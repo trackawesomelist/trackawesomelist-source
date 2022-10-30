@@ -1134,12 +1134,6 @@ sources:
     files:
       README.md:
         index: true
-  AllThingsSmitty/must-watch-css:
-    category: Front-End Development
-    default_branch: master
-    files:
-      README.md:
-        index: true
   AllThingsSmitty/css-protips:
     category: Front-End Development
     default_branch: master
@@ -1197,6 +1191,9 @@ sources:
     files:
       README.md:
         index: true
+        options:
+          type: list
+          max_heading_level: 4
   sadcitizen/awesome-backbone:
     category: Front-End Development
     default_branch: master
