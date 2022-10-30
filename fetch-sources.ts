@@ -129,7 +129,7 @@ export default async function (options: RunOptions) {
         log.info(
           `${sourceIndex}/${sourceIdentifiers.length} try updating ${sourceIdentifier}/${file}`,
         );
-        const content = await api.getConent(file);
+        const content = await api.getConent(file, source.default_branch);
         const contentSha1 = await sha1(content);
         const dbFileSha1 = dbFileMeta.sha1;
         log.debug(

@@ -35,8 +35,13 @@ export default class github extends API {
   getCloneUrl(): string {
     return `https://github.com/${this.repo}.git`;
   }
-  async getConent(filePath: string): Promise<string> {
-    const url = `${this.apiPrefix}/repos/${this.repo}/contents/${filePath}`;
+  async getConent(filePath: string, branch?: string): Promise<string> {
+    const baseurl = `${this.apiPrefix}/repos/${this.repo}/contents/${filePath}`;
+    const baseUrlObj = new URL(baseurl);
+    if (branch) {
+      baseUrlObj.searchParams.set("ref", branch);
+    }
+    const url = baseUrlObj.toString();
 
     let result;
     if (isUseCache()) {
