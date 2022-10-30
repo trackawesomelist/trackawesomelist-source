@@ -20,6 +20,7 @@
       main {
         max-width: 1024px;
         margin: 0 auto;
+        padding: 0 0.5em;
       }
       {{{CSS}}}
     </style>
