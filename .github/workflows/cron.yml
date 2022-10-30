@@ -4,20 +4,11 @@ on:
     types: [schedule]
   workflow_dispatch:
     inputs:
-      force_all:
-        default: "0"
-        description: "Force all sources to build"
-        type: string
-        required: false
       args:
         default: ""
         description: "args to build"
         type: string
         required: false
-      limit:
-        description: "limit count, for debug"
-        required: false
-        default: ""
   push:
     branches:
       - main
