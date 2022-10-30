@@ -15,15 +15,13 @@ import {
   gfmToMarkdown,
   remarkEmoji,
   remarkGemoji,
-  remarkGithub,
 } from "./deps.ts";
 import { CONTENT_DIR, INDEX_MARKDOWN_PATH } from "./constant.ts";
 export default function renderMarkdown(content: string): string {
   const domain = getDomain();
-  const remarkGithubPlugin = remarkGithub();
   const tree = fromMarkdown(content, "utf8", {
     // @ts-ignore: remarkInlineLinks is not typed
-    extensions: [gfm(), remarkGithub()],
+    extensions: [gfm()],
     mdastExtensions: [gfmFromMarkdown()],
   });
   // @ts-ignore: node function
