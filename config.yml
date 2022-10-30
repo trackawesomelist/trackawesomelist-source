@@ -3283,7 +3283,7 @@ sources:
     category: Programming Languages
   timofurrer/awesome-asyncio:
     category: Programming Languages
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
