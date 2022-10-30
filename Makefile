@@ -40,7 +40,7 @@ prod-run:
 
 .Phony: startsource
 startsource:
-	deno run -A tal.ts ${source}
+	deno run -A tal.ts --html ${source}
 
 .Phony: prod-startsource
 prod-startsource:

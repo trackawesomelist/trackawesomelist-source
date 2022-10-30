@@ -1213,14 +1213,12 @@ export function relativedFilesToHtml(nav1: Nav[]) {
   }
   const list = nav1.map((item) => {
     if (item.url) {
-      return `<li><a href="${
-        item.markdown_url || item.url
-      }">${item.name}</a></li>`;
+      return `<li><a href="${item.url}">${item.name}</a></li>`;
     } else {
       return item.name;
     }
   }).join("");
-  return "<h2>Related Files</h2>" + list;
+  return "<h2>Related Files</h2><ul>" + list + "</ul>";
 }
 export function nav2ToMarkdown(nav1: Nav[]) {
   return "[ " + nav1.map((item) => {

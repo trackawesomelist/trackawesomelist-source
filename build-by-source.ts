@@ -333,6 +333,7 @@ ${nav2ToMarkdown(nav2)}${relativedFilesToMarkdown(relatedFiles)}${
 ${feed.description ? "<p>" + feed.description + "</p>" : ""}
 <p>${nav1ToHtml(nav1)}</p>
 <p>${nav2ToHtml(nav2)}</p>
+${relativedFilesToHtml(relatedFiles)}
 ${
         feedItems.map((item) => {
           return `<h2><a href="${item.url}">${item._short_title}</a></h2>${item.content_html}`;
