@@ -215,7 +215,7 @@ export default async function (options: RunOptions) {
             }
           }
 
-          await updateFile(fileInfo, content);
+          await updateFile(fileInfo, content, dbCachedStars);
           await updateItems(fileInfo, newItems, dbIndex);
 
           dbFiles[file] = {

@@ -10,6 +10,7 @@ import {
   DayInfo,
   DBIndex,
   DBMeta,
+  ExpiredValue,
   File,
   FileInfo,
   Item,
@@ -48,6 +49,7 @@ export function getHtmlFile(
 export async function updateFile(
   fileInfo: FileInfo,
   content: string,
+  stars: Record<string, ExpiredValue>,
 ) {
   const file = fileInfo.filepath;
   const sourceConfig = fileInfo.sourceConfig;
@@ -59,7 +61,7 @@ export async function updateFile(
   });
 
   // format link etc.
-  const overviewMarkdownTree = await formatMarkdownItem(tree, fileInfo);
+  const overviewMarkdownTree = await formatMarkdownItem(tree, fileInfo, stars);
   const overviewMarkdownContent = toMarkdown(
     overviewMarkdownTree,
     {
