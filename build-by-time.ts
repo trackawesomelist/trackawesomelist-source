@@ -242,8 +242,8 @@ export function itemsToFeedItems(
       } else {
         groupMarkdown += `\n`;
       }
+      total++;
       categoryGroup[key].forEach((item) => {
-        total++;
         groupMarkdown += "\n" + item.markdown;
         groupHtml += item.html;
         firstItem = item;
