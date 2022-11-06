@@ -2401,6 +2401,12 @@ sources:
     files:
       readme.md:
         index: true
+  filipecalegario/awesome-generative-deep-art:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
   aviaryan/awesome-no-login-web-apps:
     category: Miscellaneous
     default_branch: master
