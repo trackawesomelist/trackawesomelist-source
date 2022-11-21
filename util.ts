@@ -230,7 +230,7 @@ export function weekOfYear(date: Date): WeekOfYear {
     number: Number(`${weekYear}${week}`),
     date: weekNumberToDate(Number(`${weekYear}${addZero(week)}`)),
     id: `${weekYear}-${week}`,
-    name: weekToRange(week),
+    name: weekToRange(Number(`${weekYear}${week}`)),
   };
 }
 
