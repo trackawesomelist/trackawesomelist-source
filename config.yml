@@ -459,7 +459,6 @@ sources:
         index: true
   theimpossibleastronaut/awesome-linguistics:
     category: Computer Science
-    default_branch: master
     files:
       README.md:
         index: true
