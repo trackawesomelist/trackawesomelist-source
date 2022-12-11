@@ -1,4 +1,5 @@
 /prod-current/
+deno.lock
 *.zip
 /bin/
 /book/
