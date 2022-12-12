@@ -3930,3 +3930,33 @@ sources:
     files:
       README.md:
         index: true
+  elyase/awesome-gpt3:
+    category: GPT-3
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  humanloop/awesome-chatgpt:
+    category: ChatGPT
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  Kamigami55/awesome-chatgpt:
+    category: ChatGPT
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  saharmor/awesome-chatgpt:
+    category: ChatGPT
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  f/awesome-chatgpt-prompts:
+    category: ChatGPT
+    default_branch: main
+    files:
+      README.md:
+        index: true
