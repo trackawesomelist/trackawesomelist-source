@@ -888,7 +888,7 @@ sources:
     category: Development Environment
     default_branch: master
     files:
-      readme.md:
+      README.md:
         index: true
   unixorn/awesome-zsh-plugins:
     category: Development Environment
