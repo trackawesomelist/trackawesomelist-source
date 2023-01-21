@@ -389,10 +389,10 @@ export default async function buildMarkdown(options: RunOptions) {
           const bLogScore = Math.log2(bScore);
           // console.log("aLogScore", aLogScore);
           // console.log("bLogScore", bLogScore);
-          const aUpdatedScore = ((now.getTime() - aUpdated.getTime()) / 1000 /
-            604800);
-          const bUpdatedScore = ((now.getTime() - bUpdated.getTime()) / 1000 /
-            604800);
+          const aUpdatedScore = (now.getTime() - aUpdated.getTime()) / 1000 /
+            604800;
+          const bUpdatedScore = (now.getTime() - bUpdated.getTime()) / 1000 /
+            604800;
           const result = (bLogScore - bUpdatedScore) -
             (aLogScore - aUpdatedScore);
           // console.log("result", result);

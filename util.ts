@@ -103,11 +103,9 @@ export function startDateOfWeek(date: Date, start_day = 1): Date {
   date = new Date(date.getTime());
   const day_of_month = date.getUTCDate();
   const day_of_week = date.getUTCDay();
-  const difference_in_days = (
-    day_of_week >= start_day
-      ? day_of_week - start_day
-      : day_of_week - start_day + 7
-  );
+  const difference_in_days = day_of_week >= start_day
+    ? day_of_week - start_day
+    : day_of_week - start_day + 7;
   date.setUTCDate(day_of_month - difference_in_days);
   date.setUTCHours(0);
   date.setUTCMinutes(0);
@@ -227,7 +225,7 @@ export function weekOfYear(date: Date): WeekOfYear {
     year: weekYear,
     week: week,
     path: `${workingDate.getUTCFullYear()}/${week}`,
-    number: Number(`${weekYear}${week}`),
+    number: Number(`${weekYear}${addZero(week)}`),
     date: weekNumberToDate(Number(`${weekYear}${addZero(week)}`)),
     id: `${weekYear}-${week}`,
     name: weekToRange(week),
