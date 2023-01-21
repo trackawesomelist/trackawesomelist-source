@@ -478,7 +478,7 @@ export default async function buildMarkdown(options: RunOptions) {
           pathnameToUrl("/search/")
         }) · [🔥 Feed](${
           pathnameToFeedUrl("/", true)
-        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
+        }) · [📮 Subscribe](${SUBSCRIPTION_URL})  · [❤️ Sponsor](https://github.com/sponsors/theowenyoung) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
           formatHumanTime(dbItemsLatestUpdatedAt)
         } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       } else {
@@ -486,7 +486,7 @@ export default async function buildMarkdown(options: RunOptions) {
           pathnameToUrl("/search/")
         }) · [🔥 Feed](${
           pathnameToFeedUrl("/week/", true)
-        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
+        }) · [📮 Subscribe](${SUBSCRIPTION_URL}) · [❤️ Sponsor](https://github.com/sponsors/theowenyoung) · [${GITHUB_NAV}](${GITHUB_REPO}) · [${WEBSITE_NAV}](${PROD_DOMAIN}) · 📝 ${
           formatHumanTime(dbItemsLatestUpdatedAt)
         } · ✅ ${formatHumanTime(new Date(dbMeta.checked_at))}`;
       }

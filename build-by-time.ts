@@ -17,6 +17,8 @@ import {
   INDEX_HTML_PATH,
   INDEX_MARKDOWN_PATH,
   SEARCH_NAV,
+  SPONSOR_NAV,
+  SPONSOR_URL,
   SUBSCRIBE_NAV,
   SUBSCRIPTION_URL,
 } from "./constant.ts";
@@ -115,6 +117,10 @@ export default async function main(
     {
       name: SUBSCRIBE_NAV,
       url: SUBSCRIPTION_URL,
+    },
+    {
+      name: SPONSOR_NAV,
+      url: SPONSOR_URL,
     },
   ];
   const feed: Feed = {

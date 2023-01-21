@@ -13,6 +13,8 @@ export const HOME_NAV = "🏠 Home";
 export const SEARCH_NAV = "🔍 Search";
 export const FEED_NAV = "🔥 Feed";
 export const SUBSCRIBE_NAV = "📮 Subscribe";
+export const SPONSOR_NAV = "❤️  Sponsor";
+export const SPONSOR_URL = "https://github.com/sponsors/theowenyoung";
 
 export const GITHUB_NAV = "😺 Github";
 export const WEBSITE_NAV = "🌐 Website";
