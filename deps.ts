@@ -33,16 +33,16 @@ export { gfm } from "https://esm.sh/micromark-extension-gfm@2.0.1";
 export {
   gfmFromMarkdown,
   gfmToMarkdown,
-} from "https://esm.sh/mdast-util-gfm@2.0.1";
+} from "https://esm.sh/mdast-util-gfm@2.0.2";
 // export { default as kebabCase } from "https://jspm.dev/lodash@4.17.21/kebabCase";
-export { toMarkdown } from "https://esm.sh/mdast-util-to-markdown@1.3.0";
-export { fromMarkdown } from "https://esm.sh/mdast-util-from-markdown@1.2.0";
-export { EXIT, visit } from "https://esm.sh/unist-util-visit@4.1.1";
-export { selectAll } from "https://esm.sh/unist-util-select@4.0.1";
-export { remove } from "https://esm.sh/unist-util-remove@3.1.0";
-export { u } from "https://esm.sh/unist-builder@3.0.0";
+export { toMarkdown } from "https://esm.sh/mdast-util-to-markdown@1.5.0";
+export { fromMarkdown } from "https://esm.sh/mdast-util-from-markdown@1.3.0";
+export { EXIT, visit } from "https://esm.sh/unist-util-visit@4.1.2";
+export { selectAll } from "https://esm.sh/unist-util-select@4.0.3";
+export { remove } from "https://esm.sh/unist-util-remove@3.1.1";
+export { u } from "https://esm.sh/unist-builder@3.0.1";
 export { default as remarkInlineLinks } from "https://esm.sh/remark-inline-links@6.0.1";
-export { default as remarkEmoji } from "https://esm.sh/remark-emoji@3.0.2";
+export { default as remarkEmoji } from "https://esm.sh/remark-emoji@3.1.0";
 export { default as remarkGemoji } from "./lib/gemoji.js";
 export type {
   Content,
