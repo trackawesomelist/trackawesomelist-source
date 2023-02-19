@@ -1451,7 +1451,7 @@ sources:
         index: true
   jbmoelker/progressive-enhancement-resources:
     category: Front-End Development
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
