@@ -3974,3 +3974,9 @@ sources:
     files:
       README.md:
         index: true
+  beansource/awesome-orgs:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      readme.md:
+        index: true
