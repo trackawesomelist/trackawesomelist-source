@@ -3990,5 +3990,5 @@ sources:
     category: Finance
     default_branch: main
     files:
-      readme.md:
+      README.md:
         index: true
