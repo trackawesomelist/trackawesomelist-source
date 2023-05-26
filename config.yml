@@ -3968,6 +3968,12 @@ sources:
     files:
       README.md:
         index: true
+  kyrolabs/awesome-langchain:
+    category: ChatGPT
+    default_branch: main
+    files:
+      readme.md:
+        index: true
   ddotta/awesome-polars:
     category: Programming Languages
     default_branch: main
