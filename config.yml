@@ -3253,7 +3253,7 @@ sources:
         index: true
   dustinspecker/awesome-eslint:
     category: Programming Languages
-    default_branch: master
+    default_branch: main
     files:
       readme.md:
         index: true
