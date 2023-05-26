@@ -3986,3 +3986,9 @@ sources:
     files:
       readme.md:
         index: true
+  wilsonfreitas/awesome-quant:
+    category: Finance
+    default_branch: main
+    files:
+      readme.md:
+        index: true
