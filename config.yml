@@ -3972,7 +3972,7 @@ sources:
     category: ChatGPT
     default_branch: main
     files:
-      readme.md:
+      README.md:
         index: true
   ddotta/awesome-polars:
     category: Programming Languages
