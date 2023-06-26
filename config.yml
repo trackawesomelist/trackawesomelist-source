@@ -3,7 +3,7 @@ site:
   url: https://www.trackawesomelist.com
   title: "Track Awesome List"
   description:
-    "We track over 500 awesome list updates, and you can also subscribe to daily or weekly updates via RSS or News Letter." 
+    "We track over 500 awesome list updates, and you can also subscribe to daily or weekly updates via RSS or News Letter."
 sources:
   mjhea0/awesome-flask:
     category: Back-End Development
@@ -1659,7 +1659,7 @@ sources:
         index: true
   Dvergar/awesome-haxe-gamedev:
     category: Gaming
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
@@ -3833,7 +3833,7 @@ sources:
     files:
       README.md:
         index: true
-          
+
   JanVanRyswyck/awesome-talks:
     category: Theory
     default_branch: master
