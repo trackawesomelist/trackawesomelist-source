@@ -1829,7 +1829,7 @@ sources:
         index: true
   karlhorky/learn-to-program:
     category: Learn
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
