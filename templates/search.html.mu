@@ -51,12 +51,18 @@
         <div id="target">
         </div>
       </div>
-      
+
     </main>
 
     <!--  Search UI script -->
     <script src="/search-index/assets/search-ui.ascii.bundle.js"></script>
     <script>
+
+    // check is there is q query in the url
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+
+
     morsels.initMorsels({
       searcherOptions: {
         // Output folder url specified as the second parameter in the cli command
@@ -74,6 +80,20 @@
       },
 
 });
+    if(query){
+        // focus input first
+        const inputElement = document.getElementById("morsels-search");
+        inputElement.focus();
+
+            setTimeout(()=>{
+
+        document.getElementById("morsels-search").value = query;
+        // trigger search
+        const changeEvent = new Event('input');
+        inputElement.dispatchEvent(changeEvent);
+    },10)
+    }
+
     </script>
   </body>
 </html>
