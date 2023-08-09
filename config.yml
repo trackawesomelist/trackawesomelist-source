@@ -574,6 +574,12 @@ sources:
     files:
       README.md:
         index: true
+  asdf-vm/asdf-plugins:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
   umbraco-community/awesome-umbraco:
     category: Content Management Systems
     default_branch: master
