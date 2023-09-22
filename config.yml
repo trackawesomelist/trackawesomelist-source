@@ -3998,3 +3998,8 @@ sources:
     files:
       README.md:
         index: true
+  aabouzaid/awesome-kustomize:
+    category: DevOps
+    files:
+      README.md:
+        index: true
