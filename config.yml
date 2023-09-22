@@ -3992,3 +3992,9 @@ sources:
     files:
       README.md:
         index: true
+  mahseema/awesome-ai-tools:
+    category: Computer Science
+    default_branch: master
+    files:
+      README.md:
+        index: true
