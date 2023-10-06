@@ -3998,3 +3998,9 @@ sources:
     files:
       README.md:
         index: true
+  Hyraze/ai-collective-tools:
+    category: Computer Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
