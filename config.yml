@@ -3998,6 +3998,11 @@ sources:
     files:
       README.md:
         index: true
+  aabouzaid/awesome-kustomize:
+    category: DevOps
+    files:
+      README.md:
+        index: true
   Hyraze/ai-collective-tools:
     category: Computer Science
     default_branch: main
