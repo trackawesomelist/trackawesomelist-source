@@ -4020,4 +4020,10 @@ sources:
     default_branch: main
     files:
       README.md:
-        index: true      
+        index: true
+  totpero/awesome-qgis:
+    category: Development Environment
+    default_branch: main
+    files:
+      README.md:
+        index: true
