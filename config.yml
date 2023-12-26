@@ -840,7 +840,7 @@ sources:
           min_heading_level: 2
   sirredbeard/Awesome-WSL:
     category: Development Environment
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
