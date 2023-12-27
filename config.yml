@@ -2835,7 +2835,7 @@ sources:
           type: table
   j0hnm4r5/awesome-creative-technology:
     files:
-      readme.md:
+      README.md:
         index: true
         options:
           type: table
