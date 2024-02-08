@@ -4021,3 +4021,9 @@ sources:
     files:
       README.md:
         index: true      
+  AI4LAM/awesome-ai4lam:
+    category: Library systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
