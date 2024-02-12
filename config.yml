@@ -4026,6 +4026,12 @@ sources:
     default_branch: main
     files:
       README.md:
+        index: true
+  totpero/awesome-qgis:
+    category: Development Environment
+    default_branch: main
+    files:
+      README.md:
         index: true      
   AI4LAM/awesome-ai4lam:
     category: Library systems
