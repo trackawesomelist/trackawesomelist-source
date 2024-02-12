@@ -840,7 +840,7 @@ sources:
           min_heading_level: 2
   sirredbeard/Awesome-WSL:
     category: Development Environment
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
@@ -2620,6 +2620,12 @@ sources:
     files:
       README.md:
         index: true
+  Intergalactic-XYZ/awesome-cropsteering:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
   ttt30ga/awesome-product-design:
     category: Miscellaneous
     default_branch: master
@@ -2835,7 +2841,7 @@ sources:
           type: table
   j0hnm4r5/awesome-creative-technology:
     files:
-      readme.md:
+      README.md:
         index: true
         options:
           type: table
@@ -3037,7 +3043,7 @@ sources:
         index: true
   thibmaek/awesome-raspberry-pi:
     category: Platforms
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
@@ -4023,6 +4029,12 @@ sources:
         index: true
   totpero/awesome-qgis:
     category: Development Environment
+    default_branch: main
+    files:
+      README.md:
+        index: true      
+  AI4LAM/awesome-ai4lam:
+    category: Library systems
     default_branch: main
     files:
       README.md:
