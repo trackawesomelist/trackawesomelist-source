@@ -2620,6 +2620,12 @@ sources:
     files:
       README.md:
         index: true
+  Intergalactic-XYZ/awesome-cropsteering:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
   ttt30ga/awesome-product-design:
     category: Miscellaneous
     default_branch: master
