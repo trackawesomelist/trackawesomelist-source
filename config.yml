@@ -4039,6 +4039,11 @@ sources:
     files:
       README.md:
         index: true
+  glp1guide/awesome-glp1:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      readme.md:
   virtualroot/awesome-opentofu:
     category: DevOps
     default_branch: main
