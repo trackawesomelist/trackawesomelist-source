@@ -2403,7 +2403,7 @@ sources:
         index: true
   terkelg/awesome-creative-coding:
     category: Miscellaneous
-    default_branch: master
+    default_branch: main
     files:
       readme.md:
         index: true
