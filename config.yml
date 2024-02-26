@@ -4043,7 +4043,8 @@ sources:
     category: Miscellaneous
     default_branch: main
     files:
-      readme.md:
+      README.md:
+        index: true
   virtualroot/awesome-opentofu:
     category: DevOps
     default_branch: main
