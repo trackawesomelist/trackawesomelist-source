@@ -4051,3 +4051,9 @@ sources:
     files:
       README.md:
         index: true
+  ProductivityDirectory/awesome-productivity-tools:
+    category: Productivity Tools
+    default_branch: main
+    files:
+      README.md:
+        index: true
