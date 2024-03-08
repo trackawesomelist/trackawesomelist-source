@@ -4057,3 +4057,9 @@ sources:
     files:
       README.md:
         index: true
+  stan8086/awesome-distraction-blocker:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
