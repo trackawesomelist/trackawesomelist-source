@@ -3370,6 +3370,9 @@ sources:
         index: true
   avelino/awesome-go:
     category: Programming Languages
+  nikolaydubina/go-recipes:
+    category: Programming Languages
+    default_branch: master
   lauris/awesome-scala:
     category: Programming Languages
     default_branch: master
