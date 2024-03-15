@@ -4063,3 +4063,9 @@ sources:
     files:
       README.md:
         index: true
+  dariubs/awesome-workflow-automation:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
