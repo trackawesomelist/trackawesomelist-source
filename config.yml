@@ -4072,3 +4072,9 @@ sources:
     files:
       README.md:
         index: true
+  capawesome-team/awesome-capacitorjs:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
