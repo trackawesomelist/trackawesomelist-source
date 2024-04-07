@@ -4070,7 +4070,7 @@ sources:
     category: Miscellaneous
     default_branch: main
     files:
-      README.md:
+      readme.md:
         index: true
   capawesome-team/awesome-capacitorjs:
     category: Platforms
