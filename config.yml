@@ -3784,7 +3784,7 @@ sources:
         index: true
   thomasdarimont/awesome-keycloak:
     category: Security
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
