@@ -4084,3 +4084,9 @@ sources:
     files:
       README.md:
         index: true
+  santiagoxlopez/awesome-project-management:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
