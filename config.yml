@@ -2728,6 +2728,12 @@ sources:
     files:
       README.md:
         index: true
+  selvaklnc/freeware:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true      
   mbiesiad/awesome-translations:
     category: Miscellaneous
     default_branch: main
