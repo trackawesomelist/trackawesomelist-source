@@ -4106,5 +4106,5 @@ sources:
      category: Miscellaneous
      default_branch: main
      files:
-       README.md:
+       readme.md:
          index: true
