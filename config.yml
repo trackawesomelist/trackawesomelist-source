@@ -4108,3 +4108,9 @@ sources:
      files:
        readme.md:
          index: true
+  lightszentip/awesome-laravel-filament:
+    category: Back-End Development
+    default_branch: main
+    files:
+      readme.md:
+        index: true
