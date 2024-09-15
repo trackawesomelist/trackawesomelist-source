@@ -3017,12 +3017,6 @@ sources:
     files:
       README.md:
         index: true
-  Awesome-Windows/Awesome:
-    category: Platforms
-    default_branch: master
-    files:
-      README.md:
-        index: true
   ipfs/awesome-ipfs:
     category: Platforms
     default_branch: main
