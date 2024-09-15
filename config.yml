@@ -4096,3 +4096,21 @@ sources:
     files:
       README.md:
         index: true
+  marketingtoolslist/awesome-marketing:
+     category: Miscellaneous
+     default_branch: main
+     files:
+       readme.md:
+         index: true
+  lightszentip/awesome-laravel-filament:
+    category: Back-End Development
+    default_branch: main
+    files:
+      readme.md:
+        index: true
+  xavidop/awesome-firebase-genkit:
+    category: LLM
+    default_branch: main
+    files:
+      README.md:
+        index: true
