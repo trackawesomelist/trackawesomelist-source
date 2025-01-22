@@ -55,6 +55,11 @@ export default async function (options: RunOptions) {
         `[${sourceIndex}/${sourceIdentifiers.length}] Fetching source: ${sourceIdentifier}`,
       );
       const source = sourcesMap[sourceIdentifier];
+      console.log("source.skip", sourceIdentifier, source.skip);
+      if (source && source.skip) {
+        log.info(`source ${sourceIdentifier} is skipped`);
+        continue;
+      }
       const files = source.files;
 
       if (!dbSources[sourceIdentifier] || (isSpecificSource && isRebuild)) {

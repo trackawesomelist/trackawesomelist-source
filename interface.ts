@@ -56,6 +56,7 @@ export interface RawSource {
   default_branch?: string;
   url?: string;
   files?: Record<string, RawSourceFile> | string;
+  skip?: boolean;
 }
 export interface ParsedItemsFilePath {
   originalFilepath: string;
@@ -108,6 +109,7 @@ export interface FileConfig extends RawSourceFile {
   pathname: string;
   name: string;
   options: ParseOptions;
+  skip?: boolean;
 }
 export interface Source {
   identifier: string;
@@ -115,6 +117,7 @@ export interface Source {
   default_branch?: string;
   category: string;
   files: Record<string, FileConfig>;
+  skip?: boolean;
 }
 export interface ListItem {
   name: string;

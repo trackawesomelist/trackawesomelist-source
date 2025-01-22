@@ -383,6 +383,7 @@ export function getFormatedSource(
               "/"
           }`,
           name: name,
+          skip: value.skip,
         };
       }
       // check is has index file
@@ -402,6 +403,7 @@ export function getFormatedSource(
           filepath: INDEX_MARKDOWN_PATH,
           pathname: `/${key}/`,
           name,
+          skip: value.skip,
           index: true,
           options: {
             type: defaultFileType,
@@ -416,6 +418,7 @@ export function getFormatedSource(
         filepath: INDEX_MARKDOWN_PATH,
         pathname: `/${key}/`,
         name,
+        skip: false,
         index: true,
         options: {
           type: defaultFileType,
@@ -430,6 +433,7 @@ export function getFormatedSource(
     url,
     files,
     category: value?.category || defaultCategory,
+    skip: value?.skip || false,
   };
 
   if (value && value.default_branch) {
