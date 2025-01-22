@@ -2820,7 +2820,7 @@ sources:
           max_heading_level: 1
           is_parse_category: false
   KotlinBy/awesome-kotlin:
-    default_branch: readme
+    default_branch: main
     files:
       README.md:
         index: true
