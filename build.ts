@@ -118,6 +118,10 @@ export default async function buildMarkdown(options: RunOptions) {
     // build specific source
     for (const sourceIdentifier of specificSourceIdentifiers) {
       const sourceConfig = sourcesConfig[sourceIdentifier];
+      if (!sourceConfig) {
+        log.error(`source ${sourceIdentifier} not found`);
+        continue;
+      }
       const sourceFilesKeys = Object.keys(sourceConfig.files);
       for (const file of sourceFilesKeys) {
         allUpdatedFiles.push({
@@ -218,6 +222,10 @@ export default async function buildMarkdown(options: RunOptions) {
     let updatedFileIndex = 0;
     for (const file of allUpdatedFiles) {
       const sourceConfig = sourcesConfig[file.source_identifier];
+      if (!sourceConfig) {
+        log.error(`source ${file.source_identifier} not found`);
+        continue;
+      }
       const fileInfo: FileInfo = {
         sourceConfig: sourceConfig,
         sourceMeta: dbSources[sourceConfig.identifier],
@@ -409,6 +417,10 @@ export default async function buildMarkdown(options: RunOptions) {
       },
     ).slice(0, TOP_REPOS_COUNT).map((sourceIdentifier, index) => {
       const sourceConfig = sourcesConfig[sourceIdentifier];
+      if (!sourceConfig) {
+        log.error(`source ${sourceIdentifier} not found`);
+        return null;
+      }
 
       const sourceFileConfig = getIndexFileConfig(sourceConfig.files);
       const sourceMeta = dbSources[sourceIdentifier].meta;
@@ -504,6 +516,9 @@ export default async function buildMarkdown(options: RunOptions) {
       };
       const groupByCategory = (sourceIdentifier: string) => {
         const sourceConfig = sourcesConfig[sourceIdentifier];
+        if (!sourceConfig) {
+          return "Other";
+        }
         return sourceConfig.category;
       };
       const listGroups = groupBy(sourcesKeys, groupByCategory);
@@ -514,8 +529,8 @@ export default async function buildMarkdown(options: RunOptions) {
           const sourceConfig = sourcesConfig[sourceIdentifier];
           const indexFileConfig = getIndexFileConfig(sourceConfig.files);
           const sourceMeta = dbSources[sourceIdentifier]?.meta;
-          const dbFileInfo =
-            dbSources[sourceIdentifier]?.files[indexFileConfig.filepath];
+          const dbFileInfo = dbSources[sourceIdentifier]
+            ?.files[indexFileConfig.filepath];
           const item: ListItem = {
             name: indexFileConfig.name,
             meta: sourceMeta,
