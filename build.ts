@@ -222,7 +222,7 @@ export default async function buildMarkdown(options: RunOptions) {
     let updatedFileIndex = 0;
     for (const file of allUpdatedFiles) {
       const sourceConfig = sourcesConfig[file.source_identifier];
-      if (!sourceConfig) {
+      if (!sourceConfig || sourceConfig.skip) {
         log.error(`source ${file.source_identifier} not found`);
         continue;
       }

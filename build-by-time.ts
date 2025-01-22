@@ -266,6 +266,7 @@ export function itemsToFeedItems(
     if (!firstItem) {
       throw new Error(`${key} has no firstItem`);
     }
+    console.log("firstItem.source_identifier", firstItem.source_identifier);
     // get file path
     const sourceFileConfig =
       sourcesConfig[firstItem.source_identifier].files[firstItem.file];
