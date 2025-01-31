@@ -32,7 +32,7 @@ jobs:
           arch: amd64 # allowed values: amd64, arm64
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 22
           cache: "npm"
       - name: install wrangler
         run: npm install -g wrangler
