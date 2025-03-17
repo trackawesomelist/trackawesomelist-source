@@ -4136,10 +4136,15 @@ sources:
     files:
       README.md:
         index: true
+  uscneps/Awesome-European-Tech:
+      category: Platforms
+      default_branch: main
+      files:
+        README.md:
+          index: true
   holistics/awesome-sql-playground:
     category: Data Engineering
     default_branch: main
     files:
       README.md:
         index: true
-
