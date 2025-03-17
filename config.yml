@@ -4133,7 +4133,6 @@ sources:
   holistics/awesome-sql-playground:
     category: Data Engineering
     default_branch: main
-    skip: true
     files:
       README.md:
         index: true
