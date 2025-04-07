@@ -4094,7 +4094,19 @@ sources:
       readme.md:
         index: true
   kimtth/awesome-azure-openai-llm:
-    category: LLM
+    category: ChatGPT
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kimtth/azure-openai-llm-cookbook:
+    category: ChatGPT
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kimtth/software-architect-mindmap:
+    category: Computer Science
     default_branch: main
     files:
       README.md:
