@@ -4148,3 +4148,9 @@ sources:
     files:
       README.md:
         index: true
+  junhui/awesome-pci-dss:
+    category: Security
+    default_branch: main
+    files:
+      README.md:
+        index: true
