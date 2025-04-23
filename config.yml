@@ -984,7 +984,7 @@ sources:
     category: Development Environment
     default_branch: master
     files:
-      readme.md:
+      README.md:
         index: true
   alfred-workflows/awesome-alfred-workflows:
     category: Development Environment
