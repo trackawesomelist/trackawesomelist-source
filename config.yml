@@ -4154,3 +4154,9 @@ sources:
     files:
       README.md:
         index: true
+  tokyo-dal/awesome-ai-coding-tools:
+    category: Platforms
+    default_branch: main
+    files:
+      readme.md:
+        index: true
