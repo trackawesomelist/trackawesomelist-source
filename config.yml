@@ -1500,7 +1500,7 @@ sources:
         index: true
   lauthieb/awesome-storybook:
     category: Front-End Development
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
