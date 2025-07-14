@@ -941,7 +941,7 @@ sources:
         index: true
   arslanbilal/git-cheat-sheet:
     category: Development Environment
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
