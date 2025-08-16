@@ -3993,7 +3993,7 @@ sources:
       README.md:
         index: true
   hesreallyhim/awesome-claude-code:
-    category: ChatGPT
+    category: LLM
     default_branch: main
     files:
       README.md:
