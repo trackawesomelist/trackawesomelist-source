@@ -4166,3 +4166,21 @@ sources:
     files:
       README.md:
         index: true
+  abordage/awesome-go:
+    category: Programming Languages
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  abordage/awesome-mac:
+    category: Platforms
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  abordage/awesome-ai:
+    category: Computer Science
+    default_branch: main
+    files:
+      README.md:
+        index: true
