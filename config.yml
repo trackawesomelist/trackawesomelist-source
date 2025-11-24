@@ -2642,7 +2642,7 @@ sources:
         index: true
   ttt30ga/awesome-product-design:
     category: Miscellaneous
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
