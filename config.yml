@@ -1554,7 +1554,7 @@ sources:
         index: true
   componently-com/awesome-building-blocks-for-web-apps:
     category: Front-End Development
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
