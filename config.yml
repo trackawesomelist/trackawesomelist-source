@@ -2366,7 +2366,7 @@ sources:
     category: Miscellaneous
     default_branch: master
     files:
-      docs/README.md:
+      README.md:
         index: true
   tobiasbueschel/awesome-pokemon:
     category: Miscellaneous
