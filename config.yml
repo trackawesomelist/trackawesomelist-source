@@ -3634,11 +3634,11 @@ sources:
     files:
       README.md:
         index: true
-  catdevnull/awesome-zig:
+  zigcc/awesome-zig:
     category: Programming Languages
     default_branch: main
     files:
-      readme.md:
+      README.md:
         index: true
   rust-embedded/awesome-embedded-rust:
     category: Programming Languages
