@@ -2278,7 +2278,7 @@ sources:
         options:
           type: table
 
-  hobbyquaker/awesome-mqtt:
+  rhizomatics/awesome-mqtt:
     category: Miscellaneous
     default_branch: master
     files:
