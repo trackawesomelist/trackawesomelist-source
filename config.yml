@@ -1012,7 +1012,7 @@ sources:
         index: true
   rothgar/awesome-tmux:
     category: Development Environment
-    default_branch: master
+    default_branch: main
     files:
       README.md:
         index: true
