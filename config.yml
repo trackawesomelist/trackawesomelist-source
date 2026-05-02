@@ -3681,6 +3681,12 @@ sources:
     files:
       README.md:
         index: true
+  guidryheal-create/awesome-offensive-security:
+    category: Security
+    default_branch: master
+    files:
+      README.md:
+        index: true
   Igglybuff/awesome-piracy:
     category: Security
     default_branch: master
