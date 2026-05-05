@@ -1095,6 +1095,12 @@ sources:
     files:
       README.md:
         index: true
+  tomasz-buczek/awesome-ai-companions:
+    category: Entertainment
+    default_branch: main
+    files:
+        README.md:
+          index: true
   danvoyce/awesome-creative-tech-events:
     category: Events
     default_branch: master
