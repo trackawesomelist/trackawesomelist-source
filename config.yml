@@ -4236,3 +4236,9 @@ sources:
     files:
       README.md:
         index: true
+  henrymmey/awesome-ai-for-beginners:
+    category: Awesome AI for Beginners
+    default_branch: main
+    files:
+      readme.md:
+        index: true
