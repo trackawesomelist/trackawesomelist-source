@@ -784,6 +784,12 @@ sources:
     files:
       README.md:
         index: true
+  hive-intel/awesome-crypto-mcp-servers:
+    category: Decentralized Systems
+    default_branch: main
+    files:
+      README.md:
+        index: true
   DanailMinchev/awesome-eosio:
     category: Decentralized Systems
     default_branch: main
