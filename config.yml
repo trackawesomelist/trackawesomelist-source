@@ -2081,6 +2081,12 @@ sources:
     files:
       README.md:
         index: true
+  seoulstart/awesome-living-in-korea:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
   burningtree/awesome-json:
     category: Miscellaneous
     default_branch: master
