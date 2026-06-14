@@ -4236,3 +4236,9 @@ sources:
     files:
       README.md:
         index: true
+  DaKerboul/awesome-dcs-world:
+    category: Gaming
+    default_branch: main
+    files:
+      README.md:
+        index: true
