@@ -2480,6 +2480,12 @@ sources:
     files:
       README.md:
         index: true
+  qjcg/awesome-typst:
+    category: Miscellaneous
+    default_branch: main
+    files:
+      README.md:
+        index: true
   mislavcimpersak/awesome-dev-fun:
     category: Miscellaneous
     default_branch: master
