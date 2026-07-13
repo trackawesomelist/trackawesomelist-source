@@ -4140,7 +4140,13 @@ sources:
     files:
       readme.md:
         index: true
-  kimtth/awesome-azure-openai-llm:
+  kimtth/azure-openai-llm-wiki:
+    category: LLM
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  kimtth/awesome-azure-openai-copilot:
     category: LLM
     default_branch: main
     files:
