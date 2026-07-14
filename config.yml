@@ -4236,3 +4236,22 @@ sources:
     files:
       README.md:
         index: true
+  Infrasity-Labs/awesome-developer-conferences:
+    category: Events
+    default_branch: master
+    files:
+      README.md:
+        index: true
+  Infrasity-Labs/awesome-tech-newsletter:
+    category: Entertainment
+    default_branch: main
+    files:
+      README.md:
+        index: true
+  Infrasity-Labs/awesome-developer-podcast:
+    category: Entertainment
+    default_branch: main
+    files:
+      README.md:
+        index: true
+
