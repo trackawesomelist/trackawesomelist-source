@@ -4248,4 +4248,10 @@ sources:
     files:
       README.md:
         index: true
+  Infrasity-Labs/awesome-developer-podcast:
+    category: Entertainment
+    default_branch: main
+    files:
+      README.md:
+        index: true
 
