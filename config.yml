@@ -980,6 +980,12 @@ sources:
     files:
       README.md:
         index: true
+  hugoh/awesome-jj:
+    category: Development Environment
+    default_branch: main
+    files:
+      README.md:
+        index: true
   moul/awesome-ssh:
     category: Development Environment
     default_branch: master
