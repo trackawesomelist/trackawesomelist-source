@@ -4236,3 +4236,10 @@ sources:
     files:
       README.md:
         index: true
+
+HoardAds/awesome-ai-crypto-tools:
+  category: Artificial Intelligence
+  default_branch: main
+  files:
+    README.md:
+      index: true
