@@ -4236,3 +4236,19 @@ sources:
     files:
       README.md:
         index: true
+  ai-boost/awesome-prompts:
+    category: LLM
+    default_branch: main
+    files:
+      README.md:
+        index: true
+        options:
+          type: table
+  ai-boost/awesome-image-video-prompts:
+    category: LLM
+    default_branch: main
+    files:
+      README.md:
+        index: true
+        options:
+          type: heading
